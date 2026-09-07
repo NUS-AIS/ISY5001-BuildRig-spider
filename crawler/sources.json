@@ -1,0 +1,10 @@
+{
+  "stores": [
+    {"name": "Dynacore Singapore", "base_url": "https://dynacoretech.com", "currency": "SGD", "collections": {"cpu": "cpu", "gpu": "gpu", "motherboard": "motherboard", "ram": "ram", "ssd": "ssd", "hdd": "hdd", "psu": "psu", "case": "case", "cooler": "cooler", "case_fans": "case-fans", "laptop": "laptop"}},
+    {"name": "Vii PC Singapore", "base_url": "https://www.viipc.sg", "currency": "SGD", "collections": {"cpu": "ryzen-intel-desktop-cpu", "gpu": "rtx-radeon-graphics-card", "motherboard": "amd-intel-motherboard", "ram": "desktop-pc-ram", "ssd": "internal-ssd-storage", "psu": "power-suppy-unit-psu", "case": "desktop-pc-cases", "cooler": "cpu-aio-air-cooler"}}
+  ],
+  "review_pages": [
+    {"url": "https://www.reddit.com/r/thinkpad/comments/1d6nhf3/thinkpad_t14_gen_5_amd_review_a_mixed_bag/", "product_name": "Lenovo ThinkPad T14 Gen 5 AMD", "category": "laptop", "region": "unknown", "kind": "community_discussion"},
+    {"url": "https://www.reddit.com/r/thinkpad/comments/1dfevfb/", "product_name": "Lenovo ThinkPad T14 Gen 5 AMD", "category": "laptop", "region": "unknown", "kind": "community_discussion"}
+  ]
+}

@@ -1,0 +1,780 @@
+{
+  "run_id": "20260906T124528641415Z",
+  "finished_at": "2026-09-06T12:47:49.954082+00:00",
+  "price_count": 2236,
+  "review_count": 15,
+  "imported_review_count": 15,
+  "crawled_review_count": 0,
+  "categories": {
+    "cpu": 53,
+    "bundle": 328,
+    "gpu": 135,
+    "accessory": 1,
+    "motherboard": 253,
+    "laptop_ram": 10,
+    "ram": 170,
+    "ssd": 124,
+    "external_storage": 102,
+    "hdd": 44,
+    "psu": 241,
+    "case": 332,
+    "cooler": 371,
+    "laptop": 72
+  },
+  "coverage": [
+    {
+      "store": "Dynacore Singapore",
+      "category": "cpu",
+      "variants": 22,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "gpu",
+      "variants": 6,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "motherboard",
+      "variants": 205,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "ram",
+      "variants": 21,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "ssd",
+      "variants": 96,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "hdd",
+      "variants": 105,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "psu",
+      "variants": 146,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "case",
+      "variants": 244,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "cooler",
+      "variants": 241,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "case_fans",
+      "variants": 0,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "laptop",
+      "variants": 73,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "cpu",
+      "variants": 326,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "gpu",
+      "variants": 130,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "motherboard",
+      "variants": 367,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "ram",
+      "variants": 159,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "ssd",
+      "variants": 69,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "psu",
+      "variants": 96,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "case",
+      "variants": 93,
+      "status": "exhausted"
+    },
+    {
+      "store": "Vii PC Singapore",
+      "category": "cooler",
+      "variants": 130,
+      "status": "exhausted"
+    }
+  ],
+  "issues": [
+    {
+      "url": "https://dynacoretech.com/products/amd-ryzen-7-9800x3d-4-7ghz-8c-16t-104mb-cache-tray-processor4yrs-100-000001084",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-proart-x870e-creator-wifi-am5-atx-motherboard-amd-ryzen-7-9850x3d-4-7ghz-8core-16thread-96mb-box-processor-4711387730782-730143318280",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/gigabyte-geforce-rtx-5070-aorus-master-12gb-gddr7-graphics-card-rtx5070-4719331355753",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-rog-herculx-graphics-card-holder",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-b850m-gaming-plus-wifi-am5-m-atx-motherboard3yrs-4711377347570",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-32gb-ddr4-3200mhz-cl22-1-2v-non-ecc-sodimm-so-dimm-notebook-memory-ct32g4sfd832a-649528822499",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/kioxia-exceria-basic-1tb-7200mb-s-nvme-pcie4-0-m-2-ssd-4582761161108",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/seagate-one-touch-2tb-black-usb3-0-portable-hdd-3660619041596",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-tr-kg650-650w-atx3-1-80-gold-full-modular-psu5yrs-814256019729",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/lian-li-o11-vision-compact-black-white-tempered-glass-atx-pc-case",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-phantom-spirit-120-se-argb-cpu-fan-cooler-dual-tower-heatsink-814256015578",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://www.reddit.com/r/thinkpad/comments/1d6nhf3/thinkpad_t14_gen_5_amd_review_a_mixed_bag/",
+      "stage": "community",
+      "error": "robots.txt disallows https://www.reddit.com/r/thinkpad/comments/1d6nhf3/thinkpad_t14_gen_5_amd_review_a_mixed_bag/"
+    },
+    {
+      "url": "https://www.reddit.com/r/thinkpad/comments/1dfevfb/",
+      "stage": "community",
+      "error": "robots.txt disallows https://www.reddit.com/r/thinkpad/comments/1dfevfb/"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dynacoretech.com/collections/cpu/products.json",
+      "fetched_at": "2026-09-06T12:45:30.275762+00:00",
+      "raw_file": "c31b64ccc45349cef580.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cpu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:45:31.748231+00:00",
+      "raw_file": "5cf2ef710a975e8659ef.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/gpu/products.json",
+      "fetched_at": "2026-09-06T12:45:33.239818+00:00",
+      "raw_file": "dafd5ed83d0b8ca830f2.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/gpu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:45:34.753687+00:00",
+      "raw_file": "2b9cf010339e1d60e626.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json",
+      "fetched_at": "2026-09-06T12:45:36.335592+00:00",
+      "raw_file": "4b90915086fe249f452c.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=2",
+      "fetched_at": "2026-09-06T12:45:37.774043+00:00",
+      "raw_file": "991d21760eaa5e130e04.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=3",
+      "fetched_at": "2026-09-06T12:45:39.403297+00:00",
+      "raw_file": "90e0269b0045a2e2c692.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=4",
+      "fetched_at": "2026-09-06T12:45:40.813189+00:00",
+      "raw_file": "48a82aa303f1b6c640d0.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=5",
+      "fetched_at": "2026-09-06T12:45:42.298858+00:00",
+      "raw_file": "5adc10a06d6d642068f6.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=6",
+      "fetched_at": "2026-09-06T12:45:43.888251+00:00",
+      "raw_file": "7a7cb516a300496ca0e9.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=7",
+      "fetched_at": "2026-09-06T12:45:45.336779+00:00",
+      "raw_file": "e1dd1ad2955f60ff154a.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=8",
+      "fetched_at": "2026-09-06T12:45:46.951340+00:00",
+      "raw_file": "04cd3784b474464cb630.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ram/products.json",
+      "fetched_at": "2026-09-06T12:45:48.335367+00:00",
+      "raw_file": "e5e0db56040b489499f3.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ram/products.json?page=2",
+      "fetched_at": "2026-09-06T12:45:49.804741+00:00",
+      "raw_file": "e0990c0a6dfe201dce29.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json",
+      "fetched_at": "2026-09-06T12:45:51.326409+00:00",
+      "raw_file": "27e90444413ef5f63ebb.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json?page=2",
+      "fetched_at": "2026-09-06T12:45:52.893150+00:00",
+      "raw_file": "d66afb07d5cbd198142e.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json?page=3",
+      "fetched_at": "2026-09-06T12:45:54.369620+00:00",
+      "raw_file": "acce2973d903c803b062.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json?page=4",
+      "fetched_at": "2026-09-06T12:45:55.782236+00:00",
+      "raw_file": "42af7153df01942fd275.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json",
+      "fetched_at": "2026-09-06T12:45:57.303243+00:00",
+      "raw_file": "176b98480a4dcc7561fd.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=2",
+      "fetched_at": "2026-09-06T12:45:58.846294+00:00",
+      "raw_file": "9d11798b18509588b79d.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:00.319013+00:00",
+      "raw_file": "a2cd379efe2bb8d059d3.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=4",
+      "fetched_at": "2026-09-06T12:46:01.834260+00:00",
+      "raw_file": "8f98772cacc6ca7db546.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=5",
+      "fetched_at": "2026-09-06T12:46:03.307023+00:00",
+      "raw_file": "6ce90648e57f6f68cc66.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json",
+      "fetched_at": "2026-09-06T12:46:04.818079+00:00",
+      "raw_file": "fc0483459a77c02ecb4a.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:46:06.413602+00:00",
+      "raw_file": "053f6d29f6c12cb4f9e7.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:07.877473+00:00",
+      "raw_file": "1f93a55275ab0d3e2db2.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=4",
+      "fetched_at": "2026-09-06T12:46:09.364031+00:00",
+      "raw_file": "00fbd4025706bf898c2b.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=5",
+      "fetched_at": "2026-09-06T12:46:10.849266+00:00",
+      "raw_file": "27f627ce1756fe90f5a9.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=6",
+      "fetched_at": "2026-09-06T12:46:12.384993+00:00",
+      "raw_file": "77f52630158b66681a52.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json",
+      "fetched_at": "2026-09-06T12:46:13.840766+00:00",
+      "raw_file": "00095b3e02b0910fce24.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=2",
+      "fetched_at": "2026-09-06T12:46:15.369139+00:00",
+      "raw_file": "b95f518b330b66ddbbac.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:16.948574+00:00",
+      "raw_file": "598130ac4be4a5579d93.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=4",
+      "fetched_at": "2026-09-06T12:46:18.362183+00:00",
+      "raw_file": "afae3c919b6ac3c06034.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=5",
+      "fetched_at": "2026-09-06T12:46:19.868741+00:00",
+      "raw_file": "f20ab253bc29299d7095.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=6",
+      "fetched_at": "2026-09-06T12:46:21.523978+00:00",
+      "raw_file": "ec6741d7c443ea2fa6e2.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=7",
+      "fetched_at": "2026-09-06T12:46:23.013989+00:00",
+      "raw_file": "561f2452aece767d0f63.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=8",
+      "fetched_at": "2026-09-06T12:46:24.500468+00:00",
+      "raw_file": "7ceb2a5e853ef17ec529.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=9",
+      "fetched_at": "2026-09-06T12:46:25.880297+00:00",
+      "raw_file": "d88c2aa47ffad6bb8034.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json",
+      "fetched_at": "2026-09-06T12:46:27.375741+00:00",
+      "raw_file": "bc6710760e62ea31445d.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=2",
+      "fetched_at": "2026-09-06T12:46:28.848349+00:00",
+      "raw_file": "5b1b407adbfda0354c4e.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:30.364920+00:00",
+      "raw_file": "d37f02b2f7a554606af3.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=4",
+      "fetched_at": "2026-09-06T12:46:32.129873+00:00",
+      "raw_file": "577ab1c857768e7eb382.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=5",
+      "fetched_at": "2026-09-06T12:46:33.374177+00:00",
+      "raw_file": "2437a91a898e8820c89c.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=6",
+      "fetched_at": "2026-09-06T12:46:35.085322+00:00",
+      "raw_file": "3b963d36ad7e1f8e1fd8.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=7",
+      "fetched_at": "2026-09-06T12:46:36.542171+00:00",
+      "raw_file": "b577ea665d3fbbcd3253.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=8",
+      "fetched_at": "2026-09-06T12:46:37.987157+00:00",
+      "raw_file": "8ab98807ab4ff2b25cc8.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=9",
+      "fetched_at": "2026-09-06T12:46:39.395983+00:00",
+      "raw_file": "008933f60ae6c6f43d74.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case-fans/products.json",
+      "fetched_at": "2026-09-06T12:46:40.860921+00:00",
+      "raw_file": "3b7e4a3d8a5d4ed8ee07.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json",
+      "fetched_at": "2026-09-06T12:46:42.460138+00:00",
+      "raw_file": "89c6058a67227cd4f90e.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json?page=2",
+      "fetched_at": "2026-09-06T12:46:43.864821+00:00",
+      "raw_file": "a6153eb1758ad2075971.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:45.388209+00:00",
+      "raw_file": "8a0cc64ae2e450ed3efe.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json?page=4",
+      "fetched_at": "2026-09-06T12:46:46.860520+00:00",
+      "raw_file": "dff51b5a0b90ceef4c3f.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/ryzen-intel-desktop-cpu/products.json",
+      "fetched_at": "2026-09-06T12:46:48.684704+00:00",
+      "raw_file": "e864b8ebd159e35da8f7.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/ryzen-intel-desktop-cpu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:46:50.055113+00:00",
+      "raw_file": "997726e1b13b0b239a0e.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/ryzen-intel-desktop-cpu/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:51.635258+00:00",
+      "raw_file": "febccf73b78db1cd693c.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/ryzen-intel-desktop-cpu/products.json?page=4",
+      "fetched_at": "2026-09-06T12:46:53.104836+00:00",
+      "raw_file": "fc66240ee92455889f22.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/ryzen-intel-desktop-cpu/products.json?page=5",
+      "fetched_at": "2026-09-06T12:46:54.526375+00:00",
+      "raw_file": "e24bc70b2d513f3478e8.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/rtx-radeon-graphics-card/products.json",
+      "fetched_at": "2026-09-06T12:46:56.156654+00:00",
+      "raw_file": "869cbeae64a656c01c12.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/rtx-radeon-graphics-card/products.json?page=2",
+      "fetched_at": "2026-09-06T12:46:57.611224+00:00",
+      "raw_file": "98312b9bc0fddb32f814.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/rtx-radeon-graphics-card/products.json?page=3",
+      "fetched_at": "2026-09-06T12:46:59.126420+00:00",
+      "raw_file": "dd9f125bcec94cf5b143.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/rtx-radeon-graphics-card/products.json?page=4",
+      "fetched_at": "2026-09-06T12:47:00.635623+00:00",
+      "raw_file": "8e51241e6afb64ada6d7.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/rtx-radeon-graphics-card/products.json?page=5",
+      "fetched_at": "2026-09-06T12:47:01.962900+00:00",
+      "raw_file": "8fe22dd609e0f30ccf74.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/amd-intel-motherboard/products.json",
+      "fetched_at": "2026-09-06T12:47:03.548803+00:00",
+      "raw_file": "23f1220a3ac8d9437e04.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/amd-intel-motherboard/products.json?page=2",
+      "fetched_at": "2026-09-06T12:47:05.045248+00:00",
+      "raw_file": "f73b20bf00373844fcb3.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/amd-intel-motherboard/products.json?page=3",
+      "fetched_at": "2026-09-06T12:47:06.565185+00:00",
+      "raw_file": "87956e6cba2bc52766dc.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/amd-intel-motherboard/products.json?page=4",
+      "fetched_at": "2026-09-06T12:47:08.075293+00:00",
+      "raw_file": "1bbee21c0be17e394aee.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/amd-intel-motherboard/products.json?page=5",
+      "fetched_at": "2026-09-06T12:47:09.607577+00:00",
+      "raw_file": "629b96990d27e1e9b029.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/amd-intel-motherboard/products.json?page=6",
+      "fetched_at": "2026-09-06T12:47:11.025544+00:00",
+      "raw_file": "51d9dd6beca91c9aea65.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/desktop-pc-ram/products.json",
+      "fetched_at": "2026-09-06T12:47:12.560076+00:00",
+      "raw_file": "44e043c76886051655ca.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/desktop-pc-ram/products.json?page=2",
+      "fetched_at": "2026-09-06T12:47:14.141511+00:00",
+      "raw_file": "d3560d12c34d51d0a395.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/desktop-pc-ram/products.json?page=3",
+      "fetched_at": "2026-09-06T12:47:15.592508+00:00",
+      "raw_file": "80889874e44726cf466c.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/internal-ssd-storage/products.json",
+      "fetched_at": "2026-09-06T12:47:17.274034+00:00",
+      "raw_file": "d52299d1d4f878d34d37.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/internal-ssd-storage/products.json?page=2",
+      "fetched_at": "2026-09-06T12:47:18.687659+00:00",
+      "raw_file": "20562ff681c94dce0567.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/power-suppy-unit-psu/products.json",
+      "fetched_at": "2026-09-06T12:47:20.140865+00:00",
+      "raw_file": "25ff91917b1c63cc7ddd.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/power-suppy-unit-psu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:47:21.686091+00:00",
+      "raw_file": "13e4ff6217c57e91f06a.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/power-suppy-unit-psu/products.json?page=3",
+      "fetched_at": "2026-09-06T12:47:23.007244+00:00",
+      "raw_file": "437c0aa29d7e38c6f934.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/desktop-pc-cases/products.json",
+      "fetched_at": "2026-09-06T12:47:24.673998+00:00",
+      "raw_file": "1442cb46da9cc4cb97f3.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/desktop-pc-cases/products.json?page=2",
+      "fetched_at": "2026-09-06T12:47:26.178795+00:00",
+      "raw_file": "4983dc67c67f0be4b03d.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/desktop-pc-cases/products.json?page=3",
+      "fetched_at": "2026-09-06T12:47:27.525375+00:00",
+      "raw_file": "2ae5151617018544055d.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/cpu-aio-air-cooler/products.json",
+      "fetched_at": "2026-09-06T12:47:29.256023+00:00",
+      "raw_file": "a0416cc33e53ee3084e0.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/cpu-aio-air-cooler/products.json?page=2",
+      "fetched_at": "2026-09-06T12:47:30.716033+00:00",
+      "raw_file": "66cebc602edd9ff43c4d.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/cpu-aio-air-cooler/products.json?page=3",
+      "fetched_at": "2026-09-06T12:47:32.134532+00:00",
+      "raw_file": "beac30b9b138d0c9fd06.json",
+      "status": 200
+    },
+    {
+      "url": "https://www.viipc.sg/collections/cpu-aio-air-cooler/products.json?page=4",
+      "fetched_at": "2026-09-06T12:47:33.547384+00:00",
+      "raw_file": "ef0abb488532ecd870d8.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/amd-ryzen-7-9800x3d-4-7ghz-8c-16t-104mb-cache-tray-processor4yrs-100-000001084",
+      "fetched_at": "2026-09-06T12:47:33.683141+00:00",
+      "raw_file": "432a8a5bb3326e132206.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-proart-x870e-creator-wifi-am5-atx-motherboard-amd-ryzen-7-9850x3d-4-7ghz-8core-16thread-96mb-box-processor-4711387730782-730143318280",
+      "fetched_at": "2026-09-06T12:47:35.166810+00:00",
+      "raw_file": "edc1d78623904e808f7e.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/gigabyte-geforce-rtx-5070-aorus-master-12gb-gddr7-graphics-card-rtx5070-4719331355753",
+      "fetched_at": "2026-09-06T12:47:36.665724+00:00",
+      "raw_file": "f2b726ec2ea9597d3d07.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-rog-herculx-graphics-card-holder",
+      "fetched_at": "2026-09-06T12:47:38.154429+00:00",
+      "raw_file": "01abaca3eeba90ef9f5d.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-b850m-gaming-plus-wifi-am5-m-atx-motherboard3yrs-4711377347570",
+      "fetched_at": "2026-09-06T12:47:39.667902+00:00",
+      "raw_file": "955b85a8dfb8f027e60b.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-32gb-ddr4-3200mhz-cl22-1-2v-non-ecc-sodimm-so-dimm-notebook-memory-ct32g4sfd832a-649528822499",
+      "fetched_at": "2026-09-06T12:47:41.187147+00:00",
+      "raw_file": "bedf563667cb2dd0e8e0.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/kioxia-exceria-basic-1tb-7200mb-s-nvme-pcie4-0-m-2-ssd-4582761161108",
+      "fetched_at": "2026-09-06T12:47:42.774332+00:00",
+      "raw_file": "9d020778c4883786b154.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/seagate-one-touch-2tb-black-usb3-0-portable-hdd-3660619041596",
+      "fetched_at": "2026-09-06T12:47:44.225943+00:00",
+      "raw_file": "c8be9386e920fd17b74b.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-tr-kg650-650w-atx3-1-80-gold-full-modular-psu5yrs-814256019729",
+      "fetched_at": "2026-09-06T12:47:45.747458+00:00",
+      "raw_file": "07a3a8babe3e7e1b674a.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/lian-li-o11-vision-compact-black-white-tempered-glass-atx-pc-case",
+      "fetched_at": "2026-09-06T12:47:47.206812+00:00",
+      "raw_file": "053528dd4e0e106be402.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-phantom-spirit-120-se-argb-cpu-fan-cooler-dual-tower-heatsink-814256015578",
+      "fetched_at": "2026-09-06T12:47:48.726208+00:00",
+      "raw_file": "db3c15e402699c38ac0c.html",
+      "status": 200
+    }
+  ],
+  "limitations": [
+    "Not an exhaustive Singapore market inventory.",
+    "Region and verified purchase of reviews are unknown unless explicitly supplied.",
+    "Compatibility specifications are not inferred from product names.",
+    "GST and delivery inclusion are unknown; recheck checkout prices."
+  ],
+  "postprocessed_at": "2026-09-06T12:49:41.135310+00:00"
+}

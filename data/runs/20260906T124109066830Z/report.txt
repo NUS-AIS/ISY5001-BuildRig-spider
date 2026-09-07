@@ -1,0 +1,590 @@
+{
+  "run_id": "20260906T124109066830Z",
+  "finished_at": "2026-09-06T12:42:43.703415+00:00",
+  "price_count": 952,
+  "review_count": 0,
+  "categories": {
+    "cpu": 20,
+    "bundle": 38,
+    "gpu": 5,
+    "accessory": 1,
+    "motherboard": 133,
+    "ram": 21,
+    "ssd": 96,
+    "hdd": 105,
+    "psu": 146,
+    "case": 157,
+    "cooler": 158,
+    "laptop": 72
+  },
+  "coverage": [
+    {
+      "store": "Dynacore Singapore",
+      "category": "cpu",
+      "variants": 22,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "gpu",
+      "variants": 6,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "motherboard",
+      "variants": 167,
+      "status": "page_limit_reached"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "ram",
+      "variants": 21,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "ssd",
+      "variants": 96,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "hdd",
+      "variants": 105,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "psu",
+      "variants": 146,
+      "status": "page_limit_reached"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "case",
+      "variants": 158,
+      "status": "page_limit_reached"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "cooler",
+      "variants": 158,
+      "status": "page_limit_reached"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "case_fans",
+      "variants": 0,
+      "status": "exhausted"
+    },
+    {
+      "store": "Dynacore Singapore",
+      "category": "laptop",
+      "variants": 73,
+      "status": "exhausted"
+    }
+  ],
+  "issues": [
+    {
+      "url": "https://dynacoretech.com/products/amd-ryzen-7-9800x3d-4-7ghz-8c-16t-104mb-cache-tray-processor4yrs-100-000001084",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-proart-x870e-creator-wifi-am5-atx-motherboard-amd-ryzen-7-9850x3d-4-7ghz-8core-16thread-96mb-box-processor-4711387730782-730143318280",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/gigabyte-geforce-rtx-5070-aorus-master-12gb-gddr7-graphics-card-rtx5070-4719331355753",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-rog-herculx-graphics-card-holder",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-b850m-gaming-plus-wifi-am5-m-atx-motherboard3yrs-4711377347570",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-32gb-ddr4-3200mhz-cl22-1-2v-non-ecc-sodimm-so-dimm-notebook-memory-ct32g4sfd832a-649528822499",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/kioxia-exceria-basic-1tb-7200mb-s-nvme-pcie4-0-m-2-ssd-4582761161108",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/seagate-one-touch-2tb-black-usb3-0-portable-hdd-3660619041596",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-tr-kg650-650w-atx3-1-80-gold-full-modular-psu5yrs-814256019729",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/lian-li-o11-vision-compact-black-white-tempered-glass-atx-pc-case",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-phantom-spirit-120-se-argb-cpu-fan-cooler-dual-tower-heatsink-814256015578",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/lenovo-ideapad-slim-5-83v6001ksb-ultra-9-185h-16c-32gb-ram-1tb-ssd-2242-1s-2280-arc-14-ips-wuxga-luna-grey-wifi7-win11h-83v6001ksb-pre-order",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/amd-ryzen-9-9950x3d-4-3ghz-16c-32t-144mb-cache-tray-processor4yrs-100-000000719",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-rog-strix-b850-i-gaming-wifi-itx-amd-ryzen™-5-7600-processor-cpu",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-geforce-rtx5060-8gb-shadow-2x-oc-twin-fan-gddr73yrs-4711377344234",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-mpg-b850i-edge-ti-wifi-am5-m-itx-motherboard-d5-msimpgb850iedgetiwifi",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-ddr5-pro-black-6400mt-s-32gb16gbx2-cl32-amd-intel-kitlimited-lt-649528947604",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-p310-2tb-7100mb-s-pcie-gen4-nvme-m-2-ssd5yrs-649528942241",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/western-digital-10tb-red-plus-nas-internal-hard-drive-hdd-7200-rpm-sata-6-gb-s-cmr-512-mb-cache-3-5-wd100efgx",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-tr-sgfx850-850w-atx3-1-80-gold-sfx-full-modular-psu5yrs-814256018111",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/silverstone-flp02-retro-inspired-atx-tower-chassis-3-x-5-25-expansion-bays-sst-flp02",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-phantom-spirit-120-se-aghp-dual-tower-heatsink-cooler6yrs-814256015561",
+      "stage": "reviews",
+      "error": "No public Product JSON-LD review bodies; ratings alone are not user reviews."
+    },
+    {
+      "url": "https://www.reddit.com/r/thinkpad/comments/1d6nhf3/thinkpad_t14_gen_5_amd_review_a_mixed_bag/",
+      "stage": "community",
+      "error": "robots.txt disallows https://www.reddit.com/r/thinkpad/comments/1d6nhf3/thinkpad_t14_gen_5_amd_review_a_mixed_bag/"
+    },
+    {
+      "url": "https://www.reddit.com/r/thinkpad/comments/1dfevfb/",
+      "stage": "community",
+      "error": "robots.txt disallows https://www.reddit.com/r/thinkpad/comments/1dfevfb/"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dynacoretech.com/collections/cpu/products.json",
+      "fetched_at": "2026-09-06T12:41:10.746845+00:00",
+      "raw_file": "c31b64ccc45349cef580.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cpu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:12.175615+00:00",
+      "raw_file": "5cf2ef710a975e8659ef.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/gpu/products.json",
+      "fetched_at": "2026-09-06T12:41:13.727319+00:00",
+      "raw_file": "dafd5ed83d0b8ca830f2.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/gpu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:15.163929+00:00",
+      "raw_file": "2b9cf010339e1d60e626.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json",
+      "fetched_at": "2026-09-06T12:41:16.752164+00:00",
+      "raw_file": "4b90915086fe249f452c.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:18.296792+00:00",
+      "raw_file": "991d21760eaa5e130e04.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=3",
+      "fetched_at": "2026-09-06T12:41:19.856535+00:00",
+      "raw_file": "90e0269b0045a2e2c692.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=4",
+      "fetched_at": "2026-09-06T12:41:21.301378+00:00",
+      "raw_file": "48a82aa303f1b6c640d0.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/motherboard/products.json?page=5",
+      "fetched_at": "2026-09-06T12:41:22.934152+00:00",
+      "raw_file": "5adc10a06d6d642068f6.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ram/products.json",
+      "fetched_at": "2026-09-06T12:41:24.262480+00:00",
+      "raw_file": "e5e0db56040b489499f3.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ram/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:25.733516+00:00",
+      "raw_file": "e0990c0a6dfe201dce29.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json",
+      "fetched_at": "2026-09-06T12:41:27.371027+00:00",
+      "raw_file": "27e90444413ef5f63ebb.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:28.825941+00:00",
+      "raw_file": "d66afb07d5cbd198142e.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json?page=3",
+      "fetched_at": "2026-09-06T12:41:30.344009+00:00",
+      "raw_file": "acce2973d903c803b062.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/ssd/products.json?page=4",
+      "fetched_at": "2026-09-06T12:41:32.068251+00:00",
+      "raw_file": "42af7153df01942fd275.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json",
+      "fetched_at": "2026-09-06T12:41:33.402214+00:00",
+      "raw_file": "176b98480a4dcc7561fd.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:34.817607+00:00",
+      "raw_file": "9d11798b18509588b79d.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=3",
+      "fetched_at": "2026-09-06T12:41:36.417372+00:00",
+      "raw_file": "a2cd379efe2bb8d059d3.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=4",
+      "fetched_at": "2026-09-06T12:41:37.754127+00:00",
+      "raw_file": "8f98772cacc6ca7db546.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/hdd/products.json?page=5",
+      "fetched_at": "2026-09-06T12:41:39.547874+00:00",
+      "raw_file": "6ce90648e57f6f68cc66.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json",
+      "fetched_at": "2026-09-06T12:41:40.843110+00:00",
+      "raw_file": "fc0483459a77c02ecb4a.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:42.395942+00:00",
+      "raw_file": "053f6d29f6c12cb4f9e7.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=3",
+      "fetched_at": "2026-09-06T12:41:43.910293+00:00",
+      "raw_file": "1f93a55275ab0d3e2db2.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=4",
+      "fetched_at": "2026-09-06T12:41:45.594844+00:00",
+      "raw_file": "00fbd4025706bf898c2b.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/psu/products.json?page=5",
+      "fetched_at": "2026-09-06T12:41:46.857571+00:00",
+      "raw_file": "27f627ce1756fe90f5a9.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json",
+      "fetched_at": "2026-09-06T12:41:48.461478+00:00",
+      "raw_file": "00095b3e02b0910fce24.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:49.888052+00:00",
+      "raw_file": "b95f518b330b66ddbbac.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=3",
+      "fetched_at": "2026-09-06T12:41:51.497800+00:00",
+      "raw_file": "598130ac4be4a5579d93.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=4",
+      "fetched_at": "2026-09-06T12:41:52.975870+00:00",
+      "raw_file": "afae3c919b6ac3c06034.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case/products.json?page=5",
+      "fetched_at": "2026-09-06T12:41:54.367754+00:00",
+      "raw_file": "f20ab253bc29299d7095.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json",
+      "fetched_at": "2026-09-06T12:41:55.861951+00:00",
+      "raw_file": "bc6710760e62ea31445d.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=2",
+      "fetched_at": "2026-09-06T12:41:57.409154+00:00",
+      "raw_file": "5b1b407adbfda0354c4e.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=3",
+      "fetched_at": "2026-09-06T12:41:59.007468+00:00",
+      "raw_file": "d37f02b2f7a554606af3.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=4",
+      "fetched_at": "2026-09-06T12:42:00.419580+00:00",
+      "raw_file": "577ab1c857768e7eb382.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/cooler/products.json?page=5",
+      "fetched_at": "2026-09-06T12:42:01.968276+00:00",
+      "raw_file": "2437a91a898e8820c89c.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/case-fans/products.json",
+      "fetched_at": "2026-09-06T12:42:03.308221+00:00",
+      "raw_file": "3b7e4a3d8a5d4ed8ee07.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json",
+      "fetched_at": "2026-09-06T12:42:04.946975+00:00",
+      "raw_file": "89c6058a67227cd4f90e.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json?page=2",
+      "fetched_at": "2026-09-06T12:42:06.399413+00:00",
+      "raw_file": "a6153eb1758ad2075971.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json?page=3",
+      "fetched_at": "2026-09-06T12:42:07.862264+00:00",
+      "raw_file": "8a0cc64ae2e450ed3efe.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/collections/laptop/products.json?page=4",
+      "fetched_at": "2026-09-06T12:42:09.325883+00:00",
+      "raw_file": "dff51b5a0b90ceef4c3f.json",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/amd-ryzen-7-9800x3d-4-7ghz-8c-16t-104mb-cache-tray-processor4yrs-100-000001084",
+      "fetched_at": "2026-09-06T12:42:10.988567+00:00",
+      "raw_file": "432a8a5bb3326e132206.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-proart-x870e-creator-wifi-am5-atx-motherboard-amd-ryzen-7-9850x3d-4-7ghz-8core-16thread-96mb-box-processor-4711387730782-730143318280",
+      "fetched_at": "2026-09-06T12:42:12.509359+00:00",
+      "raw_file": "edc1d78623904e808f7e.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/gigabyte-geforce-rtx-5070-aorus-master-12gb-gddr7-graphics-card-rtx5070-4719331355753",
+      "fetched_at": "2026-09-06T12:42:14.099309+00:00",
+      "raw_file": "f2b726ec2ea9597d3d07.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-rog-herculx-graphics-card-holder",
+      "fetched_at": "2026-09-06T12:42:15.428467+00:00",
+      "raw_file": "01abaca3eeba90ef9f5d.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-b850m-gaming-plus-wifi-am5-m-atx-motherboard3yrs-4711377347570",
+      "fetched_at": "2026-09-06T12:42:16.958275+00:00",
+      "raw_file": "955b85a8dfb8f027e60b.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-32gb-ddr4-3200mhz-cl22-1-2v-non-ecc-sodimm-so-dimm-notebook-memory-ct32g4sfd832a-649528822499",
+      "fetched_at": "2026-09-06T12:42:18.475517+00:00",
+      "raw_file": "bedf563667cb2dd0e8e0.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/kioxia-exceria-basic-1tb-7200mb-s-nvme-pcie4-0-m-2-ssd-4582761161108",
+      "fetched_at": "2026-09-06T12:42:19.996796+00:00",
+      "raw_file": "9d020778c4883786b154.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/seagate-one-touch-2tb-black-usb3-0-portable-hdd-3660619041596",
+      "fetched_at": "2026-09-06T12:42:21.638577+00:00",
+      "raw_file": "c8be9386e920fd17b74b.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-tr-kg650-650w-atx3-1-80-gold-full-modular-psu5yrs-814256019729",
+      "fetched_at": "2026-09-06T12:42:22.947690+00:00",
+      "raw_file": "07a3a8babe3e7e1b674a.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/lian-li-o11-vision-compact-black-white-tempered-glass-atx-pc-case",
+      "fetched_at": "2026-09-06T12:42:24.456941+00:00",
+      "raw_file": "053528dd4e0e106be402.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-phantom-spirit-120-se-argb-cpu-fan-cooler-dual-tower-heatsink-814256015578",
+      "fetched_at": "2026-09-06T12:42:25.978413+00:00",
+      "raw_file": "db3c15e402699c38ac0c.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/lenovo-ideapad-slim-5-83v6001ksb-ultra-9-185h-16c-32gb-ram-1tb-ssd-2242-1s-2280-arc-14-ips-wuxga-luna-grey-wifi7-win11h-83v6001ksb-pre-order",
+      "fetched_at": "2026-09-06T12:42:27.350939+00:00",
+      "raw_file": "268be151c85c896ecedb.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/amd-ryzen-9-9950x3d-4-3ghz-16c-32t-144mb-cache-tray-processor4yrs-100-000000719",
+      "fetched_at": "2026-09-06T12:42:28.929686+00:00",
+      "raw_file": "d4856660a10ccdf5a96b.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/asus-rog-strix-b850-i-gaming-wifi-itx-amd-ryzen™-5-7600-processor-cpu",
+      "fetched_at": "2026-09-06T12:42:30.554224+00:00",
+      "raw_file": "33ba131fecf547f898e1.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-geforce-rtx5060-8gb-shadow-2x-oc-twin-fan-gddr73yrs-4711377344234",
+      "fetched_at": "2026-09-06T12:42:32.201706+00:00",
+      "raw_file": "96cb610f50a135ef79cc.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/msi-mpg-b850i-edge-ti-wifi-am5-m-itx-motherboard-d5-msimpgb850iedgetiwifi",
+      "fetched_at": "2026-09-06T12:42:33.662428+00:00",
+      "raw_file": "6fc555a4c94e9400d138.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-ddr5-pro-black-6400mt-s-32gb16gbx2-cl32-amd-intel-kitlimited-lt-649528947604",
+      "fetched_at": "2026-09-06T12:42:34.948908+00:00",
+      "raw_file": "ee11c52e6a5415047955.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/crucial-p310-2tb-7100mb-s-pcie-gen4-nvme-m-2-ssd5yrs-649528942241",
+      "fetched_at": "2026-09-06T12:42:36.509177+00:00",
+      "raw_file": "5adf8fbcb42d9265841c.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/western-digital-10tb-red-plus-nas-internal-hard-drive-hdd-7200-rpm-sata-6-gb-s-cmr-512-mb-cache-3-5-wd100efgx",
+      "fetched_at": "2026-09-06T12:42:38.139027+00:00",
+      "raw_file": "a42f1f2805a40849880e.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-tr-sgfx850-850w-atx3-1-80-gold-sfx-full-modular-psu5yrs-814256018111",
+      "fetched_at": "2026-09-06T12:42:39.558750+00:00",
+      "raw_file": "eb4106111c6e82a3b7b2.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/silverstone-flp02-retro-inspired-atx-tower-chassis-3-x-5-25-expansion-bays-sst-flp02",
+      "fetched_at": "2026-09-06T12:42:41.153539+00:00",
+      "raw_file": "c2bb1d6a2df0c3904274.html",
+      "status": 200
+    },
+    {
+      "url": "https://dynacoretech.com/products/thermalright-phantom-spirit-120-se-aghp-dual-tower-heatsink-cooler6yrs-814256015561",
+      "fetched_at": "2026-09-06T12:42:42.632423+00:00",
+      "raw_file": "569fe2351809ec5533b3.html",
+      "status": 200
+    }
+  ],
+  "limitations": [
+    "Not an exhaustive Singapore market inventory.",
+    "Region and verified purchase of reviews are unknown unless explicitly supplied.",
+    "Compatibility specifications are not inferred from product names.",
+    "GST and delivery inclusion are unknown; recheck checkout prices."
+  ]
+}
