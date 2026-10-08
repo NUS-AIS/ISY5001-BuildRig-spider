@@ -8,7 +8,10 @@ export const workspace = reactive({
   requirementsVersion: initial.requirementsVersion || 0,
   savedBuilds: initial.savedBuilds || [],
   orchestrationMode: initial.orchestrationMode || 'dag',
-  setSession(id, version = 0) { this.sessionId = id; this.requirementsVersion = version; this.save() },
+  lastRunId: initial.lastRunId || null,
+  lastRunVersion: initial.lastRunVersion ?? null,
+  setSession(id, version = 0) { this.sessionId = id; this.requirementsVersion = version; this.lastRunId = null; this.lastRunVersion = null; this.save() },
+  setLastRun(id, version) { this.lastRunId = id; this.lastRunVersion = version; this.save() },
   setVersion(version) { this.requirementsVersion = version; this.save() },
   saveBuild(option) {
     if (!this.savedBuilds.some((item) => item.option_id === option.option_id)) this.savedBuilds.unshift({ ...option, savedAt: new Date().toISOString() })
@@ -16,5 +19,5 @@ export const workspace = reactive({
   },
   removeBuild(id) { this.savedBuilds = this.savedBuilds.filter((item) => item.option_id !== id); this.save() },
   setOrchestrationMode(mode) { this.orchestrationMode = mode; this.save() },
-  save() { localStorage.setItem(KEY, JSON.stringify({ sessionId: this.sessionId, requirementsVersion: this.requirementsVersion, savedBuilds: this.savedBuilds, orchestrationMode: this.orchestrationMode })) }
+  save() { localStorage.setItem(KEY, JSON.stringify({ sessionId: this.sessionId, requirementsVersion: this.requirementsVersion, savedBuilds: this.savedBuilds, orchestrationMode: this.orchestrationMode, lastRunId: this.lastRunId, lastRunVersion: this.lastRunVersion })) }
 })

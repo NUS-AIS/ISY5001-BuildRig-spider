@@ -19,7 +19,7 @@ export const api = {
   createSession: () => request('/api/v1/sessions', { method: 'POST', body: JSON.stringify({ locale: 'en-SG', market: 'SG', currency: 'SGD', long_term_memory: true }) }),
   getSession: (id) => request(`/api/v1/sessions/${id}`),
   sendMessage: (id, version, text) => request(`/api/v1/sessions/${id}/messages`, { method: 'POST', body: JSON.stringify({ client_message_id: crypto.randomUUID(), expected_requirements_version: version, text }) }),
-  createRun: (id, version, mode = 'dag') => request(`/api/v1/sessions/${id}/runs`, { method: 'POST', headers: { 'Idempotency-Key': crypto.randomUUID() }, body: JSON.stringify({ requirements_version: version, orchestration_mode: mode, maximum_options: 3 }) }),
+  createRun: (id, version, mode = 'dag', baseRunId = null) => request(`/api/v1/sessions/${id}/runs`, { method: 'POST', headers: { 'Idempotency-Key': crypto.randomUUID() }, body: JSON.stringify({ requirements_version: version, orchestration_mode: mode, maximum_options: 2, ...(baseRunId ? { base_run_id: baseRunId } : {}) }) }),
   getRun: (id) => request(`/api/v1/runs/${id}`),
   getResult: (id) => request(`/api/v1/runs/${id}/result`),
   getExecution: (id) => request(`/api/v1/runs/${id}/execution`),

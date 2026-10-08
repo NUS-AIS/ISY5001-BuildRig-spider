@@ -12,3 +12,50 @@
 @media(max-width:480px){.catalog-grid{grid-template-columns:1fr}.catalog-toolbar{grid-template-columns:1fr}.catalog-toolbar .search-field{grid-column:auto}.empty-steps{gap:8px;flex-wrap:wrap;justify-content:center}.message>div{max-width:88%}.status-pill{white-space:normal}.part-copy span{font-size:11px}.build-total strong{font-size:19px}}
 .reply-options{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.reply-options button{border:1px solid #a9caf7;background:#fff;color:#1267db;border-radius:16px;padding:6px 11px;font-size:12px;font-weight:700}.reply-options button:hover{background:#eaf3ff;border-color:#5c9df5}.reply-options button:disabled{opacity:.45}.ai-source{display:inline-block;color:#14745a;background:#e3f8f0;border-radius:10px;padding:2px 6px;margin-right:7px}
 .orchestration-choice{display:flex;gap:6px;justify-content:center;margin:0 0 10px}.orchestration-choice button{border:1px solid #d8e3f4;background:#fff;color:#53627a;border-radius:999px;padding:7px 13px;font-weight:700;cursor:pointer}.orchestration-choice button.active{background:#e9f2ff;border-color:#6da5ff;color:#1465dd}.orchestration-choice button:disabled{cursor:not-allowed;opacity:.6}
+
+/* Recommendation details: checks with reasons, part badges, evidence, revision timeline */
+.part-badge{margin-left:6px;padding:2px 6px;border-radius:6px;font-size:9px;font-style:normal;font-weight:700;text-transform:uppercase}
+.part-badge.locked{background:#e8efff;color:var(--blue-dark)}
+.part-badge.owned{background:#efe9ff;color:#5b3fc4}
+.part-badge.kept{background:var(--soft);color:var(--muted)}
+.part-meta{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.part-actions{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.lock-button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 6px;cursor:pointer;color:var(--muted)}
+.lock-button:hover:not(:disabled){color:var(--blue);border-color:var(--blue)}
+.check-list{list-style:none;padding:0;margin:6px 0 12px;display:grid;gap:6px}
+.check-list li{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:9px;font-size:12px;line-height:1.4}
+.check-list li b{text-transform:capitalize}
+.check-list li.passed{background:#effbf6;color:#0b6b4d}
+.check-list li.unknown{background:#fff8e6;color:#8a5d00}
+.check-list li.failed{background:#fff0f0;color:#9b2c2c}
+.trade-offs{margin:4px 0 10px;padding-left:18px;color:var(--muted);font-size:12px}
+.follow-up-note,.fallback-note{background:#eef4ff;color:var(--blue-dark);border-radius:9px;padding:8px 10px;font-size:12px;margin-bottom:8px}
+.timeline{margin:10px 0}
+.timeline h3{display:flex;align-items:center;gap:6px}
+.timeline-step{display:flex;gap:10px;margin:8px 0;font-size:12px}
+.timeline-step p{margin:3px 0;color:var(--muted)}
+.timeline-dot{flex:none;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+.evidence-toggle{display:flex;align-items:center;gap:6px;border:none;background:none;color:var(--blue);font-weight:700;cursor:pointer;padding:6px 0}
+.evidence-list{list-style:none;padding:0;margin:4px 0;display:grid;gap:8px}
+.evidence-list li{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px}
+.evidence-list p{margin:6px 0 0;color:var(--muted)}
+.evidence-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.evidence-head a{margin-left:auto;color:var(--blue);display:inline-flex;align-items:center;gap:3px}
+.evidence-kind,.evidence-level,.evidence-routes{padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:var(--soft);color:var(--muted)}
+.evidence-level{background:#fff6df;color:#8a5d00}
+.run-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:10px}
+.limitations{background:#fff8e6;border-radius:10px;padding:10px 12px;font-size:12px;color:#7a5300;margin-bottom:12px}
+.limitations ul{margin:6px 0 0;padding-left:18px}
+.no-option{background:#fff0f0;border-radius:12px;padding:14px;color:#8b2a2a;font-size:13px;margin-bottom:12px}
+.option-groups.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.group-title{margin:0 0 8px;font-size:14px}
+@media (max-width:1100px){.option-groups.compare{grid-template-columns:1fr}}
+/* Price column now also holds the lock button */
+.build-card .part-row{grid-template-columns:36px minmax(0,1fr) auto auto}
+/* Side-by-side comparison: narrower cards, so names wrap and the merchant moves under the name */
+.option-groups.compare .part-row{grid-template-columns:30px minmax(0,1fr) auto;row-gap:2px;padding:10px 12px}
+.option-groups.compare .part-copy{grid-template-columns:1fr;gap:2px}
+.option-groups.compare .part-copy span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.option-groups.compare .merchant{grid-column:2;grid-row:2}
+.option-groups.compare .part-actions{grid-column:3;grid-row:1 / span 2}
+.option-groups.compare .build-card-head{flex-wrap:wrap;gap:8px}
