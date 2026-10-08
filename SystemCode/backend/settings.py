@@ -47,7 +47,7 @@ class Settings:
     cors_origins: tuple[str, ...] = env_list(
         "BUILDRIG_CORS_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173"
     )
-    max_revisions: int = int(os.getenv("BUILDRIG_MAX_REVISIONS", "2"))
+    max_revisions: int = int(os.getenv("BUILDRIG_MAX_REVISIONS", "3"))
     default_top_k: int = int(os.getenv("BUILDRIG_TOP_K", "8"))
 
 

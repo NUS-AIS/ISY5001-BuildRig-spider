@@ -80,7 +80,8 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(result["outcome"], "recommendations_available")
         self.assertLessEqual(result["options"][0]["validation"]["total_minor"], 200000)
         self.assertIn("evidence", result["options"][0])
-        self.assertEqual(result["plan"]["active_agents"], ["laptop_selector"])
+        self.assertEqual(result["plan"]["branches"], ["laptop_selector"])
+        self.assertNotIn("desktop_planner", result["plan"]["active_agents"])
         self.assertIn("evidence_agent", [x["agent_role"] for x in result["tool_calls"]])
         execution = self.client.get(f"/api/v1/runs/{run_id}/execution").json()
         self.assertGreaterEqual(execution["operation_state"]["version"], 3)
@@ -101,9 +102,11 @@ class BackendTests(unittest.TestCase):
             "requirements_version": parsed["requirements_version"], "orchestration_mode": "dag", "maximum_options": 1
         }).json()
         result = self.client.get(f"/api/v1/runs/{run['id']}/result").json()
-        if result["options"]:
-            compatibility = next(c for c in result["options"][0]["validation"]["checks"] if c["code"] == "component_compatibility")
-            self.assertEqual(compatibility["status"], "unknown")
+        for option in result["options"]:
+            for check in option["validation"]["checks"]:
+                if check["status"] == "passed" and check["inputs"]:
+                    # A compatibility rule may only pass when every spec it compared is known.
+                    self.assertNotIn(None, check["inputs"].values(), check["code"])
         self.assertIn("desktop_planner", result["plan"]["active_agents"])
 
     def test_memory_opt_in_and_version_check(self):

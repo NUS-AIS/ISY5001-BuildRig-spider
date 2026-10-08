@@ -36,6 +36,13 @@ class LocalCorpus:
         folder = data_dir / pointer["path"]
         self.prices = self._read(folder / "prices.jsonl")
         self.reviews = self._read(folder / "reviews.jsonl")
+        # Structured specs from backend.ingest.specs; absent specs simply mean "unknown".
+        spec_path = folder / "specs.jsonl"
+        spec_rows = self._read(spec_path) if spec_path.exists() else []
+        self.specs = {s["offer_id"]: {k: (v or {}).get("value") for k, v in s["specs"].items()} for s in spec_rows}
+        self.spec_meta = {s["offer_id"]: s for s in spec_rows}
+        self.flags = {s["offer_id"]: s["flags"] for s in spec_rows}
+        self.by_id = {row["id"]: row for row in self.prices}
         self.documents = self._documents()
         self.df = Counter(term for d in self.documents for term in set(tokens(d.page_content)))
         self.avg_len = sum(len(tokens(d.page_content)) for d in self.documents) / max(len(self.documents), 1)
@@ -56,11 +63,45 @@ class LocalCorpus:
             docs.append(Document(page_content=text, metadata={"evidence_id": f"review:{row['id']}", "kind": "review", "product_id": str(row.get("product_id") or ""), "category": row["category"], "source_url": row["source_url"], "snapshot_id": self.snapshot_id, "record": row}))
         return docs
 
-    def candidates(self, category: str, maximum_minor: int | None = None, limit: int = 25) -> list[dict]:
-        rows = [r for r in self.prices if r["category"] == category and r.get("available") is True]
+    def enrich(self, row: dict) -> dict:
+        """Attach the extracted specs and data-quality flags to a catalogue row."""
+        return {**row, "specs": self.specs.get(row["id"], {}), "flags": self.flags.get(row["id"], {})}
+
+    def offer(self, offer_id: str) -> dict | None:
+        row = self.by_id.get(offer_id)
+        return self.enrich(row) if row else None
+
+    def products(self, product_ids: list[str]) -> list[dict]:
+        wanted = {str(p) for p in product_ids}
+        rows = [r for r in self.prices if str(r.get("product_id") or r["id"]) in wanted and r.get("available") is True]
+        return [self.enrich(r) for r in sorted(rows, key=lambda x: float(x["price"]))]
+
+    def candidates(self, category: str, maximum_minor: int | None = None, limit: int = 25,
+                   minimum_minor: int | None = None, require: dict | None = None,
+                   minimum_specs: dict | None = None, exclude_ids: list[str] | None = None,
+                   order: str = "price_asc") -> list[dict]:
+        """In-stock single-component offers, optionally filtered by spec equality (``require``) and
+        spec lower bounds (``minimum_specs``). Offers whose spec is unknown are kept after the known
+        matches, so a missing spec never silently counts as compatible."""
+        excluded = set(exclude_ids or [])
+        rows = [r for r in self.prices if r["category"] == category and r.get("available") is True
+                and r["id"] not in excluded and not self.flags.get(r["id"], {}).get("bundle_suspect")]
+        price = lambda r: int(round(float(r["price"]) * 100))
         if maximum_minor is not None:
-            rows = [r for r in rows if int(round(float(r["price"]) * 100)) <= maximum_minor]
-        return sorted(rows, key=lambda x: float(x["price"]))[:limit]
+            rows = [r for r in rows if price(r) <= maximum_minor]
+        if minimum_minor is not None:
+            rows = [r for r in rows if price(r) >= minimum_minor]
+        known, unknown = [], []
+        for row in rows:
+            specs = self.specs.get(row["id"], {})
+            verdicts = [specs.get(k) == v if specs.get(k) is not None else None for k, v in (require or {}).items()]
+            verdicts += [specs.get(k) >= v if specs.get(k) is not None else None for k, v in (minimum_specs or {}).items()]
+            if False in verdicts:
+                continue
+            (unknown if None in verdicts else known).append(row)
+        key = {"price_asc": lambda r: float(r["price"]), "price_desc": lambda r: -float(r["price"])}[order]
+        ranked = sorted(known, key=key) + sorted(unknown, key=key)
+        return [self.enrich(r) for r in ranked[:limit]]
 
     def search(self, query: str, categories: list[str] | None = None, product_ids: list[str] | None = None, top_k: int = 8) -> dict[str, Any]:
         docs = [d for d in self.documents if (not categories or d.metadata["category"] in categories)
