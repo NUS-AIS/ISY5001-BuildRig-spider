@@ -1,6 +1,6 @@
 # 新加坡电脑选购 Agent：数据采集
 
-> 仓库已按课程提交模板整理：系统代码在 `SystemCode/`，下文所有命令都在 `SystemCode/` 目录下执行。完整 README 会在系统完成后按模板重写。
+> The repository now follows the course submission template: all system code lives in `SystemCode/`, and every command below must be run from `SystemCode/`. This README will be rewritten in full once the system is complete.
 
 使用 Python 爬虫采集新加坡店铺公开商品目录，保存原始响应、结构化报价、TXT 文档与采集报告。现阶段提供 FastAPI 数据查询和 LangChain Document 加载，不包含最终推荐 Agent、向量数据库或硬件兼容性引擎。
 
