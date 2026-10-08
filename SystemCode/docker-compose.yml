@@ -1,0 +1,87 @@
+# Local infrastructure for BuildRig: Neo4j (knowledge graph), Milvus (vector + BM25
+# retrieval) and Ollama (local LLM and embedding models).
+#
+#   docker compose up -d                     # start everything
+#   docker compose logs -f ollama-init       # watch the first model download (~6 GB)
+#   docker compose down                      # stop (data is kept in named volumes)
+#
+# Ollama uses the NVIDIA GPU when Docker Desktop has GPU support (WSL2 backend on
+# Windows). On machines without an NVIDIA GPU (e.g. macOS), skip the ollama services
+# (`docker compose up -d neo4j milvus`), install Ollama natively and keep
+# OLLAMA_BASE_URL=http://127.0.0.1:11434 in .env.
+
+name: buildrig
+
+services:
+  neo4j:
+    image: neo4j:5.26-community
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-buildrig-local-dev}
+      NEO4J_server_memory_heap_max__size: 1G
+    ports:
+      - "7474:7474"   # browser UI
+      - "7687:7687"   # bolt
+    volumes:
+      - neo4j-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  # Single-container Milvus: embedded etcd and local storage, so no separate etcd or
+  # object-store containers are needed for development.
+  milvus:
+    image: milvusdb/milvus:v2.6.25
+    command: ["milvus", "run", "standalone"]
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      ETCD_USE_EMBED: "true"
+      ETCD_DATA_DIR: /var/lib/milvus/etcd
+      ETCD_CONFIG_PATH: /milvus/configs/embedEtcd.yaml
+      COMMON_STORAGETYPE: local
+      DEPLOY_MODE: STANDALONE
+    ports:
+      - "19530:19530"   # gRPC
+      - "9091:9091"     # health / metrics
+    volumes:
+      - milvus-data:/var/lib/milvus
+      - ./infra/milvus/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml:ro
+      - ./infra/milvus/user.yaml:/milvus/configs/user.yaml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 15s
+      timeout: 10s
+      start_period: 60s
+      retries: 20
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # One-shot job: downloads the chat and embedding models into the shared volume,
+  # then exits. Re-running it is cheap because models already present are skipped.
+  ollama-init:
+    image: ollama/ollama:latest
+    environment:
+      OLLAMA_HOST: ollama:11434
+    entrypoint: ["/bin/sh", "-c", "sleep 5 && ollama pull ${BUILDRIG_MODEL:-qwen3:8b} && ollama pull ${BUILDRIG_EMBEDDING_MODEL:-bge-m3}"]
+    depends_on:
+      - ollama
+    restart: "no"
+
+volumes:
+  neo4j-data:
+  milvus-data:
+  ollama-models:
