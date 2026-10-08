@@ -48,14 +48,17 @@ class Client:
         wait = self.delay - (time.monotonic() - self.last.get(origin, 0))
         if wait > 0:
             time.sleep(wait)
-        for attempt in range(3):
+        attempts = 5
+        for attempt in range(attempts):
             self.last[origin] = time.monotonic()
             response = self.session.get(url, timeout=(10, 35), allow_redirects=False)
-            if response.status_code in (429, 500, 502, 503, 504) and attempt < 2:
+            if response.status_code in (429, 500, 502, 503, 504) and attempt < attempts - 1:
+                # Honour the server's Retry-After (Shopify sends 60 s on 429) instead of giving up.
                 try:
-                    pause = min(60, max(self.delay, float(response.headers.get('Retry-After', 2 ** (attempt + 1)))))
+                    pause = min(120, max(self.delay, float(response.headers.get('Retry-After', 2 ** (attempt + 2)))))
                 except ValueError:
-                    pause = 5
+                    pause = 10
+                print(f'  HTTP {response.status_code} for {url}; waiting {pause:.0f}s', flush=True)
                 time.sleep(pause)
                 continue
             return response
