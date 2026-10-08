@@ -43,3 +43,29 @@ class ValidationRequest(BaseModel):
     run_id: str
     option: dict[str, Any]
     requirements: dict[str, Any]
+
+
+class CandidateRequest(BaseModel):
+    run_id: str
+    category: str
+    maximum_minor: int | None = Field(default=None, ge=0)
+    minimum_minor: int | None = Field(default=None, ge=0)
+    require: dict[str, Any] = {}
+    minimum_specs: dict[str, Any] = {}
+    exclude_ids: list[str] = []
+    order: Literal["price_asc", "price_desc"] = "price_desc"
+    limit: int = Field(default=8, ge=1, le=30)
+    product_ids: list[str] = []
+
+
+class AssembleRequest(BaseModel):
+    run_id: str
+    device_type: Literal["desktop", "laptop"]
+    offer_ids: list[str] = Field(min_length=1, max_length=12)
+    requirements: dict[str, Any]
+
+
+class DraftRequest(BaseModel):
+    run_id: str
+    device_type: Literal["desktop", "laptop"]
+    requirements: dict[str, Any]

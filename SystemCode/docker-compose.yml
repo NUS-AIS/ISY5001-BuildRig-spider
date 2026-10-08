@@ -58,6 +58,9 @@ services:
 
   ollama:
     image: ollama/ollama:latest
+    environment:
+      # Room for multi-step tool use; the 8B model plus a 12k context fits an 8 GB GPU.
+      OLLAMA_CONTEXT_LENGTH: "12288"
     ports:
       - "11434:11434"
     volumes:

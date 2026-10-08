@@ -1,6 +1,21 @@
+/**
+ * BuildRig Pi Runtime worker.
+ *
+ * A Pi Agent Core supervisor plans a configuration by itself: it decides which tool to call next,
+ * reads the result, fixes failed checks and submits when the server accepts the build. All data,
+ * rules and retrieval live in the Python backend and are reached through token-protected internal
+ * endpoints, so the runtime cannot bypass the budget or compatibility checks:
+ *
+ *   draft_build    -> POST /api/v1/internal/options/draft       deterministic first draft to review and repair
+ *   find_parts     -> POST /api/v1/internal/candidates          compatible in-stock offers
+ *   select_part    -> keeps the build in worker state; only offers returned by find_parts are accepted
+ *   check_build    -> POST /api/v1/internal/options/assemble    server-side assembly + validation
+ *   find_evidence  -> POST /api/v1/internal/retrieval/hybrid    BM25 + dense + graph retrieval
+ *   submit_build   -> server-side validation gate; a failed check rejects the submission
+ */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { Agent } from "@earendil-works/pi-agent-core";
-import { createModels, createProvider, type Model } from "@earendil-works/pi-ai";
+import { Agent, type AgentTool } from "@earendil-works/pi-agent-core";
+import { createModels, createProvider, Type, type Model } from "@earendil-works/pi-ai";
 import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completions.lazy";
 
 type Json = Record<string, any>;
@@ -10,6 +25,8 @@ const apiBase = (process.env.BUILDRIG_API_URL || "http://127.0.0.1:8000").replac
 const internalToken = process.env.BUILDRIG_INTERNAL_API_TOKEN || "";
 const ollamaBase = (process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434").replace(/\/$/, "");
 const modelId = process.env.BUILDRIG_MODEL || "qwen3:8b";
+const maxToolCalls = Number(process.env.PI_MAX_TOOL_CALLS || 24);
+const DESKTOP = ["cpu", "motherboard", "ram", "gpu", "psu", "case", "ssd", "cooler"];
 
 async function readJson(request: IncomingMessage): Promise<Json> {
   const chunks: Buffer[] = [];
@@ -22,20 +39,21 @@ function reply(response: ServerResponse, status: number, body: Json) {
   response.end(JSON.stringify(body));
 }
 
-async function backend(path: string, init: RequestInit = {}) {
+async function backend(path: string, body: Json): Promise<Json> {
   const response = await fetch(`${apiBase}${path}`, {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      "x-internal-token": internalToken,
-      ...(init.headers || {}),
-    },
+    method: "POST",
+    headers: { "content-type": "application/json", "x-internal-token": internalToken },
+    body: JSON.stringify(body),
   });
   if (!response.ok) throw new Error(`Backend ${path} failed (${response.status}): ${await response.text()}`);
   return response.json() as Promise<Json>;
 }
 
-function createPiAgent(runId: string) {
+function text(value: unknown) {
+  return [{ type: "text" as const, text: typeof value === "string" ? value : JSON.stringify(value) }];
+}
+
+function createModel() {
   const model: Model<"openai-completions"> = {
     id: modelId,
     name: `${modelId} (Ollama)`,
@@ -45,13 +63,9 @@ function createPiAgent(runId: string) {
     reasoning: false,
     input: ["text"],
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: 8192,
+    contextWindow: 16384,
     maxTokens: 1200,
-    compat: {
-      supportsDeveloperRole: false,
-      supportsReasoningEffort: false,
-      supportsStore: false,
-    },
+    compat: { supportsDeveloperRole: false, supportsReasoningEffort: false, supportsStore: false },
   };
   const provider = createProvider({
     id: "ollama",
@@ -63,137 +77,337 @@ function createPiAgent(runId: string) {
   });
   const models = createModels();
   models.setProvider(provider);
-  return new Agent({
+  return { model, models };
+}
+
+/** State shared by the tools of one supervisor session. The build lives here, not in the model's memory. */
+interface Session {
+  runId: string;
+  deviceType: "desktop" | "laptop";
+  requirements: Json;
+  build: Record<string, Json>;           // category -> selected offer (from find_parts results only)
+  seen: Record<string, Json>;            // offer_id -> offer returned by find_parts in this session
+  submitted?: { title: string; reasons: string[]; assembled: Json };
+  attempts: Json[];
+  toolCalls: Json[];
+}
+
+const SHORT_SPECS = ["socket", "memory_type", "form_factor", "max_form_factor", "capacity_gb", "wattage_w", "tdp_w",
+  "chip", "vram_gb", "length_mm", "max_gpu_length_mm", "integrated_graphics", "ram_gb", "storage_gb"];
+
+function compact(offer: Json): Json {
+  const specs: Json = {};
+  for (const key of SHORT_SPECS) if (offer.specs?.[key] != null) specs[key] = offer.specs[key];
+  return { offer_id: offer.offer_id, name: String(offer.name).slice(0, 70), price_sgd: offer.price_sgd, specs };
+}
+
+function required(session: Session): string[] {
+  if (session.deviceType === "laptop") return ["laptop"];
+  const owned = new Set((session.requirements.owned_components || []).map((o: Json) => o.category));
+  const office = (session.requirements.workloads || []).every((w: string) => !/gam|solidworks|ansys|blender|video|render|learning|ai\b/i.test(w));
+  const igpu = session.build.cpu?.specs?.integrated_graphics === true && office && !session.build.gpu;
+  return DESKTOP.filter((c) => !owned.has(c) && !(igpu && c === "gpu"));
+}
+
+/** Where the build stands and which compatibility filters the next part needs. */
+function progress(session: Session): Json {
+  const b = session.build;
+  const spent = Object.values(b).reduce((sum, o) => sum + o.price_sgd, 0);
+  const budget = session.requirements.budget.maximum_minor / 100;
+  const missing = required(session).filter((c) => !b[c]);
+  const next = missing[0];
+  const hint: Json = {};
+  if (next === "motherboard" && b.cpu?.specs?.socket) hint.require = { socket: b.cpu.specs.socket };
+  if (next === "cpu" && b.motherboard?.specs?.socket) hint.require = { socket: b.motherboard.specs.socket };
+  if (next === "ram") {
+    if (b.motherboard?.specs?.memory_type) hint.require = { memory_type: b.motherboard.specs.memory_type };
+    hint.minimum = { capacity_gb: session.requirements.hard_constraints?.minimum_memory_gb || 16 };
+  }
+  if (next === "psu" && b.cpu?.specs?.tdp_w != null) {
+    hint.minimum = { wattage_w: Math.ceil(((b.cpu.specs.tdp_w || 0) + (b.gpu?.specs?.tdp_w || 0) + 100) * 1.2) };
+  }
+  if (next === "case" && b.gpu?.specs?.length_mm) hint.minimum = { max_gpu_length_mm: b.gpu.specs.length_mm };
+  if (next === "ssd") hint.minimum = { capacity_gb: session.requirements.hard_constraints?.minimum_storage_gb || 500 };
+  if (next) hint.max_price_sgd = Math.max(Math.floor(budget - spent - 40 * (missing.length - 1)), 0);
+  return {
+    current_build: Object.fromEntries(Object.entries(b).map(([c, o]) => [c, `${String(o.name).slice(0, 50)} (S$${o.price_sgd})`])),
+    spent_sgd: spent, budget_sgd: budget, still_missing: missing,
+    next_step: next ? { call: "find_parts", category: next, ...hint } : { call: "check_build" },
+  };
+}
+
+function tools(session: Session): AgentTool<any>[] {
+  const log = (tool: string, args: Json, outcome: string) => session.toolCalls.push({ tool, args, outcome });
+  const guard = () => {
+    if (session.toolCalls.length >= maxToolCalls) throw new Error("Tool call budget exhausted for this run.");
+  };
+  const assemble = () => backend("/api/v1/internal/options/assemble", {
+    run_id: session.runId, device_type: session.deviceType,
+    offer_ids: Object.values(session.build).map((o) => o.offer_id), requirements: session.requirements,
+  });
+
+  const draftBuild: AgentTool<any> = {
+    name: "draft_build",
+    label: "Draft a starting build",
+    description: "Load a first draft built by the deterministic planner (compatible chain within budget shares). Review and improve it.",
+    parameters: Type.Object({}),
+    async execute() {
+      guard();
+      const draft = await backend("/api/v1/internal/options/draft", {
+        run_id: session.runId, device_type: session.deviceType, requirements: session.requirements,
+      });
+      for (const item of draft.items) {
+        if (item.owned_by_user || session.build[item.category]?.locked) continue;
+        const offer: Json = { ...compact(item), category: item.category, locked: item.locked };
+        session.build[item.category] = offer;
+        session.seen[offer.offer_id] = offer;
+      }
+      log("draft_build", {}, `${draft.items.length} parts`);
+      return { content: text({ ...progress(session), then: "Call check_build next." }), details: draft };
+    },
+  };
+
+  const findParts: AgentTool<any> = {
+    name: "find_parts",
+    label: "Find compatible parts",
+    description:
+      "List in-stock offers of one category from the Singapore catalogue, highest price first within the range. " +
+      "Use 'require' for exact spec matches ({\"socket\": \"AM5\"}) and 'minimum' for lower bounds ({\"wattage_w\": 750}).",
+    parameters: Type.Object({
+      category: Type.String({ description: "cpu, motherboard, ram, gpu, psu, case, ssd, cooler or laptop" }),
+      max_price_sgd: Type.Optional(Type.Number()),
+      min_price_sgd: Type.Optional(Type.Number()),
+      require: Type.Optional(Type.Record(Type.String(), Type.Union([Type.String(), Type.Boolean(), Type.Number()]))),
+      minimum: Type.Optional(Type.Record(Type.String(), Type.Number())),
+    }),
+    async execute(_id, raw) {
+      const params = raw as Json;
+      guard();
+      const result = await backend("/api/v1/internal/candidates", {
+        run_id: session.runId, category: params.category,
+        maximum_minor: params.max_price_sgd != null ? Math.round(params.max_price_sgd * 100) : null,
+        minimum_minor: params.min_price_sgd != null ? Math.round(params.min_price_sgd * 100) : null,
+        require: params.require || {}, minimum_specs: params.minimum || {}, limit: 5,
+      });
+      const offers = result.items.map(compact);
+      for (const o of offers) session.seen[o.offer_id] = { ...o, category: params.category };
+      log("find_parts", params, `${offers.length} offers`);
+      return {
+        content: text(offers.length ? { offers, then: "Pick one with select_part." }
+          : "No matching in-stock offers. Raise max_price_sgd or drop a soft preference, never a hard constraint."),
+        details: result,
+      };
+    },
+  };
+
+  const selectPart: AgentTool<any> = {
+    name: "select_part",
+    label: "Select a part",
+    description: "Put one offer returned by find_parts into the build (replaces any part of that category).",
+    parameters: Type.Object({ category: Type.String(), offer_id: Type.String() }),
+    async execute(_id, raw) {
+      const params = raw as Json;
+      guard();
+      const offer = session.seen[params.offer_id];
+      if (!offer || offer.category !== params.category) {
+        log("select_part", params, "rejected");
+        return { content: text("Unknown offer_id for this category. Use an offer_id exactly as returned by find_parts."), details: null };
+      }
+      if (session.build[params.category]?.locked) {
+        log("select_part", params, "locked");
+        return { content: text(`The ${params.category} is locked by the user and cannot be changed.`), details: null };
+      }
+      session.build[params.category] = offer;
+      log("select_part", params, "ok");
+      return { content: text(progress(session)), details: null };
+    },
+  };
+
+  const checkBuild: AgentTool<any> = {
+    name: "check_build",
+    label: "Validate the build",
+    description: "Run every deterministic check (budget, stock, socket, memory, PSU, clearance, form factor) on the current build.",
+    parameters: Type.Object({}),
+    async execute() {
+      guard();
+      const assembled = await assemble();
+      const v = assembled.validation;
+      session.attempts.push({ offer_ids: Object.values(session.build).map((o) => o.offer_id), status: v.overall_status,
+        failed: v.failed_codes, total_minor: v.total_minor });
+      log("check_build", {}, v.overall_status);
+      const failed = v.checks.filter((c: Json) => c.status === "failed").map((c: Json) => ({ code: c.code, reason: c.reason, replace: c.affected_categories }));
+      return {
+        content: text({ overall_status: v.overall_status, total_sgd: v.total_minor / 100, failed,
+          then: failed.length ? "Replace the named categories with find_parts + select_part, then check_build again." : "Call submit_build." }),
+        details: assembled,
+      };
+    },
+  };
+
+  const findEvidence: AgentTool<any> = {
+    name: "find_evidence",
+    label: "Find evidence",
+    description: "Search reviews, listings and graph facts about the parts in the current build.",
+    parameters: Type.Object({ query: Type.String() }),
+    async execute(_id, raw) {
+      const params = raw as Json;
+      guard();
+      const assembled = await assemble();
+      const productIds = assembled.option.items.filter((i: Json) => !i.owned_by_user).map((i: Json) => i.product_id);
+      const result = await backend("/api/v1/internal/retrieval/hybrid", {
+        run_id: session.runId, query: params.query, snapshot_id: "pinned", product_ids: productIds, top_k: 5,
+      });
+      log("find_evidence", params, `${result.items.length} items`);
+      return { content: text(result.items.map((e: Json) => ({ kind: e.kind, match_level: e.match_level, excerpt: String(e.excerpt).slice(0, 200) }))), details: result };
+    },
+  };
+
+  const submitBuild: AgentTool<any> = {
+    name: "submit_build",
+    label: "Submit the build",
+    description: "Submit the current build with a short title and 2-4 reasons. The server re-validates and rejects any failed check.",
+    parameters: Type.Object({ title: Type.String(), reasons: Type.Array(Type.String()) }),
+    async execute(_id, raw) {
+      const params = raw as Json;
+      guard();
+      const missing = required(session).filter((c) => !session.build[c]);
+      if (missing.length) {
+        log("submit_build", params, "incomplete");
+        return { content: text({ accepted: false, still_missing: missing, next_step: progress(session).next_step }), details: null };
+      }
+      const assembled = await assemble();
+      const v = assembled.validation;
+      if (v.overall_status === "failed") {
+        log("submit_build", params, "rejected");
+        return { content: text({ accepted: false, failed: v.checks.filter((c: Json) => c.status === "failed").map((c: Json) => ({ code: c.code, reason: c.reason, replace: c.affected_categories })) }), details: v };
+      }
+      session.submitted = { title: params.title, reasons: params.reasons, assembled };
+      log("submit_build", params, "accepted");
+      return { content: text({ accepted: true, overall_status: v.overall_status }), details: v, terminate: true };
+    },
+  };
+
+  return [draftBuild, findParts, selectPart, checkBuild, findEvidence, submitBuild];
+}
+
+function briefing(session: Session): string {
+  const r = session.requirements;
+  const common = `Budget: at most S$${r.budget?.maximum_minor / 100}. Workloads: ${JSON.stringify(r.workloads || [])}. ` +
+    `Preferences: ${JSON.stringify(r.preferences || [])}. Hard constraints: ${JSON.stringify(r.hard_constraints || {})}. ` +
+    `Locked products (must be included): ${JSON.stringify((r.locked_items || []).map((i: Json) => i.name || i.mention))}. ` +
+    `Already owned (do not buy): ${JSON.stringify((r.owned_components || []).map((o: Json) => o.mention))}.`;
+  const steps = "Steps: 1) draft_build. 2) check_build. 3) If a check failed, replace only the categories it names " +
+    "(find_parts with the suggested filters, then select_part) and check_build again. 4) If a part clearly does not fit the " +
+    "workloads or preferences, you may replace it the same way. 5) Optionally find_evidence. 6) submit_build with a title " +
+    "and 2-4 reasons taken from tool results. Always act through tool calls.";
+  if (session.deviceType === "laptop") return `/no_think Recommend ONE in-stock laptop. ${common} ${steps}`;
+  return `/no_think Recommend ONE complete desktop. ${common} ${steps}`;
+}
+
+async function superviseOne(runId: string, deviceType: "desktop" | "laptop", requirements: Json) {
+  const session: Session = { runId, deviceType, requirements, build: {}, seen: {}, attempts: [], toolCalls: [] };
+  // Locked products are part of the build from the start; the model cannot remove them.
+  const lockedIds = (requirements.locked_product_ids || []).map(String);
+  if (lockedIds.length) {
+    const locked = await backend("/api/v1/internal/candidates", { run_id: runId, category: "any", product_ids: lockedIds });
+    for (const item of locked.items) {
+      const offer: Json = { ...compact(item), category: item.category };
+      const category = (requirements.locked_items || []).find((l: Json) => String(l.product_id) === String(item.product_id))?.category;
+      if (category && (deviceType === "laptop") === (category === "laptop") && !session.build[category]) {
+        session.build[category] = { ...offer, category, locked: true };
+        session.seen[offer.offer_id] = session.build[category];
+      }
+    }
+  }
+  const { model, models } = createModel();
+  const agent = new Agent({
     initialState: {
-      systemPrompt: "You are the BuildRig planning agent. Always answer in English. Explain decisions from supplied evidence only. Never invent products, prices, compatibility, benchmarks, or reviews. Return one JSON object and no markdown.",
+      systemPrompt:
+        "/no_think You are the BuildRig Pi supervisor for computer purchases in Singapore. Always act through tool calls; never invent " +
+        "products, prices or specifications. Hard constraints (budget, locked parts, compatibility) can never be relaxed. " +
+        "Answer in English.",
       model,
       thinkingLevel: "off",
-      tools: [],
+      tools: tools(session),
       messages: [],
     },
     streamFn: models.streamSimple.bind(models),
     getApiKey: async () => "ollama",
-    sessionId: runId,
-    toolExecution: "parallel",
+    sessionId: `${runId}:${deviceType}`,
+    toolExecution: "sequential",
   });
-}
-
-function assistantText(agent: Agent): string {
-  const message = [...agent.state.messages].reverse().find((item: any) => item.role === "assistant") as any;
-  if (!message) return "";
-  if (typeof message.content === "string") return message.content;
-  return (message.content || []).filter((part: any) => part.type === "text").map((part: any) => part.text).join("");
-}
-
-function parseAgentJson(text: string): Json {
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i)?.[1];
-  const candidate = fenced || text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
-  return JSON.parse(candidate);
-}
-
-function optionFromRows(deviceType: string, rows: Json[], requirements: Json): Json {
-  const items = rows.map((row) => ({
-    category: row.category,
-    product_id: String(row.product_id || row.id),
-    offer_id: row.id,
-    name: row.name,
-    quantity: 1,
-    price: row.price,
-    currency: row.currency,
-    merchant: row.store,
-    source_url: row.source_url,
-    collected_at: row.collected_at,
-    availability: row.available ? "in_stock_at_collection" : "unavailable",
-  }));
-  return {
-    option_id: `pi_option_${rows[0]?.id || "empty"}`,
-    device_type: deviceType,
-    title: "Pi Agent catalogue candidate",
-    items,
-    required_categories: deviceType === "desktop" ? ["cpu", "motherboard", "ram", "ssd", "gpu", "psu", "case", "cooler"] : ["laptop"],
-    reasons: [`Selected from the pinned catalogue within the SGD ${(requirements.budget.maximum_minor / 100).toFixed(2)} budget.`],
-    trade_offs: ["Compatibility remains unknown when source specifications are incomplete."],
-  };
+  agent.subscribe(async (event: Json) => {
+    if (event.type === "tool_execution_end" && session.toolCalls.length >= maxToolCalls) agent.abort();
+    if (process.env.PI_DEBUG && event.type === "message_end" && event.message?.role === "assistant") {
+      const parts = (event.message.content || []).map((p: Json) => p.type === "text" ? `TEXT: ${p.text}` : p.type === "toolCall" ? `CALL: ${p.name} ${JSON.stringify(p.arguments)}` : p.type);
+      console.log(`[${deviceType}] ${parts.join(" | ").slice(0, 400)} usage=${JSON.stringify(event.message.usage?.input ?? "")}`);
+    }
+  });
+  await agent.prompt(briefing(session));
+  for (let nudge = 0; nudge < 2 && !session.submitted && !agent.state.errorMessage && session.toolCalls.length < maxToolCalls; nudge++) {
+    await agent.prompt(`/no_think You have not submitted an accepted build yet. Status: ${JSON.stringify(progress(session))}. Continue with tool calls.`);
+  }
+  return { session, error: agent.state.errorMessage };
 }
 
 async function execute(payload: Json): Promise<Json> {
-  const { run, requirements, maximum_options: maximumOptions = 3 } = payload;
-  const budget = requirements.budget.maximum_minor;
-  const allocations: Record<string, number> = { cpu: .18, motherboard: .10, ram: .07, ssd: .07, gpu: .36, psu: .07, case: .08, cooler: .07 };
-  const categories = requirements.device_type === "desktop" ? Object.keys(allocations) : ["laptop"];
-  const candidateGroups = await Promise.all(categories.map(async (category) => {
-    const maximum = requirements.device_type === "desktop" ? Math.floor(budget * allocations[category]) : budget;
-    const limit = requirements.device_type === "desktop" ? 1 : maximumOptions;
-    return (await backend(`/api/v1/internal/candidates/${category}?maximum_minor=${maximum}&limit=${limit}`)).items as Json[];
-  }));
-  const optionRows = requirements.device_type === "desktop" ? candidateGroups.flat() : candidateGroups[0];
-  const options = optionRows.length
-    ? (requirements.device_type === "desktop" ? [optionFromRows("desktop", optionRows, requirements)] : optionRows.map((row) => optionFromRows("laptop", [row], requirements)))
-    : [];
-
-  await Promise.all(options.map(async (option) => {
-    const [evidence, validation] = await Promise.all([
-      backend("/api/v1/internal/retrieval/hybrid", { method: "POST", body: JSON.stringify({ run_id: run.id, query: `${(requirements.workloads || []).join(" ")} reliability performance`, snapshot_id: run.snapshot_id, product_ids: option.items.map((item: Json) => item.product_id), categories: [], top_k: 8 }) }),
-      backend("/api/v1/internal/options/validate", { method: "POST", body: JSON.stringify({ run_id: run.id, option, requirements }) }),
-    ]);
-    option.evidence = evidence.items;
-    option.validation = validation;
-    option.review = { decision: validation.overall_status === "failed" ? "reject" : validation.overall_status === "unknown" ? "accept_with_unknowns" : "accept", notes: [] };
-  }));
-
-  const feasible = options.filter((option) => option.validation.overall_status !== "failed");
-  let plan: Json = { active_agents: [requirements.device_type === "desktop" ? "desktop_planner" : "laptop_selector", "evidence_agent", "review_agent"], tasks: ["select_candidates", "retrieve_evidence", "validate", "review"], completion: ["budget_checked", "evidence_attributed", "unknowns_exposed"] };
-  let assistantMessage = feasible.length
-    ? `I found ${feasible.length} evidence-backed option${feasible.length === 1 ? "" : "s"}.`
-    : "I could not find a configuration that satisfies every current requirement. Try adjusting the budget or requirements.";
-  let generationSource = "fallback";
-  if (feasible.length) {
-    try {
-      const agent = createPiAgent(run.id);
-      await agent.prompt(JSON.stringify({ instruction: "Review this candidate set. Return JSON with keys assistant_message, plan, reasons, trade_offs. assistant_message must naturally summarize the result and mention unknown checks. Keep each list concise. Use only supplied facts.", requirements, options: feasible }));
-      if (agent.state.errorMessage) throw new Error(agent.state.errorMessage);
-      const output = assistantText(agent);
-      if (!output.trim()) throw new Error("Pi Agent returned no assistant text");
-      const reasoned = parseAgentJson(output);
-      if (reasoned.plan && typeof reasoned.plan === "object" && !Array.isArray(reasoned.plan)) {
-        plan = { ...plan, ...reasoned.plan };
-      } else if (Array.isArray(reasoned.plan)) {
-        plan.reasoning_steps = reasoned.plan;
-      }
-      if (Array.isArray(reasoned.reasons)) feasible[0].reasons = reasoned.reasons;
-      if (Array.isArray(reasoned.trade_offs)) feasible[0].trade_offs = reasoned.trade_offs;
-      if (typeof reasoned.assistant_message === "string" && reasoned.assistant_message.trim()) assistantMessage = reasoned.assistant_message.trim();
-      generationSource = "llm";
-    } catch (error) {
-      plan = { ...plan, runtime_note: `Pi reasoning fallback used: ${error instanceof Error ? error.message : String(error)}` };
+  const { run, requirements } = payload;
+  const branches: ("desktop" | "laptop")[] = requirements.device_type === "compare" ? ["desktop", "laptop"] : [requirements.device_type];
+  const options: Json[] = [];
+  const trace: Json[] = [];
+  const limitations: string[] = [];
+  for (const branch of branches) {
+    const { session, error } = await superviseOne(run.id, branch, requirements);
+    trace.push({ agent: `pi_supervisor:${branch}`, tool_calls: session.toolCalls, attempts: session.attempts });
+    if (error) limitations.push(`Pi ${branch} supervisor stopped with an error: ${error}`);
+    if (!session.submitted) {
+      limitations.push(`Pi ${branch} supervisor did not reach an accepted build within ${maxToolCalls} tool calls.`);
+      continue;
     }
+    const { option } = session.submitted.assembled;
+    const offerIds = option.items.filter((i: Json) => i.offer_id).map((i: Json) => i.offer_id);
+    const evidence = await backend("/api/v1/internal/retrieval/hybrid", {
+      run_id: run.id, query: [...(requirements.workloads || []), ...(requirements.preferences || [])].join(" ") || "reliability",
+      snapshot_id: run.snapshot_id, product_ids: option.items.filter((i: Json) => !i.owned_by_user).map((i: Json) => i.product_id), top_k: 8,
+    });
+    options.push({
+      ...option,
+      option_id: `pi_${branch}_${offerIds[0]}`,
+      title: session.submitted.title,
+      reasons: session.submitted.reasons,
+      trade_offs: ["Unknown checks are listed with the option and should be confirmed before purchase."],
+      validation: session.submitted.assembled.validation,
+      evidence: evidence.items,
+      retrieval: { backend: evidence.retrieval_backend, degraded_routes: evidence.degraded_routes || [] },
+      review: { decision: session.submitted.assembled.validation.overall_status === "unknown" ? "accept_with_unknowns" : "accept", notes: [], source: "server_gate" },
+      revision_history: session.attempts.filter((a) => a.status === "failed").map((a, i) => ({ round: i + 1, failed_checks: a.failed, offer_ids: a.offer_ids })),
+    });
   }
+  const toolCalls = trace.flatMap((t) => t.tool_calls.map((c: Json) => ({ agent_role: t.agent, tool: c.tool, status: c.outcome })));
   return {
     run_id: run.id,
     status: "completed",
-    outcome: feasible.length ? "recommendations_available" : "no_feasible_option",
+    outcome: options.length ? "recommendations_available" : "no_feasible_option",
     requirements_version: run.requirements_version,
     snapshot_id: run.snapshot_id,
     orchestration_mode: "pi",
-    options: feasible,
-    assistant_message: assistantMessage,
-    generation_source: generationSource,
-    plan,
-    agent_trace: [
-      { agent: "pi_coordinator", task: "plan" },
-      { agent: requirements.device_type === "desktop" ? "desktop_planner" : "laptop_selector", task: "select_candidates" },
-      { agent: "evidence_agent+review_agent", task: "retrieve_validate" },
-    ],
-    tool_calls: [],
+    options,
+    assistant_message: options.length
+      ? `The Pi supervisor found ${options.length} validated option${options.length === 1 ? "" : "s"}.`
+      : "The Pi supervisor could not reach a build that passes every hard constraint. Hard constraints were not relaxed.",
+    generation_source: "llm",
+    plan: { active_agents: branches.map((b) => `pi_supervisor:${b}`), tasks: ["find_parts", "check_build", "find_evidence", "submit_build"] },
+    agent_trace: trace,
+    tool_calls: toolCalls,
     memory_context: { confirmed_memory_ids: [] },
-    limitations: ["Compatibility remains unknown where the source catalogue lacks required specifications."],
+    limitations,
   };
 }
 
 const server = createServer(async (request, response) => {
   try {
     if (request.method === "GET" && request.url === "/health") {
-      reply(response, 200, { status: "ok", runtime: "pi-agent-core", model_provider: "ollama", model: modelId });
+      reply(response, 200, { status: "ok", runtime: "pi-agent-core", model_provider: "ollama", model: modelId, tools: 6 });
       return;
     }
     if (request.method === "POST" && request.url === "/v1/runs") {

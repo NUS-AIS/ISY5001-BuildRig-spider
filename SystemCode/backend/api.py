@@ -2,7 +2,9 @@ import asyncio
 import json
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from backend.models import SessionCreate, MessageCreate, RunCreate, MemoryPatch, HybridRequest, ValidationRequest
+from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, HybridRequest, MemoryPatch, MessageCreate, RunCreate,
+                            SessionCreate, ValidationRequest)
+from backend.planning import DESKTOP_ORDER, Chooser, make_item, owned_item, plan_desktop, plan_laptops
 from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
 
@@ -172,6 +174,54 @@ def create_router(store, corpus, engine):
         require_internal(x_internal_token)
         return {"snapshot_id": corpus.snapshot_id,
                 "items": corpus.candidates(category, maximum_minor, limit)}
+
+    @router.post("/internal/candidates")
+    def internal_candidates_filtered(body: CandidateRequest, x_internal_token: str | None = Header(None)):
+        """Compatible in-stock offers for the Pi runtime's find_parts tool."""
+        require_internal(x_internal_token)
+        rows = (corpus.products(body.product_ids) if body.product_ids else
+                corpus.candidates(body.category, body.maximum_minor, body.limit, body.minimum_minor,
+                                  body.require or None, body.minimum_specs or None, body.exclude_ids, body.order))
+        return {"snapshot_id": corpus.snapshot_id, "items": [
+            {"offer_id": r["id"], "product_id": str(r.get("product_id") or r["id"]), "category": r["category"],
+             "name": r["name"], "price_sgd": float(r["price"]), "merchant": r.get("store"),
+             "specs": {k: v for k, v in r.get("specs", {}).items() if v is not None}} for r in rows]}
+
+    @router.post("/internal/options/draft")
+    def draft(body: DraftRequest, x_internal_token: str | None = Header(None)):
+        """A deterministic first draft (compatibility chain, budget shares) for the Pi runtime to review and repair."""
+        require_internal(x_internal_token)
+        if body.device_type == "desktop":
+            option = plan_desktop(corpus.candidates, corpus.products, body.requirements, Chooser())
+        else:
+            options = plan_laptops(corpus.candidates, body.requirements, Chooser(), 1)
+            option = options[0] if options else {"items": []}
+        return {"items": [{"offer_id": i["offer_id"], "product_id": i["product_id"], "category": i["category"],
+                           "name": i["name"], "price_sgd": float(i["price"]), "locked": bool(i.get("locked")),
+                           "owned_by_user": bool(i.get("owned_by_user")),
+                           "specs": {k: v for k, v in (i.get("specs") or {}).items() if v is not None}}
+                          for i in option["items"]]}
+
+    @router.post("/internal/options/assemble")
+    def assemble(body: AssembleRequest, x_internal_token: str | None = Header(None)):
+        """Build an option from offer ids on the server and validate it, so the runtime never invents items."""
+        require_internal(x_internal_token)
+        unknown = [oid for oid in body.offer_ids if corpus.offer(oid) is None]
+        if unknown:
+            raise HTTPException(422, detail={"code": "UNKNOWN_OFFER", "offer_ids": unknown})
+        rows = [corpus.offer(oid) for oid in body.offer_ids]
+        locked = {str(p) for p in body.requirements.get("locked_product_ids", [])}
+        items = [make_item(r, locked=str(r.get("product_id") or r["id"]) in locked) for r in rows]
+        if body.device_type == "desktop":
+            have = {i["category"] for i in items}
+            items += [owned_item(o) for o in body.requirements.get("owned_components", [])
+                      if o.get("category") in DESKTOP_ORDER and o["category"] not in have]
+        integrated = body.device_type == "desktop" and not any(i["category"] == "gpu" for i in items)
+        required = ["laptop"] if body.device_type == "laptop" else [c for c in DESKTOP_ORDER if not (integrated and c == "gpu")]
+        option = {"device_type": body.device_type, "items": sorted(items, key=lambda i: (DESKTOP_ORDER + ["laptop"]).index(i["category"])
+                                                                   if i["category"] in DESKTOP_ORDER + ["laptop"] else 99),
+                  "required_categories": required, "integrated_graphics_build": integrated}
+        return {"option": option, "validation": validate_option(option, body.requirements)}
 
     @router.post("/internal/options/validate")
     def validate(body: ValidationRequest, x_internal_token: str | None = Header(None)):
