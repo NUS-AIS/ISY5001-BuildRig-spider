@@ -34,14 +34,25 @@ def inject(option: dict, fault: str, corpus) -> dict | None:
         memory = items["motherboard"]["specs"].get("memory_type")
         pick = next((r for r in corpus.candidates("ram", limit=80) if r["specs"].get("memory_type") not in (None, memory)), None)
     elif fault == "psu_too_small":
-        pick = next((r for r in corpus.candidates("psu", limit=80, order="price_asc") if (r["specs"].get("wattage_w") or 9999) < 500), None)
-    elif fault == "over_budget" and "gpu" in items:
-        pick = corpus.candidates("gpu", limit=1, order="price_desc")[0]
+        # No in-stock PSU is too small for any in-stock CPU/GPU pair (smallest is 650 W), so this fault is
+        # synthetic: a real listing with its rating lowered to 400 W, marked as such in the results.
+        cheapest = corpus.candidates("psu", limit=1, order="price_asc")[0]
+        pick = {**cheapest, "specs": {**cheapest["specs"], "wattage_w": 400}, "synthetic": True}
+    elif fault == "over_budget":
+        # Swap in the most expensive in-stock CPU and GPU so the build clearly exceeds the budget.
+        swaps = {c: corpus.candidates(c, limit=1, order="price_desc")[0] for c in ("cpu", "gpu") if c in items}
+        broken = {**option, "items": [make_item(swaps[i["category"]]) if i["category"] in swaps else i for i in option["items"]]}
+        broken["option_id"], broken["revision_history"] = f"fault_{fault}", []
+        return broken
     if not pick:
         return None
     broken = {**option, "items": [make_item(pick) if i["category"] == pick["category"] else i for i in option["items"]]}
     broken["option_id"], broken["revision_history"] = f"fault_{fault}", []
     return broken
+
+
+FAULT_CHECK = {"socket_mismatch": "cpu_motherboard_socket", "memory_mismatch": "motherboard_memory_type",
+               "psu_too_small": "psu_headroom", "over_budget": "budget_limit"}
 
 
 def fault_injection(store_dir: Path, corpus, settings, model) -> list[dict]:
@@ -59,6 +70,8 @@ def fault_injection(store_dir: Path, corpus, settings, model) -> list[dict]:
                 if not broken:
                     continue
                 before_failed = validate_option(broken, req)["failed_codes"]
+                if FAULT_CHECK[fault] not in before_failed:      # the injection did not create the fault: skip
+                    continue
                 session = engine.store.create_session(SessionCreate().model_dump())
                 engine.store.update_requirements(session["id"], 0, req, "ready")
                 run = engine.store.create_run(session["id"], 1, corpus.snapshot_id, "dag")
@@ -66,12 +79,14 @@ def fault_injection(store_dir: Path, corpus, settings, model) -> list[dict]:
                 original = {i["category"]: i["offer_id"] for i in broken["items"]}
                 status = engine._review_loop(ctx, RunHarness(engine.store, run["id"], 60), broken, Chooser(model))
                 changed = {i["category"] for i in broken["items"] if original.get(i["category"]) != i["offer_id"]}
-                scope = EXPECTED_SCOPE[fault]
                 rows.append({"max_revisions": revisions, "workload": workload, "budget_sgd": budget / 100, "fault": fault,
+                             "synthetic": fault == "psu_too_small",
                              "failed_before": before_failed, "status": status,
                              "recovered": status == "accepted" and broken["validation"]["overall_status"] != "failed",
                              "rounds": len(broken["revision_history"]), "changed_categories": sorted(changed),
-                             "targeted": not changed or scope is None or changed <= scope,
+                             "parts_kept_share": round(1 - len(changed) / len(broken["items"]), 3),
+                             "first_round_targeted": not broken["revision_history"] or {c["category"] for c in broken["revision_history"][0]["changes"]}
+                             <= (EXPECTED_SCOPE[fault] or {i["category"] for i in broken["items"]}),
                              "total_after_sgd": broken["validation"]["total_minor"] / 100})
     return rows
 
@@ -92,6 +107,7 @@ def summarise(dag_scores: list[dict], pi_scores: list[dict], faults: list[dict])
         by.setdefault(key, {}).setdefault(row["fault"], []).append(row)
     recovery = {mode: {fault: {"trials": len(r), "recovery_rate": round(sum(x["recovered"] for x in r) / len(r), 3),
                                "mean_rounds": round(sum(x["rounds"] for x in r) / len(r), 2),
-                               "targeted_rate": round(sum(x["targeted"] for x in r) / len(r), 3)}
+                               "parts_kept_share": round(sum(x["parts_kept_share"] for x in r) / len(r), 3),
+                               "first_round_targeted_rate": round(sum(x["first_round_targeted"] for x in r) / len(r), 3)}
                        for fault, r in faults_by.items()} for mode, faults_by in by.items()}
     return {"dag_vs_pi": {"dag": rates(dag_scores), "pi": rates(pi_scores)}, "fault_recovery": recovery}

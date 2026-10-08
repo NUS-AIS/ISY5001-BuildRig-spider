@@ -143,12 +143,12 @@ def build(results: Path) -> None:
         a2.set_xticks(list(xs)); a2.set_xticklabels([l for _, l in keys]); a2.set_ylim(0, 1.15); a2.legend(fontsize=7)
         a2.set_title(f"DAG vs Pi ({dvp['dag']['cases']} cases)")
         fig.tight_layout(); fig.savefig(figs / "e4_recovery.png"); plt.close(fig)
-        lines += ["## E4 Orchestration and recovery", "", "| Fault | Recovery with replan | Mean rounds | Only affected parts changed | Recovery without replan |",
-                  "|---|---|---|---|---|"]
+        lines += ["## E4 Orchestration and recovery", "", "| Fault | Recovery with replan | Mean rounds | Parts kept | First round targeted | Recovery without replan |",
+                  "|---|---|---|---|---|---|"]
         for f in faults:
             w, wo = rec.get("with_replan", {}).get(f, {}), rec.get("without_replan", {}).get(f, {})
             lines.append(f"| {f.replace('_', ' ')} | {_fmt(w.get('recovery_rate'))} ({w.get('trials')}) | {w.get('mean_rounds')} | "
-                         f"{_fmt(w.get('targeted_rate'))} | {_fmt(wo.get('recovery_rate'))} |")
+                         f"{_fmt(w.get('parts_kept_share'))} | {_fmt(w.get('first_round_targeted_rate'))} | {_fmt(wo.get('recovery_rate'))} |")
         lines += ["", "| | DAG | Pi runtime |", "|---|---|---|"]
         for k in ("task_completed", "constraint_satisfaction", "mean_seconds", "mean_tool_calls", "mean_llm_calls", "mean_tokens"):
             lines.append(f"| {k.replace('_', ' ')} | {_fmt(dvp['dag'].get(k))} | {_fmt(dvp['pi'].get(k))} |")
