@@ -90,6 +90,7 @@ interface Session {
   submitted?: { title: string; reasons: string[]; assembled: Json };
   attempts: Json[];
   toolCalls: Json[];
+  usage: { calls: number; input_tokens: number; output_tokens: number };
 }
 
 const SHORT_SPECS = ["socket", "memory_type", "form_factor", "max_form_factor", "capacity_gb", "wattage_w", "tdp_w",
@@ -305,7 +306,8 @@ function briefing(session: Session): string {
 }
 
 async function superviseOne(runId: string, deviceType: "desktop" | "laptop", requirements: Json) {
-  const session: Session = { runId, deviceType, requirements, build: {}, seen: {}, attempts: [], toolCalls: [] };
+  const session: Session = { runId, deviceType, requirements, build: {}, seen: {}, attempts: [], toolCalls: [],
+    usage: { calls: 0, input_tokens: 0, output_tokens: 0 } };
   // Locked products are part of the build from the start; the model cannot remove them.
   const lockedIds = (requirements.locked_product_ids || []).map(String);
   if (lockedIds.length) {
@@ -338,6 +340,11 @@ async function superviseOne(runId: string, deviceType: "desktop" | "laptop", req
   });
   agent.subscribe(async (event: Json) => {
     if (event.type === "tool_execution_end" && session.toolCalls.length >= maxToolCalls) agent.abort();
+    if (event.type === "message_end" && event.message?.role === "assistant") {
+      session.usage.calls += 1;
+      session.usage.input_tokens += Number(event.message.usage?.input || 0);
+      session.usage.output_tokens += Number(event.message.usage?.output || 0);
+    }
     if (process.env.PI_DEBUG && event.type === "message_end" && event.message?.role === "assistant") {
       const parts = (event.message.content || []).map((p: Json) => p.type === "text" ? `TEXT: ${p.text}` : p.type === "toolCall" ? `CALL: ${p.name} ${JSON.stringify(p.arguments)}` : p.type);
       console.log(`[${deviceType}] ${parts.join(" | ").slice(0, 400)} usage=${JSON.stringify(event.message.usage?.input ?? "")}`);
@@ -355,10 +362,12 @@ async function execute(payload: Json): Promise<Json> {
   const branches: ("desktop" | "laptop")[] = requirements.device_type === "compare" ? ["desktop", "laptop"] : [requirements.device_type];
   const options: Json[] = [];
   const trace: Json[] = [];
+  const usage = { calls: 0, input_tokens: 0, output_tokens: 0 };
   const limitations: string[] = [];
   for (const branch of branches) {
     const { session, error } = await superviseOne(run.id, branch, requirements);
     trace.push({ agent: `pi_supervisor:${branch}`, tool_calls: session.toolCalls, attempts: session.attempts });
+    usage.calls += session.usage.calls; usage.input_tokens += session.usage.input_tokens; usage.output_tokens += session.usage.output_tokens;
     if (error) limitations.push(`Pi ${branch} supervisor stopped with an error: ${error}`);
     if (!session.submitted) {
       limitations.push(`Pi ${branch} supervisor did not reach an accepted build within ${maxToolCalls} tool calls.`);
@@ -400,6 +409,7 @@ async function execute(payload: Json): Promise<Json> {
     agent_trace: trace,
     tool_calls: toolCalls,
     memory_context: { confirmed_memory_ids: [] },
+    model_usage: usage,
     limitations,
   };
 }
