@@ -1,0 +1,37 @@
+{
+  "description": "Retrieval test set for E3. Relevance is defined by explicit, reproducible criteria over the pinned snapshot instead of free-form judgement: an offer is relevant when its category is listed, every 'all' token and at least one 'any' token (if given) occur in its title or description, and every 'spec' value equals the extracted specification. Reviews are relevant when their product name contains every 'all' token.",
+  "queries": [
+    {"id": "M01", "type": "model", "query": "RTX 5070 graphics card", "relevant": {"category": ["gpu"], "all": ["5070"], "none": ["5070 ti", "5070ti"]}},
+    {"id": "M02", "type": "model", "query": "Ryzen 7 9800X3D processor", "relevant": {"category": ["cpu"], "all": ["9800x3d"]}},
+    {"id": "M03", "type": "model", "query": "RX 9070 XT", "relevant": {"category": ["gpu"], "all": ["9070"], "any": ["xt"]}},
+    {"id": "M04", "type": "model", "query": "Core i7-14700K", "relevant": {"category": ["cpu"], "all": ["14700"]}},
+    {"id": "M05", "type": "model", "query": "Corsair RM850x power supply", "relevant": {"category": ["psu"], "all": ["rm850x"]}},
+    {"id": "M06", "type": "model", "query": "Samsung 990 Pro NVMe SSD", "relevant": {"category": ["ssd"], "all": ["990", "pro"]}},
+    {"id": "M07", "type": "model", "query": "Lian Li O11 case", "relevant": {"category": ["case"], "all": ["o11"]}},
+    {"id": "M08", "type": "model", "query": "Thermalright Peerless Assassin cooler", "relevant": {"category": ["cooler"], "all": ["peerless", "assassin"]}},
+    {"id": "M09", "type": "model", "query": "ASUS Zenbook A14 laptop", "relevant": {"category": ["laptop"], "all": ["zenbook", "a14"]}},
+    {"id": "M10", "type": "model", "query": "MSI B650 motherboard", "relevant": {"category": ["motherboard"], "all": ["msi", "b650"]}},
+
+    {"id": "S01", "type": "spec", "query": "AM5 DDR5 motherboard", "relevant": {"category": ["motherboard"], "spec": {"socket": "AM5", "memory_type": "DDR5"}}},
+    {"id": "S02", "type": "spec", "query": "LGA1700 motherboard", "relevant": {"category": ["motherboard"], "spec": {"socket": "LGA1700"}}},
+    {"id": "S03", "type": "spec", "query": "32GB DDR5 RAM kit", "relevant": {"category": ["ram"], "spec": {"memory_type": "DDR5", "capacity_gb": 32}}},
+    {"id": "S04", "type": "spec", "query": "DDR4 memory 16GB", "relevant": {"category": ["ram"], "spec": {"memory_type": "DDR4", "capacity_gb": 16}}},
+    {"id": "S05", "type": "spec", "query": "850W power supply", "relevant": {"category": ["psu"], "spec": {"wattage_w": 850}}},
+    {"id": "S06", "type": "spec", "query": "1000W PSU", "relevant": {"category": ["psu"], "spec": {"wattage_w": 1000}}},
+    {"id": "S07", "type": "spec", "query": "Micro-ATX motherboard", "relevant": {"category": ["motherboard"], "spec": {"form_factor": "Micro-ATX"}}},
+    {"id": "S08", "type": "spec", "query": "Mini-ITX case", "relevant": {"category": ["case"], "spec": {"max_form_factor": "Mini-ITX"}}},
+    {"id": "S09", "type": "spec", "query": "2TB NVMe SSD", "relevant": {"category": ["ssd"], "spec": {"capacity_gb": 2048}}},
+    {"id": "S10", "type": "spec", "query": "AM4 processor", "relevant": {"category": ["cpu"], "spec": {"socket": "AM4"}}},
+
+    {"id": "Q01", "type": "semantic", "query": "quiet cooling for a silent PC", "relevant": {"category": ["cooler", "case", "psu"], "any": ["quiet", "silent", "low noise", "low-noise", "noiseless"]}},
+    {"id": "Q02", "type": "semantic", "query": "lightweight laptop for travelling", "relevant": {"category": ["laptop"], "any": ["lightweight", "light weight", "portable", "thin and light", "ultra-thin", "slim"]}},
+    {"id": "Q03", "type": "semantic", "query": "laptop with long battery life", "relevant": {"category": ["laptop"], "any": ["battery life", "all-day", "all day", "long-lasting battery", "hours of battery"]}},
+    {"id": "Q04", "type": "semantic", "query": "case with good airflow", "relevant": {"category": ["case"], "any": ["airflow", "mesh"]}},
+    {"id": "Q05", "type": "semantic", "query": "white themed PC parts", "relevant": {"category": ["case", "cooler", "ram", "psu", "motherboard", "gpu"], "any": ["white"]}},
+    {"id": "Q06", "type": "semantic", "query": "RGB lighting for a gaming setup", "relevant": {"category": ["case", "cooler", "ram", "gpu", "motherboard"], "any": ["rgb", "argb"]}},
+    {"id": "Q07", "type": "semantic", "query": "fully modular power supply with high efficiency", "relevant": {"category": ["psu"], "all": ["modular"], "any": ["gold", "platinum", "titanium"]}},
+    {"id": "Q08", "type": "semantic", "query": "liquid cooling for a high-end CPU", "relevant": {"category": ["cooler"], "any": ["aio", "liquid", "water"]}},
+    {"id": "Q09", "type": "semantic", "query": "OLED screen laptop for creative work", "relevant": {"category": ["laptop"], "any": ["oled"]}},
+    {"id": "Q10", "type": "semantic", "query": "motherboard with built-in wifi", "relevant": {"category": ["motherboard"], "any": ["wifi", "wi-fi"]}}
+  ]
+}
