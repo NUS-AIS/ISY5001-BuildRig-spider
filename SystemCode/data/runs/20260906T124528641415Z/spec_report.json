@@ -1,0 +1,216 @@
+{
+  "cpu": {
+    "offers": 53,
+    "fields": {
+      "socket": {
+        "found": 52,
+        "coverage": 0.981,
+        "by_method": {
+          "regex": 29,
+          "rule_inferred": 23
+        },
+        "missing": 1,
+        "conflict": 0
+      },
+      "tdp_w": {
+        "found": 34,
+        "coverage": 0.642,
+        "by_method": {
+          "regex": 26,
+          "llm": 8
+        },
+        "missing": 19,
+        "conflict": 0
+      },
+      "integrated_graphics": {
+        "found": 48,
+        "coverage": 0.906,
+        "by_method": {
+          "rule_inferred": 48
+        },
+        "missing": 5,
+        "conflict": 0
+      }
+    }
+  },
+  "motherboard": {
+    "offers": 253,
+    "fields": {
+      "socket": {
+        "found": 251,
+        "coverage": 0.992,
+        "by_method": {
+          "regex": 217,
+          "rule_inferred": 34
+        },
+        "missing": 1,
+        "conflict": 1
+      },
+      "memory_type": {
+        "found": 252,
+        "coverage": 0.996,
+        "by_method": {
+          "regex": 203,
+          "rule_inferred": 49
+        },
+        "missing": 1,
+        "conflict": 0
+      },
+      "form_factor": {
+        "found": 191,
+        "coverage": 0.755,
+        "by_method": {
+          "regex": 183,
+          "llm": 8
+        },
+        "missing": 62,
+        "conflict": 0
+      }
+    }
+  },
+  "ram": {
+    "offers": 170,
+    "fields": {
+      "memory_type": {
+        "found": 169,
+        "coverage": 0.994,
+        "by_method": {
+          "regex": 169
+        },
+        "missing": 1,
+        "conflict": 0
+      },
+      "capacity_gb": {
+        "found": 165,
+        "coverage": 0.971,
+        "by_method": {
+          "regex": 165
+        },
+        "missing": 5,
+        "conflict": 0
+      }
+    }
+  },
+  "gpu": {
+    "offers": 135,
+    "fields": {
+      "chip": {
+        "found": 129,
+        "coverage": 0.956,
+        "by_method": {
+          "regex": 129
+        },
+        "missing": 6,
+        "conflict": 0
+      },
+      "vram_gb": {
+        "found": 98,
+        "coverage": 0.726,
+        "by_method": {
+          "regex": 98
+        },
+        "missing": 37,
+        "conflict": 0
+      },
+      "tdp_w": {
+        "found": 125,
+        "coverage": 0.926,
+        "by_method": {
+          "rule_inferred": 125
+        },
+        "missing": 10,
+        "conflict": 0
+      },
+      "length_mm": {
+        "found": 56,
+        "coverage": 0.415,
+        "by_method": {
+          "regex": 40,
+          "llm": 16
+        },
+        "missing": 79,
+        "conflict": 0
+      }
+    }
+  },
+  "psu": {
+    "offers": 241,
+    "fields": {
+      "wattage_w": {
+        "found": 238,
+        "coverage": 0.988,
+        "by_method": {
+          "regex": 165,
+          "rule_inferred": 73
+        },
+        "missing": 3,
+        "conflict": 0
+      }
+    }
+  },
+  "case": {
+    "offers": 332,
+    "fields": {
+      "max_form_factor": {
+        "found": 276,
+        "coverage": 0.831,
+        "by_method": {
+          "regex": 276
+        },
+        "missing": 56,
+        "conflict": 0
+      },
+      "max_gpu_length_mm": {
+        "found": 144,
+        "coverage": 0.434,
+        "by_method": {
+          "regex": 121,
+          "llm": 23
+        },
+        "missing": 166,
+        "conflict": 22
+      }
+    }
+  },
+  "ssd": {
+    "offers": 124,
+    "fields": {
+      "capacity_gb": {
+        "found": 120,
+        "coverage": 0.968,
+        "by_method": {
+          "regex": 120
+        },
+        "missing": 4,
+        "conflict": 0
+      }
+    }
+  },
+  "laptop": {
+    "offers": 72,
+    "fields": {
+      "ram_gb": {
+        "found": 62,
+        "coverage": 0.861,
+        "by_method": {
+          "regex": 62
+        },
+        "missing": 0,
+        "conflict": 10
+      },
+      "storage_gb": {
+        "found": 72,
+        "coverage": 1.0,
+        "by_method": {
+          "regex": 68,
+          "llm": 4
+        },
+        "missing": 0,
+        "conflict": 0
+      }
+    }
+  },
+  "_cross_store_possible_duplicates": 0,
+  "_bundle_suspects": 64,
+  "_llm_enabled": true
+}

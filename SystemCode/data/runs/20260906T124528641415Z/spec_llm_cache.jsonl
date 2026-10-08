@@ -1,0 +1,400 @@
+{"key": "3fea8829c5296a5318be94e25bd66652b0deced89767bc9650551cdb01d8141e", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "9591cdce751dc138d7cc0edc20e95668597a4c18f8677e0cfe2611a80f0e04c2", "answer": {"tdp_w": {"value": "null", "evidence_quote": "null"}}}
+{"key": "ceee5148c54d27f1629fcc4a9d5aa7c6143f89bfbe076c9d8510aa0b221b42b1", "answer": {"tdp_w": {"value": "65W", "evidence_quote": "This processor has a 65W TDP (Thermal Design Power) and includes a Wraith Stealth cooling solution."}}}
+{"key": "b8c1135e10ee12cc7b21c051e09755f88bc4cac5f5bfa66cdbbf7fc8561a15c9", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "27221cadb28a01c0f0737036dcc026ef7d35f013c5ce5c1babc5dd1f75077dd3", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "72e48d66287dc17c913d9ecca88edce839630f61ada4b80e25ac4affcd9f29b5", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "fa3f53be4539f8621bbdaf12281176d3dfb91fdd39831ad0577196623f2b5b34", "answer": {"tdp_w": {"value": "null", "evidence_quote": "null"}}}
+{"key": "66fe28895b4fa91e9c670ded57568bc9ffa0166a15460a76e59c7f0071de52b7", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "159d60db8e417c77c95d2a5d3c1571aa6fb8bdb38af6f1adb03c4db977eaaa5d", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "1f32a9c6f5c949b31dedd0839d13afe55a26c07c2405f1fabee61f5daf26a798", "answer": {"tdp_w": {"value": "null", "evidence_quote": "null"}}}
+{"key": "afe127f6a4b8b1d45d476c9dcab4635872c31bd9b33846264852d22c7f05fede", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "1e5d509af08f37c16c27fe9327c8d2a7d3762e4ca1d403f514e6e542ecff9cdf", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "1e66e56e98d7cc61843909c51b5b2de343e518d55e6c5b809035bd2162efa427", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "bb4e9c53f9e072dc8c67b1f6a42fb15cf49d4b16d0384cdbead086d3190ada24", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "29d8f9ec8bcb38c16e700ad0d17ee83d3d0dee313eb59a458ce17dff4280f651", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "da4b0bf4b9a4583f8282bb04ec50bef587f907e0f311a6b5654fda9158eac097", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "96337b93a84a4c2c457d2f14e238dfc8d2aa2d3ee56da83daaba276ad29afbdd", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "04ea4344f87200acc43fb884af0e675754074d4272cfdf7f67d87f417f58909b", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "330d9de7e16201a051fbf573530e5c465a124c7e91f8ef2cebece2271d432f30", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "7b80deeabccdf4f184d0cc916a68709c6dfca048aadfb2a830ef9633c41a1bea", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "a7882c007068a9f72a38fa67693f893bfe02afb3f27c79db55aec87e63a62f10", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "c92dd866e64257eeb30f74e70ac234672b3c50a0e10a3b4e613b1aebcc3e0d7d", "answer": {"form_factor": {"value": "Mini-ITX", "evidence_quote": "GIGABYTE Z890M AORUS ELITE WIFI 7 Motherboard - 4719331865191"}}}
+{"key": "8d4af7e4d0446b04f68c9180ed79957ec794be7a7c488088ee552cc29403c5f0", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )"}}}
+{"key": "1f358f13c088bbf021a2fbf2da63a65adfac1029575aac69c374d1d02968e00c", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS ROG Strix B850-A Gaming WiFi7 Neo DDR5 AMD Motherboard - 4711636446532"}}}
+{"key": "58915052a6392b0d89b7acdf231c3db62e4cb35bf978e10b83ff1ddf9efa236d", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "9a6cb238b29f5a84848541bbf0901695ac00f63df131bcbe05db59b798945a8f", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG Strix X870-F Gaming WiFi is built to dominate with AMD Ryzen 9000 Series Desktop Processors. Its advanced power design and AI solutions ensure peak performance, while dual USB4 ports, WiFi 7 and high-speed DDR5 slots provide cutting-edge connectivity."}}}
+{"key": "c2c17f9096e1627263833c3552a3e943125edec613cad632ce304ff6ba9cc573", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate. Built to unleash the full potential of AMD Ryzen 9000, 8000, and 7000 Series processors, this motherboard combines advanced power design with AI technologies to ensure peak performance. It delivers the uncompromised speed and stability essential for elite gaming and the demands of next-gen AI PC applications."}}}
+{"key": "e8a612e004f7558f115392bfb096bda9e0e8dbc1f2c455dd3b65b36cdb9a8d6f", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate. Built to unleash the full potential of AMD Ryzen 9000, 8000, and 7000 Series processors, this motherboard combines advanced power design with AI technologies to ensure peak performance. It delivers the uncompromised speed and stability essential for elite gaming and the demands of next-gen AI PC applications."}}}
+{"key": "975d2bc8f344a98f425a9b1e209baff036463558ab1ebfcb4ea8679369cd598e", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate. Built to unleash the full potential of AMD Ryzen 9000, 8000, and 7000 Series processors, this motherboard combines advanced power design with AI technologies to ensure peak performance. It delivers the uncompromised speed and stability essential for elite gaming and the demands of next-gen AI PC applications."}}}
+{"key": "f15c81c6bc62deb13dd31bb6fb5f595560a152e31be37649071a80821cc250a6", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate. Built to unleash the full potential of AMD Ryzen 9000, 8000, and 7000 Series processors, this motherboard combines advanced power design with AI technologies to ensure peak performance. It delivers the uncompromised speed and stability essential for elite gaming and the demands of next-gen AI PC applications."}}}
+{"key": "40caaff1704026fdd82e09712c70fd56a7c9b7bf00dac63991cf7074c01ee5b0", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate. Built to unleash the full potential of AMD Ryzen 9000, 8000, and 7000 Series processors, this motherboard combines advanced power design with AI technologies to ensure peak performance. It delivers the uncompromised speed and stability essential for elite gaming and the demands of next-gen AI PC applications."}}}
+{"key": "0ae78d424ad3c1659fb42efa3c652a52c0f64d14e1f66b78d50145e8c366852b", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate. Built to unleash the full potential of AMD Ryzen 9000, 8000, and 7000 Series processors, this motherboard combines advanced power design with AI technologies to ensure peak performance. It delivers the uncompromised speed and stability essential for elite gaming and the demands of next-gen AI PC applications."}}}
+{"key": "a33a2efe8db62910980c984409f7e2cd6baf03e6f176bfb45f4c1a355f9de4f3", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "The ROG STRIX B850-F GAMING WIFI7 Neo is engineered to dominate."}}}
+{"key": "e57125c272b1ef0b5672fd76b883f2fe095bbd0cfa9fd36f480376e6cb8d2cae", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "36d3366791ebd9267de2bd13c5fc563010d4caf7452e3b875cf9aefddb1e2a7a", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "0e4ad55537c2b4821926128f6ff6595e2777abf9df33296266ce3802b2cc08cd", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "fd9a93377b6a8392909118d95a05a01356ef33edc0171db9d839bfe7a1203adc", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "960a7285d5329661d419ee3a9bf09e07627689c89dfbfb974045952557f61635", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "178ed5174488a038078cc473676b0f36769267f54a47b705ed413a055bb46e27", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )"}}}
+{"key": "31eff5671bea869bde1dcbb45a5aaef8dc5c60483da9ac88bbeb7586a6e6b880", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX"}}}
+{"key": "016e6a0741ad399a2e5986bd5c41ad84c4c41385614b265a7cf4d4c84be927e5", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS ROG STRIX B650E-I GAMING WIFI MOTHERBOARD - 195553957892"}}}
+{"key": "b3aec5133f66237c15915a1310cfb4bf2090b45c7bf471fdcd48d7001fa3fc36", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "303387f6ae7b8021f41fc997bb0f9507544ed641a152642b1a227b6061800410", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS ROG Strix X870E-E Gaming WiFi AMD Socket AM5 Motherboard - 4711636167222"}}}
+{"key": "dc7136f91cfb5afb0f0eb6ba6d511774f253a9883c7b77860891234b47d6e905", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "ef59e4aa25efc2a72c8505602de9247af430a7248370f1618e14a73167325130", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "356bd9c5ac29b625d0afc7fd500e575ebb97361be9038579442bee25b3ee0ee4", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Motherboard Ready for Advanced AI PC: Designed for the future of AI computing, with the power and connectivity needed for demanding AI applications AMD AM5 Socket: Ready for AMD Socket AM5 for AMD Ryzen 9000 & 8000 & 7000 Series Desktop Processors Enhanced Power Solution: 16+2+1 80A power stages, 8-layer PCB, 8+8 pin ProCool power connectors, alloy chokes and durable capacitors for stable power delivery Intelligent Control: ASUS-exclusive AI Overclocking, AI Cooling II, AI Networking II, and AEMP to simplify setup and improve performance Latest M.2 Support: Two onboard PCIe 5.0 M.2 slots and two PCI 4.0 M.2 slots Ultrafast Connectivity: Wi-Fi 7, PCIe 5.0 x16 slot, Realtek 2.5Gb Ethernet, rear two USB4 (40Gbps) Type-C ports, front USB 20Gbps Type-C connector with up to 30W PD Fast-charge Comprehensive Cooling: Enlarged VRM heatsink, M.2 heatsink, PCH heatsink, hybrid fan headers and Fan Xpert 4 with AI Cooling II DIY Friendly Design: PCIe Slot Q-Release Slim, M.2 Q-Latch, Q-LED, BIOS FlashBack and Pre-mounted I/O shield Unmatched Personalization: Three Addressable RGB Gen 2 headers, all configurable with ASUS-exclusive Aura Sync RGB lighting Renowned Software: ASUS DriverHub, ASUS GlideX, ASUS TUF PROTECTION, DTS Audio Processing"}}}
+{"key": "1b9c90915cd5fe5141cdd6a53b94ed2d49fb5549343e06b45b6bb6e2770b37f0", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "c541a7f43376903f7e8898dfc5ce69ab35c9b95e6a6b08b71713ab8792ebc37d", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "a5ff336864a4a8df2efc6f3ed070cdf981464e95d85764c671494191fc4e2682", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "7f6623aee704331e564dc5e6280401f4c59cbde644452913cc9240b73b71e6df", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "9e42f33b3e6a1d41e139ac7764780d297e3660034f95324fdc3eb1845e8e3794", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Motherboard Ready for Advanced AI PC: Designed for the future of AI computing, with the power and connectivity needed for demanding AI applications"}}}
+{"key": "1162c97c19b0c1afa9c9aaffcf29d5f804277cfb1c265a06c3157a7ed2aa81c5", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "266286043b57f5e1d8388326afa9d3fcd398cc6eb6bd1e5c726bff95f1548d8f", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "61904e733431e75cb6563273ba5c9766f0df7c55406f87c8a9671d3180241e2f", "answer": {"form_factor": {"value": "Mini-ITX", "evidence_quote": "Form Factor: Mini-ITX"}}}
+{"key": "7cf714de75999618015148dc221171875ecff7a20aadcad0385fa213e05f5ce3", "answer": {"form_factor": {"value": "null", "evidence_quote": "null"}}}
+{"key": "5231815b9d5809a2030ca4d6ee89318b790ca1c2934dcb35cff457e86987fd64", "answer": {"form_factor": {"value": "null", "evidence_quote": "null"}}}
+{"key": "2e6c62c79348b61d9311e9681b20c09b309c458683484a5e25489ad44b4d5be7", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )"}}}
+{"key": "3e58c26da275faaef198da5fdbe7d4deb17dfad583b64af7b4a11049f0cceb60", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS ROG STRIX X870E-H GAMING WIFI7 MOTHERBOARD - 199291167223"}}}
+{"key": "618d6023be4756701587d7c9ffeda45fa8072a06c40746fd0fed5acc1abcbe8e", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )"}}}
+{"key": "a58cde8cb42a2abb9afd2d2e3ab03b7ea0e1ce98948a9137292b47a07a3acd95", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )"}}}
+{"key": "2537515a3a100bbfbae4f3eb54a5fa128f3d75656c4f75b58c39d2f132ba867a", "answer": {"form_factor": {"value": "ATX", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )"}}}
+{"key": "ba545e519921b6c32857442f4e1cff2035fbe2c0c08f0aee34a44edac2c2b7fb", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS ROG STRIX B850-E GAMING WIFI MOTHERBOARD - 197105769311"}}}
+{"key": "677665693b783e18859aaef8e86847d7650db8f8bc75fcf0ae23badc409de99a", "answer": {"form_factor": {"value": "ATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm )", "evidence_quote": "Form FactorATX Form Factor 12 inch x 9.6 inch ( 30.5 cm x 24.4 cm ) * For"}}}
+{"key": "7bf4097d001776177f9cbc8bec97b79e21839add01e9b58047025dc8a1bc330c", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS ROG STRIX B650E-E GAMING WIFI MOTHERBOARD - 195553906210"}}}
+{"key": "b0a4154b50ee70d7c982a82043858a50a021ae3dd020ea34846be2c8cb15cb8e", "answer": {"memory_type": {"value": "DDR5", "evidence_quote": "MSI MPG Z790 EDGE TI MAX WIFI LGA1700 ATX MOTHERBOARD - 4711377132848"}}}
+{"key": "3ab47bc04de9c90503767cf82bbec1538f3a5ccb4de82616cf2ae1e60b6445f2", "answer": {"wattage_w": {"value": "3000", "evidence_quote": "ASUS Pro WS 3000W ATX 80 Plus PCIe 5.1 Platinum Fully Modular Power Supply - 4711387972793"}}}
+{"key": "9708ba242e1a166b8bd07ebd75e76c0fd0b16398f4ad57115c922a0efa512c5f", "answer": {"wattage_w": {"value": "3000W", "evidence_quote": "Total Output 3000W"}}}
+{"key": "d3bd6e5a24bfd9133b7ae029e46724d2eb3b8ea22ae5b3a28c27b85c3bab84cd", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "1e3a49aa88ed68f5bc5574fc2844613c2c681efe5ef65ee095b03e2d6b8ed091", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "a4bb1350c664e49045ec9d0224926ddf25ab39cb698aac8522ca7c02bea87be7", "answer": {"max_gpu_length_mm": {"value": "410mm", "evidence_quote": "supports up to a 420mm radiator, 410mm GPUs"}}}
+{"key": "3af1c2c379a7ec3d187aa6a88e9303cb925dfda31e16732f0ad1564d3ef7f27d", "answer": {"max_gpu_length_mm": {"value": "410mm", "evidence_quote": "supports up to a 420mm radiator, 410mm GPUs"}}}
+{"key": "f2de90837ff524ee72d275d47756e4c155089e493b90dc6a5c13f7c5bdb6e994", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "09a6e2cd1e0fafe3244d610f6a8a61b9e8e784d6cb229c96766bdb8a9e27001c", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "62dbf07e89555cb64b9e70731b81944b6506888920abbf6fb06dd1092a53f562", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "413e20cb7df8d8631c750d9774e2ec1914ebdce25ea425713b9708d37f806926", "answer": {"max_gpu_length_mm": {"value": "6-inch", "evidence_quote": "Integrated 6-inch IPS screen"}}}
+{"key": "26660d54a0aa6342fff4d7804156e7d8c69f52025d7c45ea3420102c59f2e7e9", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "7d8025e7ea8101124bae7cd27e46c6fe44e0903c627313437b5906d84da69421", "answer": {"max_gpu_length_mm": {"value": "365", "evidence_quote": "Clearance - GFX 365mm (without front fans & radiator)"}}}
+{"key": "f358090668891b58640e304c6572f889f55bcb2e6fa62b857707e1ca84420bcf", "answer": {"max_gpu_length_mm": {"value": "even the largest GPUs are supported", "evidence_quote": "even the largest GPUs are supported to build even the highest-end gaming systems."}}}
+{"key": "276ccfb8177b35ada8d2d44928e7f5eab9e4ade56aff4375e52a90d0010118b5", "answer": {"max_gpu_length_mm": {"value": "280mm", "evidence_quote": "room for a 280mm AIO cooler"}}}
+{"key": "d2aae1946a2caba734e8a094f8f38c21f3a1f9626c79b56017f8f0b9445e4192", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "614ed4a66a6642cb297e39ebba187e4f5de9d8c170e9f177ae13de7f8109a678", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "7106d83e5386b71ec938dd5f63fd91a67d418c5614f22c00469a495eb7155493", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "supports up to a 360mm AIO for maximum cooling efficiency."}}}
+{"key": "007dbc41ea3558672bcca2bcfb5a05ccf3e286d702c73023b9e8100c7d14c99b", "answer": {"max_gpu_length_mm": {"value": "280mm", "evidence_quote": "supports up to a 280mm AIO for maximum cooling efficiency"}}}
+{"key": "f0229a6dc88331017bbac03d121f939dc2fb4824857e99a774ca7c9fbc451168", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "46bc2ee993d82b251d6ab47ca6fb11c4fd9f89730da442b812cadd765cab5983", "answer": {"max_gpu_length_mm": {"value": "358", "evidence_quote": "Supports M-ATX / Mini-ITX, 358mm 4-slot GPUs, and 140mm ATX PSUs."}}}
+{"key": "0a31e465403d5ae12fd36e2896c4532b88e936363a10de115fabdbfeab840733", "answer": {"max_gpu_length_mm": {"value": "358", "evidence_quote": "Supports M-ATX / Mini-ITX, 358mm 4-slot GPUs, and 140mm ATX PSUs."}}}
+{"key": "5610c285ced1f15ddb6cc5cad00ce895dc8f517f506193c5a73d90576265bf3b", "answer": {"max_gpu_length_mm": {"value": "358", "evidence_quote": "Supports M-ATX / Mini-ITX, 358mm 4-slot GPUs, and 140mm ATX PSUs."}}}
+{"key": "34b6aaede8abc27a1b84b90d1fb33655e98e6ee8e318ed1c1644a0e4a180b23f", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "6ce796058e870055fc0aebf2094b2d6e80a8fda47103bc754a0e75f8235f6c16", "answer": {"max_gpu_length_mm": {"value": "372", "evidence_quote": "space for graphics cards up to 372 mm in length with front-mounted fans, or 345 mm with a front radiator."}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "d29d2716a986b06fc156193d4d5473f842d40ce075baced461fd2861ab6c9fb9", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "8ecde65a2ee372e0cfdad29f6eeb3a44072b94c0cf224469be536b0018a436dc", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "8d363b7407159358d53691256866023914f743534a0a912ae08caa3a49c35459", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d3d06f96214e6acec3c21819e32ba5a06b6a4e0fa36ddcbb9070d7b39fc5c625", "answer": {"max_gpu_length_mm": {"value": "360", "evidence_quote": "360mm radiator support"}}}
+{"key": "210b3e845943b81cd6ac2322d7e4cb25a2fb3a4da57251c3d54c51cc7354009c", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}, "max_form_factor": {"value": "null", "evidence_quote": "null"}}}
+{"key": "5d9da024db77551108a60447c8ed404d067dff64d21a07fe810b7375ad277823", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "Supports up to SSI-EEB motherboards Supports dual 360mm liquid cooling radiators"}, "max_form_factor": {"value": "SSI-EEB", "evidence_quote": "Supports up to SSI-EEB motherboards"}}}
+{"key": "4612479680c43e60ec52863815738240585417cb341cd984dfdf2d94347d71bd", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "76dbc37cc10f2729411b9d7f79585005b85ef4afb7a4feb2602b33a97af9e41c", "answer": {"max_gpu_length_mm": {"value": "240mm", "evidence_quote": "Supports up to SSI-EEB motherboards & 240mm liquid cooling radiators"}}}
+{"key": "4ce2f27f903cee14e275635beb16f90986088233236db3dfe1e2082a3cc2d2dc", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "SSI-EEB", "evidence_quote": "Supports up to SSI-EEB motherboards"}}}
+{"key": "61597c2e3365f28518ae42a2204ef0b17398ae371550a6be2ba3777f397b8a80", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "34623efa5343933c346db0aeb869ef782c797c926a45c94deb8c07493d707740", "answer": {"max_gpu_length_mm": {"value": "80", "evidence_quote": "Includes three 80 x 15mm PWM fans"}}}
+{"key": "50353d66fd05310b53d74c412bd28e7ee2bd92c5870989575e43ad19dcd6b06b", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "Supports 360mm and 280mm radiators"}}}
+{"key": "64c07a9627f63c5d369a608667979ecb2428b24d596a8bb29b554262aab1ce17", "answer": {"max_gpu_length_mm": {"value": "11\"", "evidence_quote": "Supports graphics card up to 11\" with supporter design from TJ08-E"}}}
+{"key": "3b6350b6df1ad9b0f908196e34fdcd8015a26dd207bc7a809066757cada0ec2b", "answer": {"max_gpu_length_mm": {"value": "most graphics card", "evidence_quote": "Precisely designed interior provides sufficient space for most graphics card and multiple cooling options"}}}
+{"key": "f9ab4ada4b9f73735ec6a8f405fb2fed3adf7989d61baf002de9eb46501cb388", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "33ea4d469234e6555dcb81504c262c6ea561c7f11ac11986ee0b4d57798ab4d5", "answer": {"max_gpu_length_mm": {"value": "345mm", "evidence_quote": "Supports 3-slot graphics cards up to 345mm length"}}}
+{"key": "b0cd3a678bc36d9d4ba5bb77668f006b03f0ca1abf4adb66c655e03d3cd37be8", "answer": {"max_gpu_length_mm": {"value": "330", "evidence_quote": "Support graphics card up to 13 inches (330mm)"}}}
+{"key": "76d392a596128e3ae42910a53dcf4f7529771e2b1d4557456e8253980eeaebbf", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "aa71cde41e50d0d4876105995a87563a44ce83e7b7c3023f7ae1f06992c2dd30", "answer": {"max_gpu_length_mm": {"value": "275mm", "evidence_quote": "Supports standard length graphics / expansion cards of up to 275mm"}}}
+{"key": "595a12cdd026bf9f33e91b937492238c85412a5c23f15ffd79a2ffa994a2c5e3", "answer": {"max_gpu_length_mm": {"value": "275mm", "evidence_quote": "Supports standard length graphics / expansion cards of up to 275mm"}}}
+{"key": "9d3d0396d5cc20ac63aec50fb9efe2dcb55c4bb065e2e3116dae33f49117906a", "answer": {"max_gpu_length_mm": {"value": "1060", "evidence_quote": "Supports standard-length expansion cards (10.6 inches)"}}}
+{"key": "e22496d7b5c8084b9f252354d6f25a76f7c2f6c2fb57867798a4ef39da5d25d8", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "ae6a938f6eb05bf331b7a35d626cca29cad3773330a8979e29cb134c8ce67c33", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "5d62254b2c427a02e1d0dbef62440abd6f6bb0016aeb26e387a41c97f3e969e1", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "up to 360mm radiator support"}}}
+{"key": "6b20a5e2deb11c3805ecc88968ee7c16dc195a36f1ac70e983f8631dbc23cd51", "answer": {"max_gpu_length_mm": {"value": "Support up to 240mm radiator", "evidence_quote": "Support up to 240mm radiator"}}}
+{"key": "8b8a30f94f7b0c00a132f2714e8e8d06711949e9a8b7d355fa0bb31183619fde", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "2f7f68dcf0da4a1e42d526af7b0d7e406082e2e3eaa6559e91b51c85db9e1faa", "answer": {"max_gpu_length_mm": {"value": "330", "evidence_quote": "Latest Gen GPU Compatiblity Ultra-Small Footprint Extendable Frame Design"}}}
+{"key": "c6b325ed9a901333e18ec6ea80c28b42db6dfc772b24edbe5dbba5c24dea76c0", "answer": {"max_gpu_length_mm": {"value": "300", "evidence_quote": "The length and width of the chassis easily fit even the largest graphics cards with space to spare for cable management."}}}
+{"key": "7086bb385c976acf7722e4c33854e98227b34e2c6674874c588326a93ce9af5e", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "defda96816078b57994744e920c38e519c9d165b4da0774e6114cae24be7eb76", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "3c646007980cee7f30d3282015a8a458a431ed31d2d77ca6c4d211145b469562", "answer": {"max_gpu_length_mm": {"value": "240mm", "evidence_quote": "Support up to 240mm radiator"}}}
+{"key": "0d79f7af76f82bc4cb8f1e863af7215830fc0188988d8a233caacae6d8ff9dd6", "answer": {"max_gpu_length_mm": {"value": "4 mm", "evidence_quote": "0.2 inch (4 mm) tempered glass on the front and side panels"}}}
+{"key": "bb75aa65934fb4d384ca0a5ef18aaa8cd0c2727ba77635318b8332399e03e99f", "answer": {"max_gpu_length_mm": {"value": "365mm", "evidence_quote": "supports up to 365mm graphics cards"}}}
+{"key": "5f03084c2f081d94d0417419372be1301260f0321033a7dfa368c327931b9265", "answer": {"max_gpu_length_mm": {"value": "425mm", "evidence_quote": "RTX 50 Series Upto 425mm"}}}
+{"key": "319c6d9a3fbb39b0f9663f061891f256fabfc4e38f7cdf9356896c22896c4905", "answer": {"max_gpu_length_mm": {"value": "425mm", "evidence_quote": "RTX 50 Series Upto 425mm"}}}
+{"key": "d642898aca8c83561da12d5682e413fcbffcd3cee2841deec2795ec0c3b4e308", "answer": {"max_gpu_length_mm": {"value": "361.5", "evidence_quote": "Clearance - Graphics Card L: 361.5 mm (incl. power connector)"}}}
+{"key": "11acedec7665375d1e3699c529fd5274039d1215617fc1652d47a959c0eaa1cd", "answer": {"max_gpu_length_mm": {"value": "360-380", "evidence_quote": "graphic cards up to ~360-380 mm long"}}}
+{"key": "7cb48b95907ad99cb8ac2a2f6a20d625c7ef9c58a80f836053fe8011b3b10ced", "answer": {"max_gpu_length_mm": {"value": "360-380", "evidence_quote": "graphic cards up to ~360-380 mm long"}}}
+{"key": "b0598cfd2b7008ad0f1bcfa10a91d40486f63e648a8585f663362c4969b1346d", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "5eb0325144da9fc098ba33d9e2d2eb958f79e5da71ac7190f3aa71f3047e54ed", "answer": {"max_gpu_length_mm": {"value": "6-inch", "evidence_quote": "Integrated 6-inch IPS screen"}}}
+{"key": "47e973985f8f389784dc7137d02b79bf49fe32c9f175d0b8f98e0695d82607d3", "answer": {"max_gpu_length_mm": {"value": "365mm", "evidence_quote": "Clearance - GFX 365mm (without front fans & radiator)"}}}
+{"key": "47217aa492e872badaf2cb8a2052c0e3b85cc02fe7a5f6e78b18ec2ad0fd3885", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "120473cc76ff44523d607e85458cf5f23cc53b96ff84ef273c711d90bb44d344", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "f49d1a0653df1340186fd1cb7137653f3871d281f2585341992d79efa17c6230", "answer": {"max_gpu_length_mm": {"value": "5.25 inch bay-free design for unprecedented power to size ratio", "evidence_quote": "Breakthrough 5.25 inch bay-free design for unprecedented power to size ratio"}}}
+{"key": "bbb6ccdb93c7facc5f64b1cffaade32ed29f861c426c27383c44a968cb919053", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "62c8262224215224a757f7a7870a345715aa06e267fabd28546fff1259a85bb4", "answer": {"max_gpu_length_mm": {"value": "358", "evidence_quote": "Incredible 358mm depth to fit comfortably inside home theater cabinet"}}}
+{"key": "d1d6761b62e901981960bddcc9b32ef02a83dc3636bb4b6f272f84c5c58464c7", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "674fc10f2262119aa308ef1096f53c85508fc6f2f15e3e216877c07ea3babae4", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "425a7eb48134a6919e71a31b6eb9115f8788f32a244f6dbe57ce9cae2433657f", "answer": {"max_gpu_length_mm": {"value": "90", "evidence_quote": "90 degree motherboard mounting"}}}
+{"key": "f05a2d7b88915e320afc1d6ec90132ff3e90bb1d08cf903ccd1654bcce5fb36c", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "Supports 360mm radiators or up to 10×120mm fans"}}}
+{"key": "16682c8cf84531b33acfc5673935357b3f639e76ee58cf972feb5c225bd95bdf", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e6d040b43ae7976176988e599bb44934a18d66ba97d0439122cfdb2e9e28f090", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "b9b266413abdc81dd68c0d5b21f3b9e1bb3f979063c2d0526198ac3824fef458", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "7cd85b95c083ddda7af5bd4b9a4d682ed7fbc6b02c0d4eed983227add5a5fc6c", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Mid Tower"}}}
+{"key": "e1ee247047a5fdfaabc964e30180bdf7014d17fd0ffe4a779f403a9cee165feb", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "4000D", "evidence_quote": "FRAME 4000D WOOD RS"}}}
+{"key": "cb0964c0b91deb3b7c9f9f6effeb338ca97b74d6d9dd6c058d5119bde873a11a", "answer": {"max_form_factor": {"value": "Mid-Tower", "evidence_quote": "FRAME 4000D LCD RS ARGB Premium Mid-Tower PC Case"}}}
+{"key": "a3f498d38a0b11ea5dddaf3f34b0dac8169d4fe1d2dcf0402965fb67a6c722f1", "answer": {"max_form_factor": {"value": "Mid-Tower", "evidence_quote": "FRAME 4000D LCD RS ARGB Premium Mid-Tower PC Case"}}}
+{"key": "8a407a152c030abcfdac000c7579bfb944964e1ba82f4633f21ef75259fa4502", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "E-ATX", "evidence_quote": "Compatible with ASUS BTF, MSI Project Zero, and Gigabyte Project Stealth reverse connection motherboards"}}}
+{"key": "dc3cb5d75da8ddded222d1964785722048afdeffd8d5a5625cda7d57688a6591", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "E-ATX", "evidence_quote": "Compatible with ASUS BTF, MSI Project Zero, and Gigabyte Project Stealth reverse connection motherboards"}}}
+{"key": "bc1f8812a6e8daa285df27cf73e57e8bdc201327f763998bc4be8470815e48d9", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "The 3500X accommodates most large graphics cards and CPU coolers, 360mm radiators, and even EATX motherboards – without taking up your entire desk."}}}
+{"key": "61beae829031ce895e29aca01ba31946cf6ef4ac14a7a5e0034c445b28f1ff2f", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "The 3500X accommodates most large graphics cards and CPU coolers, 360mm radiators, and even EATX motherboards – without taking up your entire desk."}}}
+{"key": "297e3bac38e2bed292928a38dfbe3715a0db7a10f129899eb62bfbbf56cfa874", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "256eadb88da6e057e6a7ef2c8872d9e78a54a6d8d89903bb9eb139f0033d1b27", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "cb6900e885e76c18189445ac41603571c8351745879be850bf9c8d7f1ca472c8", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "db1c08a73535ed4c4ab27e2862692c181d3298a9a069d5c6fa7759f6df6bf082", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "af48f789bc3050a50d5085e3650546858a9d59a93a858305085a68ebfab191a9", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "Support up to 9 fans and 360mm radiator"}}}
+{"key": "3365e71cf23b432f80e1a9b92d2475147d71913bdd0a1a81bde814dc49e788a4", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Mid-Tower PC Case"}}}
+{"key": "8ef0f57c9c764f2c00d927e6c0bf7a5f853b5d8508743a0697ae574cef2e58e5", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Mid-Tower PC Case"}}}
+{"key": "97841e5f486941e1ce5be12e803443143e1d540272b88210e19c3aae3782eb36", "answer": {"max_gpu_length_mm": {"value": "Supports up to 360mm AIO liquid coolers", "evidence_quote": "Supports up to 360mm AIO liquid coolers"}}}
+{"key": "62992211ee8844b9ee6f365381300761f6c8d02a3bf77b45e9140cbd77b73838", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Mid-Tower PC Case"}}}
+{"key": "f7f1261ce847c94df62380ef9e914627b7a907c1b88f7a061562332ce8b988ff", "answer": {"max_gpu_length_mm": {"value": "200mm", "evidence_quote": "InfiniRail Fan Mounting System for easier building Includes three RS120 performance fans Dual 360mm radiator support GPU anti-sag stabilization arm Compatible with reverse connector motherboards including ASUS BTF, MSI PROJECT ZERO, and GIGABYTE PROJECT STEALTH ENDLESS MODULAR POSSIBILITIES"}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "FRAME 4000D RS Modular Mid-Tower PC Case"}}}
+{"key": "26ceac7bd2bddeecd1d59569c51665cf67cc66f762808504b74520f2b83e1e04", "answer": {"max_gpu_length_mm": {"value": "200mm", "evidence_quote": "InfiniRail Fan Mounting System for easier building Includes three RS120 performance fans Dual 360mm radiator support GPU anti-sag stabilization arm Compatible with reverse connector motherboards including ASUS BTF, MSI PROJECT ZERO, and GIGABYTE PROJECT STEALTH ENDLESS MODULAR POSSIBILITIES"}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "FRAME 4000D RS Modular Mid-Tower PC Case"}}}
+{"key": "ba3842e432cde93946cd0e4ba576cffb6447de218af3ba3c8019471f3c25dbbf", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "af1471c3d8f01893cb2fe464100037761e0c91ededb2d2ba9f066b600260899e", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "8fbb05d0d583c59485b8c4ff5934e9c6917189ad652c5253dc88e628e77a9d59", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "E-ATX", "evidence_quote": "Compatible with reverse connector motherboards"}}}
+{"key": "25e90503fa74ef1d87cb2e4e18b3955272a072bdcafd63423a09ecd6c00c27ac", "answer": {"max_gpu_length_mm": {"value": "15.7\"", "evidence_quote": "Supports GPUs up to 15.7\""}}}
+{"key": "9968bf43fdbd51cf7ff7ef948fab0d554b76a889f5522f407c68853a6effd794", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Mid-Tower PC Case"}}}
+{"key": "504a62f9992d498b727570579dfa50e692ddcf177aebd79c5581c621b14fc3af", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Mid-Tower PC Case"}}}
+{"key": "5af87bbb0c878c0ff02e5af386fa3d29c5886f9a4680464ea9eed62a8e4eeca0", "answer": {"max_gpu_length_mm": {"value": "15.7\"", "evidence_quote": "Supports GPUs up to 15.7\""}}}
+{"key": "6024698a0c1d2ad4239e493d79390f6997ea1d44a9ad6a5b6aa8d8be94ccc2cc", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "47fb5a3e4c9c2f24d8db1e3f8e8d8a706b5b09d6d898c883e54b97a51c5b6d2f", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "3854b0f748f7ff1763b132566ae1fd67bcc53e7755754f1b625d6ced0c2d2c2a", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "Accommodates up to 9 fans and supports up to 360mm / 240mm radiators"}}}
+{"key": "077aece70f04d8d90b5f196a4f2533cb30df0001a1757708c000645b4639e4be", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "13a46191dcbccd3d7e12ead957bd2e953249e74b1a74fcb3cb96e5fc6750f5ee", "answer": {"max_gpu_length_mm": {"value": "160mm", "evidence_quote": "Supports ATX (PS2)/Mini redundant power supply up to 160mm deep"}}}
+{"key": "f30719be77daa8961b2243d892fccd7aed89d95c50449a22ff941e9e92432a7f", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}, "max_form_factor": {"value": "null", "evidence_quote": "null"}}}
+{"key": "a19e29855ea467511a67b2bd15846b7f4bc9a8cb08b51cab18314dcebb898cd3", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d513fe36bfac8300dc725ef7706732fe111dc603ff440da1b9cc4323dd5b14db", "answer": {"max_gpu_length_mm": {"value": "180", "evidence_quote": "Open grill and 180 mm front fans optimized for maximum air intake"}}}
+{"key": "1475b8b772aa572f605f4409b7679174b83ec13e0a1dcf1c66cbc21b89bae2ce", "answer": {"max_gpu_length_mm": {"value": "180", "evidence_quote": "two custom-made 180 x 38 mm Dynamic PWM or Prisma RGB PWM fans"}}}
+{"key": "1b4fed41e9a1dd94ae7281c47aea6b16142591c8b1f7233acc0c5be671bf8d10", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "20df5c0e0855961d0aeae40dd9c067e1061bf30f0c6207910968443bd75c00b8", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "96be5e11a47cc8ff8f8bab18af2a71b9dca14c48e0b61fe1d19edd1fd26be68b", "answer": {"max_gpu_length_mm": {"value": "300", "evidence_quote": "The length and width of the chassis easily fit even the largest graphics cards with space to spare for cable management."}}}
+{"key": "006be4215a40a3389bf3d63a09cff64d0bd458a48d015cd1bde8e61a2d941cd6", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "92ccee03a74b09bcbabd2f65ddca789b646cc42f52da951a5c2029446b2fd1d7", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "b2085b4ff8980955b278a1e8b56767c8b45da0931cbfb19089ee6e2bc462aef2", "answer": {"max_gpu_length_mm": {"value": "360", "evidence_quote": "Support up to 360mm Liquid Cooling Compatible"}}}
+{"key": "f5ee57e262ad84553ec13c1a4c5a82fc28aac25dc9ea6711a6dd30fcbaeaff73", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "North XL", "evidence_quote": "North XL combines a transformative take on the gaming PC case with a generous form factor."}}}
+{"key": "a97c583f7c8370e7f89f1bbbb63f4d9505d732ec43aada64b86b3f3e9c46426e", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "72f4be77fc09c7ecb52f01fb3a56537102ce4e8b8a5995df7b4c2b8ff2274665", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "9a4edda27a6ea4441d7eb1bc5f82398b77b622c796000f70cb7c8961ef62246a", "answer": {"max_gpu_length_mm": {"value": "420mm", "evidence_quote": "It supports up to a 420mm AIO radiator on the right side"}}}
+{"key": "69322bcb769c409865ce9d5f7c0308fe5bc46105aca97f392636da9b461c753c", "answer": {"max_gpu_length_mm": {"value": "420mm", "evidence_quote": "It supports up to a 420mm AIO radiator on the right side"}}}
+{"key": "a668b062c949aba075a7bf6ee0172619a437c4fe3bd3b00f02672acb9d4d888b", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "939ed29034192ef9763e1d388250fcae8057659a8c27f93dd57cfee8688ab58e", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e712df1d14f50a5b551ebb62312e147a11ebdafd93475f956f34a015a2668ae8", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "Supports Up to 12 Fans and a 360mm Radiator"}}}
+{"key": "0319bf0542df82adefe7e392be4160aba77cbc5d6ce413bcfd00b1f8854a9f90", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "71fb8272a9144fa763f4bbbc0bbdb3aaa975342291dbedba6dc759cf5252d84f", "answer": {"max_form_factor": {"value": "E-ATX", "evidence_quote": "North XL combines a transformative take on the gaming PC case with a generous form factor."}}}
+{"key": "5519a4a04a043340907c1b6a2d74f23ecd45c2d3516e3a23cc6c39977b768f6a", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "116c89a22e329f062adf58c2a451e60558cb516a1f1c78f4c7603cd3dc547d01", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "219a40f7e6c807c08c4bbde7cfdfb1cf2f0be7f7bdaa9acfe88ed3b3edc6b0ab", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d416662c4c92015de97101b1717c934e00fda9927cb61f5886e07ccd22ecd71e", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "2192ac2b2e5f0abad3e41b5044d665227e6fdea5c1e8b7eb398de3fab56c93a8", "answer": {"max_gpu_length_mm": {"value": "420", "evidence_quote": "supporting up to 11 x 140mm fans and 420mm radiators on top and side."}}}
+{"key": "b3d1a1a97fd06392683ec7634e9f2d2ae6b6553c1149283fccf85089a6a4f3e0", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "fb87e67fb8ddab0ba62feb7f90dd4565a00643e231f6b527423ba538295530b7", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "a541503dcde27fd97612a766b7d93e94e9d28eee27a672cb9fd4c4378e814385", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "492bf9d53d23610acf58af9dfc5c4964327e5d7e1c6660bdfd13a5d03172dc76", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "2e3100c430b3b5d711083f7ec5c672723c5d0bb9df3bf9a205cf3988cc959bf3", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "28d6ee85f2c39718873259dec718bca56b618b286d3f1e9965cc47d33d4e56b9", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "ab2dc6c94e8ce6f134fb332fea528c8ffa1f85adfed21ff7cf690495ac0ad2ae", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "55fd86cc6937672c1a48733928c1de32ea565051a9af55031fd879c004780f33", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "4abcb2e1e45f22b0e4e29be20474fe5e54a81cde8848c22b3053f162f940b925", "answer": {"max_gpu_length_mm": {"value": "3x 420mm radiators", "evidence_quote": "Supports up to 3x 420mm radiators"}, "max_form_factor": {"value": "E-ATX", "evidence_quote": "Form factor: E-ATX"}}}
+{"key": "1c927f0c70086efbcfeafcb2d5988786895ee1efff4e122d67d9485e2aaf5ec8", "answer": {"max_gpu_length_mm": {"value": "420", "evidence_quote": "It supports up to a 420mm AIO radiator on the right side and a 360mm AIO radiator on the left side"}}}
+{"key": "642cc3653234b9c3b30b8db26931bd47a86177459b8d723dba3c295bf66697be", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "6a67a8730fff5c5bbbf56d8c3de046acb8616def52817d2fa11c329cc13e1c8b", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "7b48ec51c23665131921915053cf52c8b50e7c24205d8678d47223819601ba21", "answer": {"max_gpu_length_mm": {"value": "280mm", "evidence_quote": "Up to 280mm Radiator Support"}}}
+{"key": "03788371141fd2ad6733999dbd4501eae5f0c8922e29531e0d87162ca4c3c7c6", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Modular Mid-Tower PC Case"}}}
+{"key": "75209fe5283183ec798034325dff078bbbd40c08c15f8cf146ec0c1f1db5e5e1", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "Mid-Tower", "evidence_quote": "Modular Mid-Tower PC Case"}}}
+{"key": "cdadc40a12a23cceebb4c08c0e3db8a04af651dc9573086950ef965b485abddd", "answer": {"max_form_factor": {"value": "Mid-Tower", "evidence_quote": "3200D RS ARGB Mid-Tower PC Case - Smoke"}}}
+{"key": "69611c229a536104ea377cdfcc97bb34e319348fc09455dd6615ce71dbf39dd4", "answer": {"max_form_factor": {"value": "Mid-Tower", "evidence_quote": "3200D RS ARGB Mid-Tower PC Case - Smoke"}}}
+{"key": "b6b25895f916b9a765431a801e8efd8376c7fde3696c43f728db1e7e761e18b9", "answer": {"max_form_factor": {"value": "Mid-Tower", "evidence_quote": "3200D RS ARGB Mid-Tower PC Case - Smoke"}}}
+{"key": "4d447c8c79f1dfba4cabe6aad941f20adbcf6d41181044044fe6970c4ce60e63", "answer": {"max_form_factor": {"value": "E-ATX", "evidence_quote": "Compatible with reverse-connector motherboards"}}}
+{"key": "bf9e5ccee4d3b84e906823243e1bc10c7d3bca0e977d38515f0513c4a2b1abfc", "answer": {"max_form_factor": {"value": "E-ATX", "evidence_quote": "Compatible with reverse-connector motherboards"}}}
+{"key": "d3e7663d5d35d789e30cb13d0cb6acfbf073ab8c384a98cc3bbd9b157f899ce1", "answer": {"max_form_factor": {"value": "E-ATX", "evidence_quote": "Compatible with reverse-connector motherboards"}}}
+{"key": "ae53cc8aa7bfc00208546e501c70113468c10837a22e25f297a55df54573dfe8", "answer": {"max_gpu_length_mm": {"value": "405mm", "evidence_quote": "405mm GPU clearance with front fans installed"}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "97037ed657c775ccfee11182cc408d0e7efe40bb5e9d630a7d296a87067bff80", "answer": {"max_gpu_length_mm": {"value": "405mm", "evidence_quote": "405mm GPU clearance with front fans installed"}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "c9ff21741261f4acc65c310c814803983c06dbf715474efd8fa34f77eaea6b8d", "answer": {"max_gpu_length_mm": {"value": "840", "evidence_quote": "Dual chambers for a streamlined look Lots of customization options Compatible with reverse connector motherboards including ASUS BTF, MSI PROJECT ZERO, and GIGABYTE PROJECT STEALTH Wide cooling flexibility"}}}
+{"key": "664797a442b7733ea464a0cc024362e086732e7dbc2982a6a0d5520845b461fe", "answer": {"max_gpu_length_mm": {"value": "840", "evidence_quote": "Dual chambers for a streamlined look Lots of customization options Compatible with reverse connector motherboards including ASUS BTF, MSI PROJECT ZERO, and GIGABYTE PROJECT STEALTH Wide cooling flexibility"}}}
+{"key": "ffeeb0a7a3a49d440ac45f7f22b87c4f8ee729b35dedb59e5f96eda1a6b9a127", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "6676d1ccfd2163880709c30e65f19aed749415db0d046dccb73a6988a666366a", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "including versatile radiator mounting options for up to 360mm in the roof, bottom, and side"}}}
+{"key": "d29a3d0efcb0f1e98a853b5b5c4d37eb213802f23cf0afaf584ca28fd5fd1042", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "c30d028a751bba3841dd41eb25b09ab0f1c7bbaa3c0f43988a5392cfcf80bfa5", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "96bb779904129805ef7b567acc30d43c96ffbb7f1334b2a804d8bbfbf16caf06", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "cb71888d9920b49cf75d672ba8e0e84ebc4c57504f2420ff23e2fcbceb73b2c6", "answer": {"max_gpu_length_mm": {"value": "350", "evidence_quote": "Wraparound glass view with removable front and side panels 3x Pre-installed RS120 ARGB fans Builder-friendly features for a high-performance custom PC Side, roof, and PSU fan mounting points for great cooling Compatible with reverse connector motherboards including ASUS BTF, MSI PROJECT ZERO, and GIGABYTE PROJECT STEALTH For Compatibly of the product, please visit the respective product web site."}}}
+{"key": "f0869a7a29a75e54304f9cbd17c328aa6264de33cd3244b3564ae111bd6b62ae", "answer": {"max_gpu_length_mm": {"value": "350", "evidence_quote": "Wraparound glass view with removable front and side panels 3x Pre-installed RS120 ARGB fans Builder-friendly features for a high-performance custom PC Side, roof, and PSU fan mounting points for great cooling Compatible with reverse connector motherboards including ASUS BTF, MSI PROJECT ZERO, and GIGABYTE PROJECT STEALTH For Compatibly of the product, please visit the respective product web site."}}}
+{"key": "b7e0ec5b822a4047aaee15b8d803d5c30a46cbec6832d159c51b0d28c3f95f41", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "558e2c0aa42296b23c085f60c59bab338c5f2689d721e9e7cfdf88b261576a47", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "1456dc7ebe6992d176f1840e39dc94479fd0f604e42d74439e015c5821955903", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "The 3500X accommodates most large graphics cards and CPU coolers, 360mm radiators, and even E-ATX motherboards, without taking up your entire desk."}}}
+{"key": "ff649d2a75e5845c43f162c73a49e80567e716827b02d9231dbc06e3a81ad69c", "answer": {"max_gpu_length_mm": {"value": "360mm", "evidence_quote": "The 3500X accommodates most large graphics cards and CPU coolers, 360mm radiators, and even E-ATX motherboards, without taking up your entire desk."}}}
+{"key": "1e98528c21adeb9768d026c3e76bd8509c8ae4b119f40f13ea096f3e108c45cd", "answer": {"max_gpu_length_mm": {"value": "200mm", "evidence_quote": "Support daisy-chainable 4-pin PWM connections and Zero RPM mode for near-silent operation at low loads. Each Fan has eight LEDs and easily controllable with your motherboard’s +5V ARGB connector."}, "max_form_factor": {"value": "E-ATX", "evidence_quote": "For Compatibly of the product, please visit the respective product web site."}}}
+{"key": "77be6bad3269342aa0118d467d40e65773a84eb101c06c1e71f81e55557e2774", "answer": {"max_gpu_length_mm": {"value": "200mm", "evidence_quote": "InfiniRail Fan Mounting System – This steel multi-point mounting system offers unmatched flexibility in front and roof fan configuration. Simply slide the rail to mount fans up to 200mm (140mm in the roof) wherever you like, ensuring targeted airflow without fixed mounting constraints."}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "dbe9abd72a6a0116902df0e4aa541bab77833ad92af7c23e958cda990b0920f2", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "9093bf9496faaa4b2fba817e7a8d7e71a16805b95f0db8bd6e3391a2e0bd6b49", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "d65941ae32ead1218eaf724f1262ef32a036c4d34809c960203e7dfcf27b55a2", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "2a1e16a4d18335a659786644d2d79354f6ce0b38307ed1cd672bfb429273b83f", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": "E-ATX", "evidence_quote": "A spacious interior fits up to 6x 120mm or 4x 145mm cooling fans, along with multiple radiators including 360mm in front and 280mm in the roof (dependent on RAM height)."}}}
+{"key": "3deda6d076d5d297fd65e55b1bcab15ff9a9e50408dd47a67a2a7ad7ad6f67ef", "answer": {"max_gpu_length_mm": {"value": "884102128462", "evidence_quote": "Cooler Master NCORE 100 Air Mini-ITX PC Tower Case Black - 884102128462"}}}
+{"key": "9e1b20254dba5c8806a139329cee7eb986e96026fecf45e79d167a0092acab63", "answer": {"max_gpu_length_mm": {"value": "160mm", "evidence_quote": "The MSI MAG FORGE M100R can house a CPU cooler up to 160mm high, four expansion slots, and an ATX power supply support."}}}
+{"key": "3b9af5f62ad7e9bfeb4269c6caaa06ca4c3f71abcc820b5d00da772966fe0ac6", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "6b1b26e56d69a5118265dea18906a98c1dca109fd1384c620cdec7f000153502", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "deb15d4a524f51e233db1f031a9748fbca769a8d0b83c4fabdb858bc2657388e", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "11314b0a1fffe4d1fa617069bba994703d14c2bc9306620efaa12579dab0ba9c", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "7855c41c9be6bcda32fc291b362afb05cc0590a5527c5228dbb1d21612e21b5c", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "4817810f54d685d6c04e50036aa5ebc12286491dcbd236dac9aa79ba6cf1190b", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e87e471b041738d730981d1ec407962a66e412ed85afbf9b415fdfa20002dddd", "answer": {"max_gpu_length_mm": {"value": "420mm", "evidence_quote": "room for 420mm front radiators and water-cooling pump and reservoir"}}}
+{"key": "2ef53dff53e3861595958c73bd61b8aa8ef834c7f6bf3f9d66a08b3f0ed97aaf", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "4a300e6cc315d2e4032d31a2eb1a008806c311d328b3b618880387ba04072d0f", "answer": {"storage_gb": {"value": "512", "evidence_quote": "512GB M.2 NVMe SSD"}}}
+{"key": "225622d6af0394131803d5df88ff297a4b1c51558096ad1307b76b7b9953f594", "answer": {"storage_gb": {"value": "512", "evidence_quote": "Internal Storage: 512gb"}}}
+{"key": "ff0ab52c87df2ee5d811afe78a1954e3d2775d7001070f47af3602690e762b65", "answer": {"storage_gb": {"value": "512", "evidence_quote": "Internal Storage: 512gb"}}}
+{"key": "d279fd0824670bc74a087e10414b9b8b0d138c26e6b77b03476cad3b40bce2dd", "answer": {"storage_gb": {"value": "256", "evidence_quote": "256GB M.2 NVMe PCIe 3.0 SSD"}}}
+{"key": "cd24e5a0d1b574570c39c4d3bf49729ddef6db307ad4f8e299de34068600b8bd", "answer": {"tdp_w": {"value": "105W", "evidence_quote": "Ryzen 7 5000 Series Desktop Processor (8-Core 3.0GHz Socket AM4 105W Non-Integrated Boxed Processor)"}}}
+{"key": "d4bafa8d6aa6e5478e1a3c3d53ec5e27a56fd2b222da3a54651ce02e7329a5fb", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "GIGABYTE X870 EAGLE WIFI 7 The Gigabyte X870 EAGLE WIFI7 is a budget-friendly, enthusiast-level motherboard for AMD's AM5 platform, featuring support for Ryzen 9000-series CPUs, DDR5 memory, and Wi-Fi 7 connectivity."}}}
+{"key": "e08bf440e8db57607af637efcd1d4d9176745eb353514feb7fc3dbe628aaad2c", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "GIGABYTE X870 EAGLE WIFI 7 The Gigabyte X870 EAGLE WIFI7 is a budget-friendly, enthusiast-level motherboard for AMD's AM5 platform, featuring support for Ryzen 9000-series CPUs, DDR5 memory, and Wi-Fi 7 connectivity."}}}
+{"key": "995f4febd5ff807fd2aa47fea846e752053b51fa7c04c6b12e720213eceda89d", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "GIGABYTE X870 EAGLE WIFI 7 The Gigabyte X870 EAGLE WIFI7 is a budget-friendly, enthusiast-level motherboard for AMD's AM5 platform, featuring support for Ryzen 9000-series CPUs, DDR5 memory, and Wi-Fi 7 connectivity."}}}
+{"key": "adb9397e8ef5ce70c627c4f5658e1dd7763cd0e69328abf0fc64a241cda67dd4", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "GIGABYTE X870 EAGLE WIFI 7 The Gigabyte X870 EAGLE WIFI7 is a budget-friendly, enthusiast-level motherboard for AMD's AM5 platform, featuring support for Ryzen 9000-series CPUs, DDR5 memory, and Wi-Fi 7 connectivity."}}}
+{"key": "c24cd9ecc6239d693bf1bd8ba3f34c90760c93b214680643f7a3d3caa433a3e7", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "GIGABYTE X870 EAGLE WIFI 7 The Gigabyte X870 EAGLE WIFI7 is a budget-friendly, enthusiast-level motherboard for AMD's AM5 platform, featuring support for Ryzen 9000-series CPUs, DDR5 memory, and Wi-Fi 7 connectivity."}}}
+{"key": "7db1c46325624d14a887fd0b96194e4f67581a34b420c1c4785389380e8ee57f", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "GIGABYTE X870 EAGLE WIFI 7 The Gigabyte X870 EAGLE WIFI7 is a budget-friendly, enthusiast-level motherboard for AMD's AM5 platform, featuring support for Ryzen 9000-series CPUs, DDR5 memory, and Wi-Fi 7 connectivity."}}}
+{"key": "23f2bfe1e1f6fe4cf2a8600b3680927dfab781dd90ab50f872b0a7f4331acee9", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "0aa5c56c6754a42ed99cf862e441bf62e63c8af2701a9e8b2c625a275b5218a4", "answer": {"tdp_w": {"value": null, "evidence_quote": null}}}
+{"key": "6f5e55cc1f2f2070fe295b355786bcb065aeff49ccea79b9ee627b764c760dda", "answer": {"tdp_w": {"value": "65", "evidence_quote": "Processor Base Power : 65 W"}}}
+{"key": "70a8373298773b34148e600f4389ef03bd200d462cdbb5b57ec61ce04ec4b839", "answer": {"tdp_w": {"value": "65", "evidence_quote": "Processor Base Power : 65 W"}}}
+{"key": "3847457889da0bfbef182a3653b37fdba1c584b678e8d1a7d81cc269a5ab358c", "answer": {"tdp_w": {"value": "65", "evidence_quote": "Processor Base Power: 65 W"}}}
+{"key": "cdf2a00f6c47e4895c4e8b8e3130c8188fe98b3583c736b1d86cab72e40aa776", "answer": {"tdp_w": {"value": "65", "evidence_quote": "Processor Base Power : 65 W"}}}
+{"key": "486a6b04706e99ffff0737a9088e8191cb5a3f60caf3081396742ef395f38aaa", "answer": {"tdp_w": {"value": "58", "evidence_quote": "Processor Base Power : 58 W"}}}
+{"key": "f7eb76a4de926060df2f94414c17f252690fdea15fac00b2146c68c0b3cec07e", "answer": {"tdp_w": {"value": "58", "evidence_quote": "Processor Base Power : 58 W"}}}
+{"key": "6ce19acfe4713380bf180dc5ef007c167d4bbd70d7a3d597a92deb47384967c2", "answer": {"tdp_w": {"value": "125", "evidence_quote": "Processor Base Power: 125 W"}}}
+{"key": "821d716d864a10603010ed64a6b4d4eac520d0a9379540784bb5ee20760c2cf4", "answer": {"tdp_w": {"value": "125", "evidence_quote": "Processor Base Power: 125 W"}}}
+{"key": "82377c33b36bc313184a0d82a8bca8ec5e083948cff9b4b4b8f9af43e499a6dd", "answer": {"tdp_w": {"value": "125", "evidence_quote": "Processor Base Power : 125 W (i7-14700K)/(i7-14700KF)"}}}
+{"key": "04db6a898080f402708b51718f24f1fd4e4f028e4331d9a15b56b0f6a958ef75", "answer": {"tdp_w": {"value": "125", "evidence_quote": "Processor Base Power : 125 W (i7-14700K)/(i7-14700KF)"}}}
+{"key": "e36b20bdd54bfa0fa922aa518d8add367011b970a84e4a6c09b6edd5d0d01b93", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "74c799018778524ece48115ec8e82310c2e3b66d37b4c9a75c75965954b17a68", "answer": {"length_mm": {"value": "330", "evidence_quote": "Card size L=330 W=145 H=65 mm"}}}
+{"key": "c561f20ac80a63086ea75b064a6eefbdf28492274e94701876c766f9b5aea7d9", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "5c64b2aeb094d1426d1e6a51b6280e9eb34f873b32c30d6c9d9e3233427f9044", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e996e19b719025276007ae8a842f4885a0f96462b4a4c176fe6640bcd841fd77", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "a64681f72493e0c888d21084c37f5d19b890c6abeab3ce869d1d4e9e92381b1f", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "bad4a56875a481e4667a62498f92dc4ba7f4276cef698fc0f7e31fe5ce623b4b", "answer": {"length_mm": {"value": "2.5-Slot", "evidence_quote": "2.5-Slot"}}}
+{"key": "a15c53ba3f7195e35e8149c973b5a95ed302504859c6af0d404888130f82f60e", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "ba10368bece738d15cf49dc543da65a9dde706bedf77379eeca2a1e11353031b", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "9167f0a52cac8b7456dac1cb2da1c8726cdf07a48a85a710838142180f345ad3", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "5fbf93e50804ae49e3dd07678c6037fed7ed69e057a074bca56c499cc8c17f0e", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "f50f2442882f23c81d77e5c0e2f78c160e646ab19fecfce954d36a6b576080db", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "3a4cd1d4ed1f3ec24b4d45927a6abf64900660ce6a338a7a45e1b8a7213cdd64", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "78dd9f68af7d7939b58a3ef9caec900299d4da00488b51d51ae1292f7fd80b8b", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "4ea95d83f691078f074a0aabf820ce177c62f8535934e2cbde9ff59243befd9d", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "40eea2b77e93f79bee1cdf9d36d3b2fc9950c26e089b60b9e2a9c4fa961d7216", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "8c0d9a710f83231236b36344ad2f57476fab7a718e2fa31ee1e802679dcbaef4", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "9cd146ab046f04c1cdf1bb8f7cddc2fba614eaea8bfecd13f57cca85c5f5a418", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "dc9663bef61e9c882d49e2923f16caaffa023c8821878f24ac2b32c4aaf050a3", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "01a3b14dfdae3f6b98eed50e07d1e3f1e5952957a0ed28e74021a672a0cc5c01", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "3954e4d9476189e59282f5aac092ec292f0e1502429e0712b68586ea97f17404", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "96b9d34fdaa4c81914a2778d00ea8e44a0658bd9cc00cfcbb5675f03bb1b9139", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "561c0e80b4a465e70367bc7cdb4b6e3d1f5c864bf1136cf1f850a54bbfc90f92", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d1456ada877dcbc63a8d87253a3243fca3c4bc81ed61fa733db3ce8c7813ddc8", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d05b77be0aea5e7aefd910c715cb302239259a302959ad70589d324510157c9e", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "1b53358cb6e8ab1c95ea305c4cb26c126cc2c712540295601e5e4d65f46e2550", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e7c15e4d92c51ab9923d11425adb318b6c36e4f5ca8b0e71c1df91692a57b6db", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "2ef8d642a30c87d22be0bb6b8af1eacf5b29225ab01f52edd510a121786c35c2", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "5e60fb7287923b6a66d35e3abc703f4f515642587c5f161ba6ecc960da7d5352", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "9bc9f294d868dc4e505525a0f1f5737c0f86aeeb0c4ea2045c2058d0774b6c5f", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "a355e43e8c0559cc6ab4eed75fef974a1144d1f40bf555565c7a506b0223c808", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "c89682885716fe7d0e7b31a2c774994fa753d2e0a3aecf94fc4ead0b4d3dacad", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "9903c0c5b7edda00c1cad77bdb55a7dba40e7be30c0a30470f38636816b69446", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "4ac396367cfe756a7394d147fb83a8c30762aa67893f232eaac4dcf651eedf45", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d803ff63c6abc2f16793c8738dc31531eb74724ae759a06bad626dc8e8dcd2c4", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "539e659438ebf5ecc90966dcfcce4feade14bf6f9f6aa2e03fc49c140c40bfd6", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "d701e73694b4d8f057c0fad540d54c5131616c24cb3468ef69c1c3956bdd073f", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "a3c25cd8465c0d4a4676760df3a578960966e89e8704ea51f2d99d57b10195e2", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "f751c78e38d5831e9f6d79fd1385cba624d48f02da30bd0ad2999f449be9fb9e", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "cfdb6f0582c54f2006d8d671c6bb5a259dab98252c68f34bf21c8710b76a8a27", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "322b1f5f060d473fcccc67157a952de46a50d249154f81192923ea1334fda2c2", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "9d5d733dfed81fa1a0e6306fb7f192cf6b22d8fe07d4616aeeb24cfaa77a654d", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "fd7f08c04c835d8e21fadbcc3f26544d6268a7011ff4d8935d9a1b7fb23e3ae7", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "6b9a4b524aff76e56dae6c7c1d6cac73a9cf4635f5b0272f7333aeb2467d7371", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "3a98f49983b62a57b55315b5d753e684161a43e0cf7591f4a4e8b2c57237ba72", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "64e8cd8b2a673772b09434132f93b71d6bfe818f9da0b7353c0fa4e10b30cebe", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "f0879200d3e768f535411ac464d419c77e7b2befff35af142ba04b2cfd3b7e72", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "15a931bab517162e70cfe249f02262c089bbcbef98525b116e61d07badaf4412", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "8c477f1e8de08bd065411202dcbe98a13e46935f87ab50d342ca58f447b333f7", "answer": {"length_mm": {"value": "267", "evidence_quote": "Card size H=40 L=267 W=111"}}}
+{"key": "42533287de72f6531e3cd9215c88538ac79b19b02058b129fc453c07a4e124f4", "answer": {"length_mm": {"value": "360mm", "evidence_quote": "Dimensions: 360mm (L) x 150mm (W) x 75mm (H)."}}}
+{"key": "3e05c5e680fb1e0d7eb88691ee9fe0655e455b47fafdae46e2b2a8f2ae9b34ae", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "669851298698832af7f10e1d570142972ea9d166581b4f315c2c8ca644bff8b5", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "42a9db98853469409ff67ee838d34fa2bd27ceed8189a1b6cb7a8ed4af60ecca", "answer": {"length_mm": {"value": "342", "evidence_quote": "Card size L=342 W=150 H=65 mm"}}}
+{"key": "f54a1ed10efc4525fb623d54893bef3164c24aba00beb4d7c66236509d9df3ae", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "592e7b05113f0bad86f45ba2969612710bb65625712c2f7810f8607c8c7017cc", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "57cafc26dd81cbc5ab10d938008dd905954f94e248ee7f5630c01c1349ce7801", "answer": {"length_mm": {"value": "360", "evidence_quote": "Card size L=360 W=150 H=75 mm"}}}
+{"key": "572a2bb40943c0c702d9ac4ff64dd74384b27f3e979ce9835ad82363725dab5e", "answer": {"length_mm": {"value": "360", "evidence_quote": "Card size L=360 W=150 H=75 mm"}}}
+{"key": "0f6818a9a6a1b88d424c578797dbd7cc145a3d76f4608fc9d95cf2cfacb912ad", "answer": {"length_mm": {"value": "317", "evidence_quote": "Card size L=317 W=136 H=64 mm"}}}
+{"key": "5d664f8bd77d62a4f64a31825c59c8dc2f5027d61b32a5fbea4926f5d7a18863", "answer": {"length_mm": {"value": "329", "evidence_quote": "Card size L=329 W=128 H=41 mm"}}}
+{"key": "119666ba98ca1e8182f0b5d0fa7cb7bdedab1c58e95d1f7f8cfcbbc7c6bb52a2", "answer": {"length_mm": {"value": "281", "evidence_quote": "Card size L=281 W=117 H=40 mm"}}}
+{"key": "764b4b12c9a487029e07db2bf859d940e67aa9554bb8e73b45e95c28bd3a0808", "answer": {"length_mm": {"value": "281", "evidence_quote": "Card size L=281 W=119 H=40 mm"}}}
+{"key": "94f6c627f73b55dd4e69c6f543160ac86ab735cad3a7661861827b6c98ab6f5c", "answer": {"length_mm": {"value": "215", "evidence_quote": "Card size L=215 W=122 H=40 mm"}}}
+{"key": "f35bc73d24ad2449aae34f119fa541ffcc5526a28a3da469b2f364c5fa76d659", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "a906daf6d6766d5cd40171685224edfef0962d5a4cea3cb007fbdd024ab5eadf", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "033696e3ccf3f178f6dc683dde50fb9403aa9be9b99a333d7a977c2b874bf3fc", "answer": {"length_mm": {"value": "329", "evidence_quote": "Card size L=329 W=128 H=40"}}}
+{"key": "220f65d5684d373157a86e1066fc6306a7fabcbe2b525389fc2bf04fb71d5636", "answer": {"length_mm": {"value": "281", "evidence_quote": "Card size L=281 W=117 H=40"}}}
+{"key": "ffa08611ab148b02fb0381e0700de9c9ebcdb1de26e68acd81f4d0f48a201f1b", "answer": {"length_mm": {"value": "281", "evidence_quote": "Card size L=281 W=119 H=40"}}}
+{"key": "0ac1a13dcc9d0d76c32986f70c671c26c0b8c258c80b32376a5de306280a69e8", "answer": {"length_mm": {"value": "208", "evidence_quote": "Card size L=208 W=120 H=40"}}}
+{"key": "975329b63acbe7fa0435a94da6317437631c5e864189f6ff37dae049806c8802", "answer": {"length_mm": {"value": "208", "evidence_quote": "Card size L=208 W=120 H=40"}}}
+{"key": "c2e5879348cf9bd0051c2a2e8091ae7c94ac8d0c40eabbaf23ef64e6b34eb6c2", "answer": {"length_mm": {"value": "3.2-slot design", "evidence_quote": "3.2-slot design"}}}
+{"key": "335cf0c1f57be1c17c30b60bdf67e858f18b2b57ccb6917b372350b18cef858b", "answer": {"length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "1f693d8015b7d3f9b1b1f1a9e2fb4bcc4dc10b653458dff5624a4b6a5f299e42", "answer": {"length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "92a4b23476458d6534cbec59faca7d73de6327b253a0df2a090f9bc14b103763", "answer": {"length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "a517df64955e7bcbb558f3c03a5c9f503dae32fe24eefa141b501b9d77b565a6", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "a599b2437daabf7e1704e53551e5b3a2def9b8ec6329c9d26c0882e7a2f6518a", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "b6937543f27e21f0ad060872094f3b86df0e176e13a1e1b92f9bf309434e64aa", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e466b214eebbcbfadd3355a2baefdcf020fd9e6f6d95a00ef7b77fc6f77a2d85", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "ce823c078779acaf8fd023ff9e99d142a623014c8a265b46fe09c3711f1a867c", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "c8cde3c055e9572d55eaca2230eb9a6762d61c15147008cea7b59580ac4894af", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "dbaa4c3ccbf0b28369ba7b2a3c9790a87c28e9ff039cbba135b058e2d35de0bf", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "6f731d6e82b83e0ab6930f66ead842b903ebb6d85f90b7005e78cd8ab43029c4", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "5621d3b8eeb684967fa92081d336b8980dc032f60a9d718414c533a7eff6f70a", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "b93d1fdaf712543f4c2ce4f1d973f4c22b3dc314d147829e92525b04a9a3b7a5", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "5103e88b6fe1f05108d6ad5ab10743eb4fd294124f1e800429c919c5683c208a", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "ee212c0611e383d137d92804bfcac7769588d5218ff8dc8e037971ecef08165e", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "60ed4bbb227a685656f7b4e730598cc3da995714162bbd0e818a0397a2bb764a", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "b0d6257dac7e58488aa04734ce5995c0c2e2b6245153fe382193a496ed329e16", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "f80f8ed064807c88530a7aa698e267345ba0ce31504316919663dff87ad4c4c4", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "e3139ebff4a72a4b5b3561df7beba2e91f21a8a5cf010e1af85e40616308305d", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "6bfd8218664b6c72663ab18a3cbab89e0bfb6103544f722a5f6239efcebd0f60", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "0e3b4be6eae273e6117bff007348d9078c05d955bd72ee72e7abee4abeeb3ae3", "answer": {"length_mm": {"value": null, "evidence_quote": null}}}
+{"key": "96c70f47de0dbf72019ade508e13386e7a45301a98a9c6f3c65c37b00969f034", "answer": {"length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "129a7b9ddaad720802b70c8b602c8e4483b1fe149d99260611980319892f043d", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Form factor: E-ATX"}}}
+{"key": "50b5402a3f238c59d90210221ba4f9de7565412fdfea15917294b75d45eb1856", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "f37fbe6e838b917f973e50a622c03ecc20dec5fd356fdbc7e541e5b0c8447cec", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "d8580c34261febf2173dd733370ce93eaecaff75c36838b63e33839c88a2c092", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "068f3adbcfda8fb5d85a750010f44a46ff217f887c0936c02a1630b86823be7c", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Form factor: E-ATX"}}}
+{"key": "492b80fc656fa6233d9842918f151ddb3e14321759b01c8c0f80450cead9e530", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "MEG X870E GODLIKE X EDITION SUPPORT AM5 CPU DDR5 WIFI 7 GAMING MOTHERBOARD"}}}
+{"key": "2fdfc0b08fa928349615f50a8d5b2b946ed790815da61e8a9a7e53c6f6a1f988", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ROG CROSSHAIR X870E EXTREME The ROG Crosshair X870E Extreme is the flagship AMD Ryzen 9000 series motherboard, designed for the most discerning users."}}}
+{"key": "c3a87c73a225e06425b3978151786f52b441f36b6ddc60158bac4b2a7261219a", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Product details of ASROCK X870 PRO RS WIFI Supports AMD Ryzen 9000, 8000 and 7000 Series Processors 14+2+1 Phase Power Design, 80A Dr.MOS for VCore+SOC 4 x DDR5 DIMMsSupports Dual Channel, up to 8000+ (OC) 1 PCIe 5.0 x16, 1 PCIe 4.0 x16 Graphics Output Options: 2 USB4 Type-C, 1 HDMI Realtek ALC1220 7.1 CH HD Audio Codec, Nahimic Audio 1 x Blazing M.2 (PCIe Gen5x4), 1 x Hyper M.2 (PCIe Gen4x4), 1 xUltra M.2 (PCIe Gen3x4 & SATA3) 4 x SATA3 2 x USB4 Type-C (Rear), 1 x USB 3.2 Gen2x2 Type-C (Front), 6 x USB 3.2 Gen1 (4 Rear, 2 Front), 9 x USB 2.0 (6 Rear, 3 Front) Realtek 2.5G LAN 802.11be WiFi 7 + Bluetooth Supports Toolless Multi-Layer M.2 Heatsink, M.2 Bottom Heatsink"}}}
+{"key": "d5db9664dbd8ab33e06479856cd04e5f9f9cca2aa49db9043482983e4a6e781d", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "2948489c7d78b7ea3b93f72f0369a58407961493c1e106a544141bdf8519a91c", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Gigabyte X870 EAGLE WIFI7 AMD Ryzen 9000 Series DDR5 Gaming Motherboard"}}}
+{"key": "bd148c859913a5e0712b8fcaec0ccf7c5728af6e88a05580f2c1fa1110ac5e52", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "346ad56e2a04e5f0be7016715be9d03dab180c9793ddbabce0a4157a993995ff", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Gigabyte X870 AORUS Elite Wifi7 AMD Ryzen 9000 Series DDR5 Gaming Motherboard"}}}
+{"key": "a53412d44aa25efb0f0f09f74b9b502d747eb236979dfc475f373a0bc4d59bda", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "Form factor: E-ATX"}}}
+{"key": "05ae2badab99305b53b868bd65752fb52f188e27501431d96664e7bd964fe5c3", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "b38d1020735d67fa21528078661c7e9b3e4d2dd86c339f15701781298ba959bd", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ROG CROSSHAIR X870E HERO The AI PC-ready ROG Crosshair X870E Hero offers unyielding power delivery, robust thermal management, hyperspeed connectivity, comprehensive PCIE 5.0 and DDR5 support to unleash the performance of AMD Ryzen 9000 Series processors."}}}
+{"key": "4db6627fedd9c4288d4691a4fa4ecddd6f0045c465a608a90c98d1090ace3acc", "answer": {"form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "7ee6bb960f63fe4abdeb4868c0cec5fa011ab1ee041f0c0238aa12c868ba0ce5", "answer": {"form_factor": {"value": "E-ATX", "evidence_quote": "ASUS PRIME X870-P WIFI ASUS Prime series motherboards are expertly engineered to unleash the full potential of AMD Ryzen 9000 series processors. Boasting a robust power design, comprehensive cooling solutions and intelligent tuning options, the PRIME X870-P WIFI motherboard provides users and PC DIY builders with a range of performance optimizations via intuitive software and firmware features. It’s designed to be Advanced AI PC-ready, offering the power and connectivity needed for demanding AI applications."}}}
+{"key": "96654e0669c601948c99454ebf94c2555b24a88c7873561e9102badad3b562cb", "answer": {"wattage_w": {"value": "2200", "evidence_quote": "PRIME PX-2200"}}}
+{"key": "df73484fd4968af9113b02a5952eeddbbc0c53a5f9d1323b898b9ed5e3851e10", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "5c360b887b7e30227b6ef44ce04e207dce834232914bbaa556d989e953855720", "answer": {"max_gpu_length_mm": {"value": "130", "evidence_quote": "Spacious Interior : Fits long GPUs and multiple storage devices, with ample room for cable management."}}}
+{"key": "441e218de3454f5b526036d2a2534ecb07fb8101f8472778eaf189172c092111", "answer": {"max_gpu_length_mm": {"value": "130", "evidence_quote": "Spacious Interior : Fits long GPUs and multiple storage devices, with ample room for cable management."}}}
+{"key": "e48de4ab8631d12e676ec55b6b1f1bc300e854db56e824eb017f875a00de76ba", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "8f3b8b54b205925ddfcd412862e58ea9a858458195ae6e2acc850d772e1f728a", "answer": {"max_gpu_length_mm": {"value": null, "evidence_quote": null}, "max_form_factor": {"value": null, "evidence_quote": null}}}
+{"key": "6257b65306c0c0d796b0befdc883afa1c8e2f15009d91819261767f23a51c689", "answer": {"max_gpu_length_mm": {"value": "230", "evidence_quote": "MAX. DISPLAY CARD LENGTH : ≤ 230mm"}}}
+{"key": "3c61168690e8b4b4a008337f05c31259cfc737f632c05bb3a52201b859f309ec", "answer": {"max_gpu_length_mm": {"value": "≤ 202mm-310mm", "evidence_quote": "Max. Display Card Length: ≤ 202mm-310mm"}}}
+{"key": "65e7e57276b9f3450267209ab2bdae699af7e609d4f0313d21638bf4c21ff88f", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "d814130eaa7f9342707800da67fd34a1a4f5048d0fbbfcb67f5dc0d021d14969", "answer": {"max_gpu_length_mm": {"value": "null", "evidence_quote": "null"}}}
+{"key": "9c084e4b42cb7ae5b6c5151184b70ea83febf338326a57d11c809866b51373b4", "answer": {"max_form_factor": {"value": "Mini-ITX", "evidence_quote": "Top panel supports radiators up to 360 mm in length. Up to 365 mm GPU and 200 mm PSU clearance"}}}
+{"key": "24ca247a2556e3fc7775626d2751862920e1bc9f12adbb80ef8e2a23caa63d31", "answer": {"max_form_factor": {"value": "Mini-ITX", "evidence_quote": "Top panel supports radiators up to 360 mm in length. Up to 365 mm GPU and 200 mm PSU clearance"}}}
+{"key": "3ea5d7f2ae403e06a44cca299b431eb815a9322cbc9d6845246b10ca623f2304", "answer": {"max_gpu_length_mm": {"value": "280", "evidence_quote": "Motherboard Support : ATX, micro-ATX, mini-ITX, SSI-CEB, E-ATX (up to 280mm wide)"}}}
+{"key": "b8e9c77c7ec923ceca01b7d35d52dfb492e26f0e13070c5c822f5fb4753d05b6", "answer": {"max_gpu_length_mm": {"value": "280", "evidence_quote": "Motherboard Support : ATX, micro-ATX, mini-ITX, SSI-CEB, E-ATX (up to 280mm wide)"}}}
+{"key": "d2e13872597ae51064b9dcd57af979f99edb3ba1bd20240024e50fe9a2ff8a2f", "answer": {"max_gpu_length_mm": {"value": "280mm", "evidence_quote": "Motherboard Support : ATX, micro-ATX, mini-ITX, E-ATX (up to 280mm without GPU Support Bracket)"}}}
+{"key": "8ca71d8c257114ce34680af4ac7257fa8505cc054bcf291779a9f6271748d300", "answer": {"max_gpu_length_mm": {"value": "280mm", "evidence_quote": "Motherboard Support : ATX, micro-ATX, mini-ITX, E-ATX (up to 280mm without GPU Support Bracket)"}}}
+{"key": "7dfcd2abd8bebae0564d764d0e308b498182b200d9667b667bcf3f3f9f90ab5e", "answer": {"max_gpu_length_mm": {"value": "440", "evidence_quote": "(D) 440 x (W) 230 x (H) 500mm"}}}
+{"key": "7703b4540227ee0142c6955248d41562058e33fde8a53a4b8e4e4a98de0e6560", "answer": {"max_gpu_length_mm": {"value": "440", "evidence_quote": "(D) 440 x (W) 230 x (H) 500mm"}}}
