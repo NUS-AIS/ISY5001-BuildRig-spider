@@ -292,3 +292,15 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
         except Exception as exc:  # model down or malformed output: the rule layer result stands
             req["understanding_source"] = f"rules (model unavailable: {type(exc).__name__})"
     return req, questions + clarification_questions(req)
+
+
+def for_model(req: dict) -> dict:
+    """A readable view of the requirements for prompts: money in Singapore dollars, no internal fields."""
+    budget = (req.get("budget") or {}).get("maximum_minor")
+    view = {"device_type": req.get("device_type"),
+            "budget_sgd_max": budget / 100 if budget is not None else None,
+            "workloads": req.get("workloads", []), "preferences": req.get("preferences", []),
+            "hard_constraints": req.get("hard_constraints", {}),
+            "locked_parts": [i.get("name") or i.get("mention") for i in req.get("locked_items", [])],
+            "owned_parts": [o.get("mention") for o in req.get("owned_components", [])]}
+    return {k: v for k, v in view.items() if v not in (None, [], {})}

@@ -321,3 +321,22 @@ def revise(option: dict, categories: list[str], validation: dict, query: Callabl
                                 "note": "no compatible alternative available"})
     new = {**option, "items": [items[c] for c in DESKTOP_ORDER + ["laptop"] if c in items], "tried_offer_ids": tried}
     return new, changes
+
+
+def assemble_option(corpus, device_type: str, offer_ids: list[str], requirements: dict) -> dict:
+    """Build an option on the server from offer ids (plus owned parts) so no runtime can invent items."""
+    rows = [corpus.offer(oid) for oid in offer_ids]
+    if any(r is None for r in rows):
+        raise KeyError([oid for oid, r in zip(offer_ids, rows) if r is None])
+    locked = {str(p) for p in requirements.get("locked_product_ids", [])}
+    items = [make_item(r, locked=str(r.get("product_id") or r["id"]) in locked) for r in rows]
+    if device_type == "desktop":
+        have = {i["category"] for i in items}
+        items += [owned_item(o) for o in requirements.get("owned_components", [])
+                  if o.get("category") in DESKTOP_ORDER and o["category"] not in have]
+    integrated = device_type == "desktop" and not any(i["category"] == "gpu" for i in items)
+    required = ["laptop"] if device_type == "laptop" else [c for c in DESKTOP_ORDER if not (integrated and c == "gpu")]
+    order = DESKTOP_ORDER + ["laptop"]
+    items.sort(key=lambda i: order.index(i["category"]) if i["category"] in order else len(order))
+    return {"device_type": device_type, "items": items, "required_categories": required,
+            "integrated_graphics_build": integrated}

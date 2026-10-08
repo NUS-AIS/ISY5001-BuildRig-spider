@@ -1,10 +1,13 @@
 import json
+import threading
 from typing import Type
+
 from pydantic import BaseModel
 
 
 class ModelGateway:
-    """Optional LangChain boundary for local chat and structured output."""
+    """LangChain boundary for local chat and structured output, with call and token accounting."""
+
     def __init__(self, model_name: str | None, provider: str | None = None,
                  base_url: str | None = None, reasoning: bool = False,
                  num_ctx: int = 8192, num_predict: int = 1200):
@@ -14,6 +17,8 @@ class ModelGateway:
         self.num_ctx = num_ctx
         self.num_predict = num_predict
         self._model = None
+        self._lock = threading.Lock()
+        self.usage = {"calls": 0, "input_tokens": 0, "output_tokens": 0}
 
     @property
     def enabled(self) -> bool:
@@ -37,15 +42,31 @@ class ModelGateway:
             self._model = init_chat_model(self.model_name, temperature=0, **kwargs)
         return self._model
 
+    def _count(self, message) -> None:
+        meta = getattr(message, "usage_metadata", None) or {}
+        with self._lock:
+            self.usage["calls"] += 1
+            self.usage["input_tokens"] += int(meta.get("input_tokens", 0) or 0)
+            self.usage["output_tokens"] += int(meta.get("output_tokens", 0) or 0)
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            return dict(self.usage)
+
     def structured(self, system: str, payload: dict, schema: Type[BaseModel]) -> BaseModel:
-        model = self._load().with_structured_output(schema)
-        return model.invoke([("system", system), ("user", json.dumps(payload, ensure_ascii=False))])
+        model = self._load().with_structured_output(schema, include_raw=True)
+        result = model.invoke([("system", system), ("user", json.dumps(payload, ensure_ascii=False))])
+        self._count(result.get("raw"))
+        if result.get("parsing_error") is not None or result.get("parsed") is None:
+            raise ValueError(f"Model output did not match {schema.__name__}: {result.get('parsing_error')}")
+        return result["parsed"]
 
     def text(self, system: str, payload: dict) -> str:
         response = self._load().invoke([
             ("system", system),
             ("user", json.dumps(payload, ensure_ascii=False)),
         ])
+        self._count(response)
         content = response.content
         if isinstance(content, str):
             return content.strip()

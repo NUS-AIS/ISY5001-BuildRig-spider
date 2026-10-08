@@ -164,7 +164,7 @@ def rule_display_output(option, req):
     if not cpu:
         return None
     igpu = _spec(cpu, "integrated_graphics")
-    inputs = {"cpu_integrated_graphics": igpu, "graphics_card": None}
+    inputs = {"cpu_integrated_graphics": igpu, "graphics_card": "none in this build"}
     if igpu is None:
         return _check("display_output", "unknown", "No graphics card, and it is not stated whether the CPU has integrated graphics.", inputs)
     if igpu:

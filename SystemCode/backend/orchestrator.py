@@ -10,6 +10,7 @@ configured, the run is handed to Pi with the same tools and constraints. Hard co
 relaxed: an unsolvable request ends as ``no_feasible_option`` with the reasons.
 """
 import json
+import time
 from concurrent.futures import ThreadPoolExecutor
 from urllib.error import URLError
 from urllib.request import Request, urlopen
@@ -20,6 +21,7 @@ from backend.explanation_guard import guard, option_facts, unsupported
 from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
 from backend.planning import Chooser, revise
+from backend.requirements_parser import for_model
 from backend.revision import carry_over, requirement_changes, reuse_decision
 from backend.retrieval import LocalCorpus
 from backend.settings import Settings
@@ -52,7 +54,7 @@ class RecommendationEngine:
                 "not empty, ask exactly those questions without answering them or inventing details. If "
                 "it is empty, briefly confirm the understood device type, budget and workload, then say "
                 "the recommendation can be generated. Do not recommend products yet.",
-                {"user_message": user_message, "requirements": requirements,
+                {"user_message": user_message, "requirements": for_model(requirements),
                  "clarification_questions": questions},
             )
             return (reply or fallback), "llm" if reply else "fallback"
@@ -63,6 +65,7 @@ class RecommendationEngine:
         run = self.store.run(run_id)
         if not run:
             return
+        usage_before, started = self.model.snapshot(), time.time()
         try:
             self._progress(run_id, "planning", "Creating the task plan")
             req = self.store.requirements(run["session_id"], run["requirements_version"])
@@ -73,6 +76,10 @@ class RecommendationEngine:
                 if result["outcome"] == "no_feasible_option" and result.get("revisions_exhausted") \
                         and self.settings.pi_runtime_url:
                     result = self._pi_fallback(run, req, maximum_options, result)
+            if result.get("orchestration_mode") != "pi" or "model_usage" not in result:
+                after = self.model.snapshot()
+                result["model_usage"] = {k: after[k] - usage_before[k] for k in after}
+            result["duration_seconds"] = round(time.time() - started, 2)
             self.store.set_run(run_id, "completed", "completed", result=result)
             self.store.event(run_id, "completed", {"stage": "completed", "outcome": result["outcome"]})
         except Exception as exc:
@@ -255,7 +262,7 @@ class RecommendationEngine:
         if context.model_enabled:
             try:
                 narrative = ExplanationAgent(context.model).invoke({
-                    "requirements": context.requirements,
+                    "requirements": for_model(context.requirements),
                     "options": [{"option_id": o["option_id"], "device_type": o["device_type"], "facts": option_facts(o), "items": [
                         {**{k: i.get(k) for k in ("category", "name", "price", "merchant", "selection_reason")},
                          "specs": {k: v for k, v in (i.get("specs") or {}).items() if v is not None}} for i in o["items"]],

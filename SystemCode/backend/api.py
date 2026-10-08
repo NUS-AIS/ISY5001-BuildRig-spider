@@ -4,7 +4,7 @@ from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, HybridRequest, MemoryPatch, MessageCreate, RunCreate,
                             SessionCreate, ValidationRequest)
-from backend.planning import DESKTOP_ORDER, Chooser, make_item, owned_item, plan_desktop, plan_laptops
+from backend.planning import Chooser, assemble_option, plan_desktop, plan_laptops
 from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
 
@@ -206,21 +206,10 @@ def create_router(store, corpus, engine):
     def assemble(body: AssembleRequest, x_internal_token: str | None = Header(None)):
         """Build an option from offer ids on the server and validate it, so the runtime never invents items."""
         require_internal(x_internal_token)
-        unknown = [oid for oid in body.offer_ids if corpus.offer(oid) is None]
-        if unknown:
-            raise HTTPException(422, detail={"code": "UNKNOWN_OFFER", "offer_ids": unknown})
-        rows = [corpus.offer(oid) for oid in body.offer_ids]
-        locked = {str(p) for p in body.requirements.get("locked_product_ids", [])}
-        items = [make_item(r, locked=str(r.get("product_id") or r["id"]) in locked) for r in rows]
-        if body.device_type == "desktop":
-            have = {i["category"] for i in items}
-            items += [owned_item(o) for o in body.requirements.get("owned_components", [])
-                      if o.get("category") in DESKTOP_ORDER and o["category"] not in have]
-        integrated = body.device_type == "desktop" and not any(i["category"] == "gpu" for i in items)
-        required = ["laptop"] if body.device_type == "laptop" else [c for c in DESKTOP_ORDER if not (integrated and c == "gpu")]
-        option = {"device_type": body.device_type, "items": sorted(items, key=lambda i: (DESKTOP_ORDER + ["laptop"]).index(i["category"])
-                                                                   if i["category"] in DESKTOP_ORDER + ["laptop"] else 99),
-                  "required_categories": required, "integrated_graphics_build": integrated}
+        try:
+            option = assemble_option(corpus, body.device_type, body.offer_ids, body.requirements)
+        except KeyError as exc:
+            raise HTTPException(422, detail={"code": "UNKNOWN_OFFER", "offer_ids": exc.args[0]})
         return {"option": option, "validation": validate_option(option, body.requirements)}
 
     @router.post("/internal/options/validate")

@@ -11,3 +11,4 @@ python-dotenv>=0.21,<2
 neo4j>=5.26,<7
 pymilvus>=2.5,<4
 langchain-milvus>=0.2,<1
+matplotlib>=3.8,<4
