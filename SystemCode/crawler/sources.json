@@ -1,6 +1,6 @@
 {
   "stores": [
-    {"name": "Dynacore Singapore", "base_url": "https://dynacoretech.com", "currency": "SGD", "min_interval_seconds": 180, "collections": {"cpu": "cpu", "gpu": "gpu", "motherboard": "motherboard", "ram": "ram", "ssd": "ssd", "hdd": "hdd", "psu": "psu", "case": "case", "cooler": "cooler", "case_fans": "case-fans", "laptop": "laptop"}},
+    {"name": "Dynacore Singapore", "base_url": "https://dynacoretech.com", "currency": "SGD", "min_interval_seconds": 300, "collections": {"cpu": "cpu", "gpu": "gpu", "motherboard": "motherboard", "ram": "ram", "ssd": "ssd", "hdd": "hdd", "psu": "psu", "case": "case", "cooler": "cooler", "case_fans": "case-fans", "laptop": "laptop"}},
     {"name": "Vii PC Singapore", "base_url": "https://www.viipc.sg", "currency": "SGD", "collections": {"cpu": "ryzen-intel-desktop-cpu", "gpu": "rtx-radeon-graphics-card", "motherboard": "amd-intel-motherboard", "ram": "desktop-pc-ram", "ssd": "internal-ssd-storage", "psu": "power-suppy-unit-psu", "case": "desktop-pc-cases", "cooler": "cpu-aio-air-cooler"}}
   ],
   "review_pages": [
