@@ -49,7 +49,7 @@ def create_router(store, corpus, engine):
         if session["requirements_version"] != body.expected_requirements_version:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_VERSION_CONFLICT", "current_version": session["requirements_version"]})
         mid = store.add_message(session_id, body.client_message_id, body.text)
-        requirements, questions = parse_requirements(body.text, session["requirements"])
+        requirements, questions = parse_requirements(body.text, session["requirements"], engine.model, corpus)
         status = "needs_clarification" if questions else "ready"
         try:
             version = store.update_requirements(session_id, body.expected_requirements_version, requirements, status)
