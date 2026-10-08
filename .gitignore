@@ -1,10 +1,22 @@
+# Python
 __pycache__/
 .pytest_cache/
 .venv/
+
+# Secrets and local state
 .env
 runtime/
-frontend/node_modules/
-frontend/dist/
-frontend/dist-cloud/
-pi-worker/node_modules/
-pi-worker/dist/
+
+# Node
+node_modules/
+SystemCode/frontend/dist/
+SystemCode/frontend/dist-cloud/
+SystemCode/pi-worker/dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Large local artefacts
+*.db
+SystemCode/evaluation/results/**/raw/
