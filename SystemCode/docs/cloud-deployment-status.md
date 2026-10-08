@@ -1,5 +1,7 @@
 # Cloud deployment status
 
+> **Historical.** This page records a cloud check from 2026-09-20 (Neo4j Aura, Zilliz). The project now runs on the local stack in `docker-compose.yml`; cloud services remain optional through `.env`.
+
 Verified on 2026-09-20:
 
 - Neo4j Aura connectivity: passed.

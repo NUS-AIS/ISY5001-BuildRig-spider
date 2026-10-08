@@ -1,5 +1,7 @@
 # BuildRig Backend Implementation
 
+> **Superseded.** This page describes the prototype as of 2026-09-20. The current implementation is documented in `system-architecture.md` and `knowledge-base.md`.
+
 ## Current implementation
 
 The FastAPI application now contains a runnable multi-agent recommendation path rather than only crawler endpoints.
