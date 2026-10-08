@@ -18,6 +18,7 @@ import requests
 
 ROOT = Path(__file__).resolve().parents[1]
 AGENT = "SGComputerResearchBot/0.1"
+PAGE_SIZE = 250
 
 
 def now():
@@ -37,27 +38,36 @@ def money(value):
 
 
 class Client:
-    def __init__(self, folder, delay=1.5):
+    def __init__(self, folder, delay=1.5, intervals=None):
         self.folder, self.delay = folder, delay
+        # Per-origin minimum spacing between requests, for stores that rate-limit more strictly.
+        self.intervals = intervals or {}
         self.session = requests.Session()
         self.session.headers['User-Agent'] = AGENT
         self.rules, self.last, self.events = {}, {}, []
 
+    def interval(self, origin):
+        return max(self.delay, self.intervals.get(origin, 0))
+
     def request(self, url):
         origin = '{0.scheme}://{0.netloc}'.format(urlsplit(url))
-        wait = self.delay - (time.monotonic() - self.last.get(origin, 0))
+        wait = self.interval(origin) - (time.monotonic() - self.last.get(origin, 0))
         if wait > 0:
+            if wait > 30:
+                print(f'  waiting {wait:.0f}s before the next request to {origin}', flush=True)
             time.sleep(wait)
         attempts = 5
         for attempt in range(attempts):
             self.last[origin] = time.monotonic()
             response = self.session.get(url, timeout=(10, 35), allow_redirects=False)
             if response.status_code in (429, 500, 502, 503, 504) and attempt < attempts - 1:
-                # Honour the server's Retry-After (Shopify sends 60 s on 429) instead of giving up.
+                # Honour Retry-After. Some stores restart their window on every rejected request,
+                # so never retry sooner than the store's own minimum interval either.
                 try:
-                    pause = min(120, max(self.delay, float(response.headers.get('Retry-After', 2 ** (attempt + 2)))))
+                    retry_after = float(response.headers.get('Retry-After', 2 ** (attempt + 2)))
                 except ValueError:
-                    pause = 10
+                    retry_after = 10
+                pause = min(600, max(retry_after, self.interval(origin)))
                 print(f'  HTTP {response.status_code} for {url}; waiting {pause:.0f}s', flush=True)
                 time.sleep(pause)
                 continue
@@ -194,15 +204,19 @@ def run(args):
     folder = Path(args.output) / 'runs' / stamp
     raw = folder / 'raw'
     raw.mkdir(parents=True, exist_ok=True)
-    client = Client(raw, args.delay)
+    intervals = {'{0.scheme}://{0.netloc}'.format(urlsplit(s['base_url'])): s.get('min_interval_seconds', 0)
+                 for s in config['stores']}
+    client = Client(raw, args.delay, intervals)
     prices, reviews, issues, coverage = {}, {}, [], []
     for source in config['stores']:
         for category, collection in source['collections'].items():
             seen, count, status = set(), 0, 'page_limit_reached'
             for page in range(1, args.max_pages + 1):
-                url = source['base_url'] + '/collections/' + collection + '/products.json'
+                # Shopify serves at most 250 products per page; asking for the maximum keeps the
+                # number of requests low for stores with strict rate limits.
+                url = source['base_url'] + '/collections/' + collection + f'/products.json?limit={PAGE_SIZE}'
                 if page > 1:
-                    url += f'?page={page}'
+                    url += f'&page={page}'
                 try:
                     payload = json.loads(client.get(url))
                     items = parse_shopify(payload, source, category)
@@ -218,6 +232,9 @@ def run(args):
                         seen.add(row['id'])
                         prices[row['id']] = row
                     count += len(fresh)
+                    if len(payload['products']) < PAGE_SIZE:
+                        status = 'exhausted'
+                        break
                 except Exception as exc:
                     issues.append({'url': url, 'stage': 'prices', 'error': str(exc)})
                     status = 'incomplete'
@@ -278,13 +295,17 @@ def run(args):
                              'GST and delivery inclusion are unknown; recheck checkout prices.']}
     (folder / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     (folder / 'report.txt').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
-    if prices:
+    incomplete = [c for c in coverage if c['status'] in ('incomplete', 'page_limit_reached')]
+    if incomplete:
+        print('Not publishing this snapshot: incomplete categories ' +
+              ', '.join(f"{c['store']}/{c['category']}" for c in incomplete), flush=True)
+    if prices and not incomplete:
         latest = Path(args.output) / 'latest.json'
         temp = latest.with_suffix('.tmp')
         temp.write_text(json.dumps({'run_id': stamp, 'path': 'runs/' + stamp}), encoding='utf-8')
         temp.replace(latest)
     print(json.dumps({'folder': str(folder), 'prices': len(prices), 'reviews': len(reviews), 'issues': len(issues)}), flush=True)
-    return 0 if prices else 1
+    return 0 if prices and not incomplete else 1
 
 
 def main():
