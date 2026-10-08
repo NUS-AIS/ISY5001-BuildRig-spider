@@ -1,6 +1,6 @@
 import unittest
 
-from backend.explanation_guard import guard, option_facts, unsupported
+from backend.explanation_guard import guard, guard_message, option_facts, unsupported
 
 
 def option(*names, device="desktop"):
@@ -34,6 +34,22 @@ class ExplanationGuardTests(unittest.TestCase):
         facts = option_facts(option("AMD Ryzen 5 8500G", "MSI B850M"))
         self.assertFalse(facts["has_graphics_card"])
         self.assertTrue(facts["uses_integrated_graphics_only"])
+
+
+class SummaryGuardTests(unittest.TestCase):
+    def test_false_over_budget_and_all_passed_claims_are_removed(self):
+        opt = {**option("AMD Ryzen 7 9800X3D", "MSI RTX 5060"),
+               "validation": {"failed_codes": [], "checks": [{"code": "gpu_case_clearance", "status": "unknown"}]}}
+        message = ("Option 1 offers an RTX 5060 but is slightly over the budget. All checks passed. "
+                   "Some fit checks need confirmation.")
+        kept, dropped = guard_message(message, [opt])
+        self.assertEqual(kept, "Some fit checks need confirmation.")
+        self.assertEqual(len(dropped), 2)
+
+    def test_true_over_budget_statement_is_kept(self):
+        opt = {**option("AMD Ryzen 7 9800X3D"), "validation": {"failed_codes": ["budget_limit"], "checks": []}}
+        kept, dropped = guard_message("This option is over the budget.", [opt])
+        self.assertEqual(dropped, [])
 
 
 if __name__ == "__main__":

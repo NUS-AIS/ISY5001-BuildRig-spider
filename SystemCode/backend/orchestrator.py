@@ -17,7 +17,7 @@ from urllib.request import Request, urlopen
 
 from backend.agents import (AgentContext, DesktopPlanningAgent, EvidenceAgent, ExplanationAgent, LaptopSelectionAgent,
                             PlannerAgent, ReviewAgent)
-from backend.explanation_guard import guard, option_facts, unsupported
+from backend.explanation_guard import guard, guard_message, option_facts, unsupported
 from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
 from backend.planning import Chooser, revise
@@ -263,7 +263,11 @@ class RecommendationEngine:
             try:
                 narrative = ExplanationAgent(context.model).invoke({
                     "requirements": for_model(context.requirements),
-                    "options": [{"option_id": o["option_id"], "device_type": o["device_type"], "facts": option_facts(o), "items": [
+                    "options": [{"option_id": o["option_id"], "device_type": o["device_type"],
+                                 "facts": {**option_facts(o), "total_sgd": o["validation"]["total_minor"] / 100,
+                                           "within_budget": "budget_limit" not in o["validation"]["failed_codes"],
+                                           "unknown_checks": [c["code"] for c in o["validation"]["checks"] if c["status"] == "unknown"]},
+                                 "items": [
                         {**{k: i.get(k) for k in ("category", "name", "price", "merchant", "selection_reason")},
                          "specs": {k: v for k, v in (i.get("specs") or {}).items() if v is not None}} for i in o["items"]],
                         "validation": [{"code": c["code"], "status": c["status"], "reason": c["reason"]} for c in o["validation"]["checks"]],
@@ -282,7 +286,13 @@ class RecommendationEngine:
                         option["explanation_guard"] = {"dropped": dropped}
                         if not option["reasons"]:
                             option["reasons"] = [i.get("selection_reason") for i in option["items"] if i.get("selection_reason")][:4]
-                message, source = narrative["assistant_message"], "llm"
+                message, dropped_summary = guard_message(narrative["assistant_message"], accepted)
+                source = "llm"
+                if dropped_summary:
+                    accepted[0].setdefault("explanation_guard", {"dropped": []})["dropped"] += [
+                        {"field": "assistant_message", **d} for d in dropped_summary]
+                if not message:
+                    message = f"I found {len(accepted)} evidence-backed option" + ("s." if len(accepted) != 1 else ".")
                 harness.transition("recommendation_explained", "explanation_agent", "explain", {"option_count": len(accepted)})
             except Exception as exc:
                 limitations.append(f"The local model explanation was unavailable; template wording was used ({type(exc).__name__}).")

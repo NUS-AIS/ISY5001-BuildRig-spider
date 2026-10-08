@@ -45,3 +45,26 @@ def guard(option: dict, field: str) -> list[dict]:
             kept.append(sentence)
     option[field] = kept
     return dropped
+
+
+OVER_BUDGET = re.compile(r"over (?:the |your )?budget|exceed\w* (?:the |your )?budget|above (?:the |your )?budget", re.I)
+ALL_PASSED = re.compile(r"all (?:compatibility )?checks? (?:have |are )?passed|fully (?:verified|compatible)|no unresolved", re.I)
+
+
+def guard_message(message: str, options: list[dict]) -> tuple[str, list[dict]]:
+    """Filter the run-level summary: every sentence must be consistent with all options' verified facts."""
+    names = _squash(" ".join(i["name"] for o in options for i in o["items"]))
+    any_over = any("budget_limit" in o.get("validation", {}).get("failed_codes", []) for o in options)
+    any_unknown = any(c["status"] == "unknown" for o in options for c in o.get("validation", {}).get("checks", []))
+    kept, dropped = [], []
+    for sentence in re.split(r"(?<=[.!?])\s+", message.strip()):
+        problem = None
+        for token in MODEL_TOKEN.findall(sentence):
+            if _squash(token) not in names:
+                problem = f"names a model not in any option: {token}"
+        if not problem and OVER_BUDGET.search(sentence) and not any_over:
+            problem = "claims an option is over budget, but every option passed the budget check"
+        if not problem and ALL_PASSED.search(sentence) and any_unknown:
+            problem = "claims all checks passed, but some checks are unknown"
+        (dropped if problem else kept).append({"text": sentence, "reason": problem} if problem else sentence)
+    return " ".join(kept), dropped

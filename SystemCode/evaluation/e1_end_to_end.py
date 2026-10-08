@@ -50,6 +50,7 @@ def score(case: dict, record: dict, offers: dict, model=None) -> dict:
     s["detail"] = f"outcome={result.get('outcome')} kinds={kinds} questions={final['questions']}"
     if not options:
         return s
+    s["guard_interventions"] = sum(len((o.get("explanation_guard") or {}).get("dropped", [])) for o in options)
     checks = [option_constraints_ok(o, expect, final["requirements"]) for o in options]
     s["constraint_satisfaction"] = all(all(c.values()) for c in checks)
     s["constraint_detail"] = checks
@@ -88,6 +89,9 @@ def aggregate(scores: list[dict]) -> dict:
                                 "unknown_handling", "adjustment_success", "evidence_levels_respected")}
     quality = [s["explanation_quality"] for s in scores if "explanation_quality" in s]
     out["explanation_quality_mean"] = round(sum(quality) / len(quality), 2) if quality else None
+    guarded = [s.get("guard_interventions", 0) for s in scores if "guard_interventions" in s]
+    out["explanation_guard"] = {"cases_with_filtered_sentences": sum(1 for g in guarded if g), "sentences_filtered": sum(guarded),
+                                "cases_with_options": len(guarded)}
     for key in ("seconds", "tool_calls", "llm_calls", "tokens"):
         values = [s[key] for s in scores if s.get(key)]
         out[f"mean_{key}"] = round(sum(values) / len(values), 1) if values else None

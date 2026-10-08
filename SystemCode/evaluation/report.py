@@ -61,7 +61,10 @@ def build(results: Path) -> None:
         fig.tight_layout(); fig.savefig(figs / "e1_by_scenario.png"); plt.close(fig)
         lines += ["## E1 End-to-end quality", "", "| Metric | Rate | n |", "|---|---|---|"]
         lines += [f"| {l} | {_rate(s, k):.0%} | {s[k]['n']} |" for k, l in METRICS if s.get(k)]
+        g = s.get("explanation_guard") or {}
         lines += [f"| Explanation quality (LLM judge, 1-5) | {s.get('explanation_quality_mean')} | |",
+                  f"| Explanation guard: sentences filtered / cases affected | {g.get('sentences_filtered')} / "
+                  f"{g.get('cases_with_filtered_sentences')} of {g.get('cases_with_options')} | |",
                   f"| Mean latency (s) / tool calls / LLM calls / tokens | {s.get('mean_seconds')} / {s.get('mean_tool_calls')} / "
                   f"{s.get('mean_llm_calls')} / {s.get('mean_tokens')} | |", "",
                   "Task completion by scenario: " + ", ".join(f"{k} {v:.0%}" for k, v in sc.items()), ""]
