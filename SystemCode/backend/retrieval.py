@@ -53,14 +53,29 @@ class LocalCorpus:
         # incorrectly split those characters inside a product description.
         return [json.loads(line) for line in path.read_text(encoding="utf-8").split("\n") if line.strip()]
 
+    def spec_text(self, offer_id: str) -> str:
+        specs = {k: v for k, v in self.specs.get(offer_id, {}).items() if v is not None}
+        return ("Specifications: " + ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in specs.items())) if specs else ""
+
     def _documents(self) -> list[Document]:
+        """Searchable chunks. A chunk never mixes two products; every chunk of a listing repeats the
+        title and extracted specs so keyword search can match "AM5" or "DDR5" in any chunk."""
         docs = []
         for row in self.prices:
-            text = " ".join(str(row.get(k) or "") for k in ("name", "brand", "category", "description"))
-            docs.append(Document(page_content=text, metadata={"evidence_id": f"price:{row['id']}", "kind": "offer", "product_id": str(row.get("product_id") or row["id"]), "category": row["category"], "source_url": row["source_url"], "snapshot_id": self.snapshot_id, "record": row}))
+            head = " ".join(str(row.get(k) or "") for k in ("name", "brand", "category")) + ". " + self.spec_text(row["id"])
+            for n, body in enumerate(chunk_text(row.get("description") or "")):
+                docs.append(Document(page_content=f"{head}\n{body}".strip(), metadata={
+                    "chunk_id": f"price:{row['id']}#{n}", "evidence_id": f"price:{row['id']}", "kind": "offer",
+                    "product_id": str(row.get("product_id") or row["id"]), "category": row["category"],
+                    "source_url": row["source_url"], "match_level": "exact_offer", "snapshot_id": self.snapshot_id}))
         for row in self.reviews:
-            text = " ".join(str(row.get(k) or "") for k in ("product_name", "category", "text"))
-            docs.append(Document(page_content=text, metadata={"evidence_id": f"review:{row['id']}", "kind": "review", "product_id": str(row.get("product_id") or ""), "category": row["category"], "source_url": row["source_url"], "snapshot_id": self.snapshot_id, "record": row}))
+            head = " ".join(str(row.get(k) or "") for k in ("product_name", "category"))
+            for n, body in enumerate(chunk_text(row.get("text") or "")):
+                docs.append(Document(page_content=f"{head}\n{body}".strip(), metadata={
+                    "chunk_id": f"review:{row['id']}#{n}", "evidence_id": f"review:{row['id']}", "kind": "review",
+                    "product_id": str(row.get("product_id") or ""), "category": row["category"],
+                    "source_url": row["source_url"], "match_level": row.get("match_level") or "unknown",
+                    "snapshot_id": self.snapshot_id}))
         return docs
 
     def enrich(self, row: dict) -> dict:
@@ -103,37 +118,76 @@ class LocalCorpus:
         ranked = sorted(known, key=key) + sorted(unknown, key=key)
         return [self.enrich(r) for r in ranked[:limit]]
 
-    def search(self, query: str, categories: list[str] | None = None, product_ids: list[str] | None = None, top_k: int = 8) -> dict[str, Any]:
+    def search(self, query: str, categories: list[str] | None = None, product_ids: list[str] | None = None,
+               top_k: int = 8, routes: list[str] | None = None) -> dict[str, Any]:
+        """Development stand-in for hybrid retrieval: in-memory BM25, hashed vectors and a
+        product-link "graph" route, fused with the same RRF as production."""
+        routes = routes or list(ROUTES)
         docs = [d for d in self.documents if (not categories or d.metadata["category"] in categories)
                 and (not product_ids or d.metadata["product_id"] in product_ids)]
         qterms, qvec = tokens(query), vector(query)
         n = max(len(self.documents), 1)
-        bm25, dense, graph = [], [], []
-        for d in docs:
-            terms = tokens(d.page_content); counts = Counter(terms); dl = len(terms)
-            score = 0.0
-            for term in qterms:
-                df = self.df.get(term, 0)
-                idf = math.log(1 + (n - df + .5) / (df + .5))
-                tf = counts.get(term, 0)
-                score += idf * tf * 2.2 / (tf + 1.2 * (1 - .75 + .75 * dl / max(self.avg_len, 1))) if tf else 0
-            bm25.append((score, d)); dense.append((cosine(qvec, vector(d.page_content)), d))
-            graph_score = (2 if d.metadata["product_id"] in (product_ids or []) else 0) + (1 if d.metadata["category"] in (categories or []) else 0)
-            graph.append((graph_score, d))
-        routes = {"bm25": sorted(bm25, key=lambda x: x[0], reverse=True)[:top_k * 2],
-                  "vector": sorted(dense, key=lambda x: x[0], reverse=True)[:top_k * 2],
-                  "graph": sorted(graph, key=lambda x: x[0], reverse=True)[:top_k * 2]}
-        fused: dict[str, dict] = {}
-        for route, ranked in routes.items():
-            for rank, (raw, doc) in enumerate(ranked, 1):
-                if raw <= 0:
-                    continue
-                key = doc.metadata["evidence_id"]
-                hit = fused.setdefault(key, {"evidence_id": key, "score": 0.0, "route_ranks": {}, "document": doc})
-                hit["score"] += 1 / (60 + rank); hit["route_ranks"][route] = rank
-        items = sorted(fused.values(), key=lambda x: x["score"], reverse=True)[:top_k]
-        return {"snapshot_id": self.snapshot_id, "retrieval_backend": "local_contract_fallback", "items": [
-            {"evidence_id": x["evidence_id"], "score": x["score"], "route_ranks": x["route_ranks"],
-             "kind": x["document"].metadata["kind"], "product_id": x["document"].metadata["product_id"],
-             "category": x["document"].metadata["category"], "source_url": x["document"].metadata["source_url"],
-             "excerpt": x["document"].page_content[:700]} for x in items]}
+        ranked: dict[str, list[tuple[float, Document]]] = {}
+        if "bm25" in routes:
+            scored = []
+            for d in docs:
+                terms = tokens(d.page_content); counts = Counter(terms); dl = len(terms)
+                score = 0.0
+                for term in qterms:
+                    df = self.df.get(term, 0)
+                    idf = math.log(1 + (n - df + .5) / (df + .5))
+                    tf = counts.get(term, 0)
+                    score += idf * tf * 2.2 / (tf + 1.2 * (1 - .75 + .75 * dl / max(self.avg_len, 1))) if tf else 0
+                scored.append((score, d))
+            ranked["bm25"] = scored
+        if "dense" in routes:
+            ranked["dense"] = [(cosine(qvec, vector(d.page_content)), d) for d in docs]
+        if "graph" in routes:
+            ranked["graph"] = [((2 if d.metadata["product_id"] in (product_ids or []) else 0)
+                                + (1 if d.metadata["category"] in (categories or []) else 0), d) for d in docs]
+        hits = {route: [(doc.metadata["evidence_id"], doc.page_content, doc.metadata) for raw, doc in
+                        sorted(rows, key=lambda x: x[0], reverse=True) if raw > 0] for route, rows in ranked.items()}
+        items = rrf_fuse(hits, top_k)
+        return {"snapshot_id": self.snapshot_id, "retrieval_backend": "local_contract_fallback",
+                "routes": routes, "degraded_routes": [], "items": items}
+
+
+ROUTES = ("bm25", "dense", "graph")
+
+
+def chunk_text(text: str, size: int = 1200, overlap: int = 150) -> list[str]:
+    """Split one listing's text into overlapping chunks on sentence-ish boundaries."""
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) <= size:
+        return [text]
+    chunks, start = [], 0
+    while start < len(text):
+        end = min(start + size, len(text))
+        cut = text.rfind(". ", start + size // 2, end)
+        end = cut + 1 if cut != -1 and end < len(text) else end
+        chunks.append(text[start:end].strip())
+        if end >= len(text):
+            break
+        start = max(end - overlap, start + 1)
+    return chunks
+
+
+def rrf_fuse(route_hits: dict[str, list[tuple[str, str, dict]]], top_k: int, k: int = 60) -> list[dict]:
+    """Reciprocal Rank Fusion over routes. Each route contributes the rank of its best chunk per
+    evidence item; raw scores from different routes are never added together."""
+    fused: dict[str, dict] = {}
+    for route, hits in route_hits.items():
+        seen: set[str] = set()
+        rank = 0
+        for evidence_id, text, meta in hits:
+            if evidence_id in seen:
+                continue
+            seen.add(evidence_id)
+            rank += 1
+            hit = fused.setdefault(evidence_id, {
+                "evidence_id": evidence_id, "score": 0.0, "route_ranks": {}, "kind": meta.get("kind"),
+                "product_id": meta.get("product_id"), "category": meta.get("category"),
+                "source_url": meta.get("source_url"), "match_level": meta.get("match_level"), "excerpt": text[:700]})
+            hit["score"] += 1 / (k + rank)
+            hit["route_ranks"][route] = rank
+    return sorted(fused.values(), key=lambda x: x["score"], reverse=True)[:top_k]

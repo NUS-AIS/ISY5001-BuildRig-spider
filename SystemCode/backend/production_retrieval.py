@@ -1,13 +1,21 @@
-"""Neo4j + Milvus production adapter.
+"""Neo4j + Milvus production adapter (FR04, FR05).
 
-Imports are lazy so the API can still start in local development mode. Milvus
-provides dense + BM25 retrieval; Neo4j provides graph/structured retrieval.
-The application combines all three ranked lists with RRF.
+* Candidates come from Neo4j: in-stock offers of the pinned snapshot, filtered by the spec values
+  stored on Variant nodes. Unknown specs are kept but ranked after known matches.
+* Retrieval runs three independent routes and fuses them with application-level RRF:
+    bm25  - Milvus sparse BM25 over chunk text (exact model names, "AM5", "DDR5")
+    dense - Milvus HNSW over bge-m3 embeddings (meaning: "quiet", "portable")
+    graph - Neo4j: family-level reviews ABOUT the products, compatibility facts between the
+            products, and offers reached through shared Spec nodes
+* A route that fails is skipped and reported in ``degraded_routes``; results are never presented
+  as complete when a route was missing.
+
+Imports are lazy so the API can still start in local development mode.
 """
-import json
+import re
 from typing import Any
 from langchain_core.embeddings import Embeddings
-from backend.retrieval import LocalCorpus, vector
+from backend.retrieval import ROUTES, LocalCorpus, rrf_fuse, vector
 
 
 class HashEmbeddings(Embeddings):
@@ -70,6 +78,63 @@ def create_embeddings(settings) -> Embeddings:
     return DimensionCheckedEmbeddings(delegate, settings.embedding_dimensions)
 
 
+
+
+CANDIDATE_QUERY = """
+MATCH (p:Product {category: $category})-[:HAS_VARIANT]->(v:Variant)-[:HAS_OFFER]->(o:Offer {snapshot_id: $sid})
+WHERE o.available AND NOT coalesce(v.bundle_suspect, false) AND NOT o.offer_id IN $exclude
+  AND ($max IS NULL OR o.price_minor <= $max) AND ($min IS NULL OR o.price_minor >= $min)
+  AND ALL(k IN keys($require) WHERE v['spec_' + k] IS NULL OR v['spec_' + k] = $require[k])
+  AND ALL(k IN keys($minimum) WHERE v['spec_' + k] IS NULL OR v['spec_' + k] >= $minimum[k])
+WITH o, size([k IN keys($require) WHERE v['spec_' + k] IS NULL])
+      + size([k IN keys($minimum) WHERE v['spec_' + k] IS NULL]) AS unknowns
+RETURN o.offer_id AS id
+ORDER BY unknowns ASC, CASE WHEN $descending THEN -o.price_minor ELSE o.price_minor END ASC
+LIMIT $limit
+"""
+
+GRAPH_PRODUCT_QUERY = """
+CALL () {
+  MATCH (r:Review)-[a:ABOUT]->(p:Product) WHERE p.product_id IN $pids AND r.snapshot_id = $sid
+  RETURN r.evidence_id AS evidence_id, p.product_id AS product_id, p.category AS category,
+         r.product_name + ': ' + r.text AS text, a.match_level AS match_level, 'review' AS kind,
+         [(r)-[:FROM_SOURCE]->(s) | s.url][0] AS source_url, 0 AS priority
+  UNION ALL
+  MATCH (p1:Product)-[:HAS_VARIANT]->(v1:Variant)-[e:SOCKET_COMPATIBLE|MEMORY_COMPATIBLE]->(v2:Variant)<-[:HAS_VARIANT]-(p2:Product)
+  WHERE p1.product_id IN $pids AND p2.product_id IN $pids
+  RETURN 'graph:' + type(e) + ':' + p1.product_id + ':' + p2.product_id AS evidence_id, p1.product_id AS product_id,
+         p1.category AS category,
+         p1.name + ' and ' + p2.name + ' are linked by ' + toLower(type(e)) + ' (' + e.basis + ': ' +
+         coalesce(e.socket, e.memory_type) + ').' AS text, 'derived_from_specs' AS match_level,
+         'graph_fact' AS kind, [(v1)-[:HAS_OFFER]->(:Offer)-[:FROM_SOURCE]->(s) | s.url][0] AS source_url, 1 AS priority
+  UNION ALL
+  MATCH (p:Product)-[:HAS_VARIANT]->(v:Variant)-[:HAS_OFFER]->(o:Offer {snapshot_id: $sid})-[:FROM_SOURCE]->(s:Source)
+  WHERE p.product_id IN $pids
+  OPTIONAL MATCH (v)-[:HAS_SPEC]->(sp:Spec)
+  WITH p, o, s, collect(sp.key + ' ' + sp.value) AS specs
+  RETURN o.evidence_id AS evidence_id, p.product_id AS product_id, p.category AS category,
+         p.name + '. Specifications: ' + reduce(t = '', x IN specs | t + x + '; ') AS text, 'exact_offer' AS match_level,
+         'offer' AS kind, s.url AS source_url, 2 AS priority
+}
+RETURN evidence_id, product_id, category, text, match_level, kind, source_url
+ORDER BY priority ASC LIMIT $limit
+"""
+
+GRAPH_SPEC_QUERY = """
+MATCH (sp:Spec) WHERE toUpper(sp.value) IN $terms
+MATCH (p:Product)-[:HAS_VARIANT]->(v:Variant)-[:HAS_SPEC]->(sp)
+WHERE size($categories) = 0 OR p.category IN $categories
+MATCH (v)-[:HAS_OFFER]->(o:Offer {snapshot_id: $sid})-[:FROM_SOURCE]->(s:Source)
+WITH p, o, s, count(DISTINCT sp) AS matched, collect(DISTINCT sp.key + ' ' + sp.value) AS specs
+RETURN o.evidence_id AS evidence_id, p.product_id AS product_id, p.category AS category,
+       p.name + '. Matched specifications: ' + reduce(t = '', x IN specs | t + x + '; ') AS text,
+       'exact_offer' AS match_level, 'offer' AS kind, s.url AS source_url
+ORDER BY matched DESC, o.available DESC, o.price_minor ASC LIMIT $limit
+"""
+
+SPEC_TERM = re.compile(r"(?:RTX|RX|GTX|ARC)\s?[A-Z]?\d{3,4}(?:\s?(?:TI SUPER|TI|XTX|XT|GRE|SUPER))?|\b[A-Z]{2,4}\d{1,4}\b|\bDDR[45]\b", re.I)
+
+
 class Neo4jMilvusCorpus(LocalCorpus):
     def __init__(self, data_dir, settings):
         super().__init__(data_dir)
@@ -77,102 +142,86 @@ class Neo4jMilvusCorpus(LocalCorpus):
             raise RuntimeError("NEO4J_PASSWORD is required for neo4j_milvus mode")
         try:
             from neo4j import GraphDatabase
-            from langchain_milvus import Milvus, BM25BuiltInFunction
+            from backend.index_data import milvus_client
         except ImportError as exc:
-            raise RuntimeError("Install neo4j, pymilvus and langchain-milvus for neo4j_milvus mode") from exc
+            raise RuntimeError("Install neo4j and pymilvus for neo4j_milvus mode") from exc
         self.settings = settings
         self.driver = GraphDatabase.driver(settings.neo4j_uri, auth=(settings.neo4j_user, settings.neo4j_password))
         self.driver.verify_connectivity()
-        connection_args = {"uri": settings.milvus_uri}
-        if settings.milvus_token:
-            connection_args["token"] = settings.milvus_token
-        elif settings.milvus_user:
-            connection_args["user"] = settings.milvus_user
-            connection_args["password"] = settings.milvus_password
-        if settings.milvus_database:
-            connection_args["db_name"] = settings.milvus_database
-        self.vector_store = Milvus(
-            embedding_function=create_embeddings(settings),
-            builtin_function=BM25BuiltInFunction(output_field_names="sparse"),
-            vector_field=["dense", "sparse"],
-            text_field="text",
-            collection_name=settings.milvus_collection,
-            connection_args=connection_args,
-            consistency_level="Bounded",
-        )
-
-    def candidates(self, category: str, maximum_minor: int | None = None, limit: int = 25) -> list[dict]:
-        query = """
-        MATCH (p:Product)-[:HAS_OFFER]->(o:Offer)-[:FROM_SOURCE]->(s:Source)
-        WHERE p.category = $category AND o.snapshot_id = $snapshot
-          AND o.available = true AND ($maximum IS NULL OR o.price_minor <= $maximum)
-        RETURN p.product_id AS product_id, p.name AS name, p.brand AS brand,
-               p.category AS category, o.offer_id AS id, o.variant_id AS variant_id,
-               toString(o.price_minor / 100.0) AS price, o.currency AS currency,
-               o.available AS available, s.name AS store, s.url AS source_url,
-               o.collected_at AS collected_at
-        ORDER BY o.price_minor ASC LIMIT $limit
-        """
+        self.milvus = milvus_client()
+        self.collection = settings.milvus_collection
+        self.embeddings = create_embeddings(settings)
+        self.events: list[dict] = []
         records, _, _ = self.driver.execute_query(
-            query, category=category, snapshot=self.snapshot_id,
-            maximum=maximum_minor, limit=limit,
-            database_=self.settings.neo4j_database,
-        )
-        return [dict(record) for record in records]
+            "MATCH (m:SnapshotManifest {snapshot_id: $sid}) RETURN m.status AS status",
+            sid=self.snapshot_id, database_=settings.neo4j_database)
+        self.manifest_status = records[0]["status"] if records else "missing"
 
-    def search(self, query: str, categories=None, product_ids=None, top_k: int = 8) -> dict[str, Any]:
-        # Milvus performs its internal dense + sparse RRF. We preserve route
-        # provenance at the application boundary and then fuse graph results.
-        expression = f'snapshot_id == "{self.snapshot_id}"'
+    def status(self) -> dict:
+        return {"snapshot_id": self.snapshot_id, "manifest_status": self.manifest_status, "collection": self.collection}
+
+    # ------------------------------------------------------------------ candidates (Neo4j)
+
+    def candidates(self, category: str, maximum_minor: int | None = None, limit: int = 25,
+                   minimum_minor: int | None = None, require: dict | None = None,
+                   minimum_specs: dict | None = None, exclude_ids: list[str] | None = None,
+                   order: str = "price_asc") -> list[dict]:
+        try:
+            records, _, _ = self.driver.execute_query(
+                CANDIDATE_QUERY, category=category, sid=self.snapshot_id, exclude=list(exclude_ids or []),
+                max=maximum_minor, min=minimum_minor, require=require or {}, minimum=minimum_specs or {},
+                descending=order == "price_desc", limit=limit, database_=self.settings.neo4j_database)
+            return [self.enrich(self.by_id[r["id"]]) for r in records if r["id"] in self.by_id]
+        except Exception as exc:
+            # The pinned snapshot is also on disk, so planning can continue; the event is reported.
+            self.events.append({"route": "neo4j_candidates", "error": type(exc).__name__})
+            return super().candidates(category, maximum_minor, limit, minimum_minor, require, minimum_specs,
+                                      exclude_ids, order)
+
+    # ------------------------------------------------------------------ retrieval routes
+
+    def _filter(self, categories, product_ids) -> str:
+        parts = [f'snapshot_id == "{self.snapshot_id}"']
         if categories:
-            expression += f" and category in {json.dumps(categories)}"
+            parts.append("category in [" + ", ".join(f'"{c}"' for c in categories) + "]")
         if product_ids:
-            expression += f" and product_id in {json.dumps(product_ids)}"
-        docs = self.vector_store.similarity_search(
-            query, k=top_k * 2, expr=expression, ranker_type="rrf", ranker_params={"k": 60})
-        milvus_hits = [(d.metadata.get("evidence_id"), d) for d in docs
-                       if (not categories or d.metadata.get("category") in categories)
-                       and (not product_ids or d.metadata.get("product_id") in product_ids)]
-        graph_query = """
-        CALL () {
-          MATCH (p:Product)-[:HAS_OFFER]->(e:Offer)-[:FROM_SOURCE]->(s:Source)
-          WHERE e.snapshot_id = $snapshot
-            AND (size($categories)=0 OR p.category IN $categories)
-            AND (size($product_ids)=0 OR p.product_id IN $product_ids)
-          RETURN e.evidence_id AS evidence_id, p.product_id AS product_id,
-                 p.category AS category, p.name AS excerpt, s.url AS source_url,
-                 'offer' AS kind
-          UNION ALL
-          MATCH (e:Review)-[:FROM_SOURCE]->(s:Source)
-          WHERE e.snapshot_id = $snapshot
-            AND (size($categories)=0 OR e.category IN $categories)
-            AND (size($product_ids)=0 OR e.product_id IN $product_ids
-                 OR e.product_id IS NULL OR e.product_id = '')
-          RETURN e.evidence_id AS evidence_id, e.product_id AS product_id,
-                 e.category AS category, e.text AS excerpt, s.url AS source_url,
-                 'review' AS kind
-        }
-        RETURN evidence_id, product_id, category, excerpt, source_url, kind
-        LIMIT $limit
-        """
-        rows, _, _ = self.driver.execute_query(
-            graph_query, snapshot=self.snapshot_id,
-            categories=categories or [], product_ids=product_ids or [], limit=top_k * 2,
-            database_=self.settings.neo4j_database,
-        )
-        fused: dict[str, dict] = {}
-        for rank, (eid, doc) in enumerate(milvus_hits, 1):
-            if not eid:
-                continue
-            fused[eid] = {"evidence_id": eid, "score": 1 / (60 + rank), "route_ranks": {"bm25_vector": rank},
-                          "kind": doc.metadata.get("kind"), "product_id": doc.metadata.get("product_id"),
-                          "category": doc.metadata.get("category"), "source_url": doc.metadata.get("source_url"),
-                          "excerpt": doc.page_content[:700]}
-        for rank, row in enumerate(rows, 1):
-            eid = row["evidence_id"]
-            hit = fused.setdefault(eid, {"evidence_id": eid, "score": 0, "route_ranks": {}, "kind": row["kind"],
-                                         "product_id": row["product_id"], "category": row["category"],
-                                         "source_url": row["source_url"], "excerpt": row["excerpt"]})
-            hit["score"] += 1 / (60 + rank); hit["route_ranks"]["graph"] = rank
-        items = sorted(fused.values(), key=lambda x: x["score"], reverse=True)[:top_k]
-        return {"snapshot_id": self.snapshot_id, "retrieval_backend": "neo4j_milvus", "items": items}
+            parts.append("product_id in [" + ", ".join(f'"{p}"' for p in product_ids) + "]")
+        return " and ".join(parts)
+
+    def _milvus(self, route: str, query: str, expr: str, limit: int) -> list[tuple[str, str, dict]]:
+        fields = ["evidence_id", "product_id", "category", "kind", "match_level", "source_url", "text"]
+        if route == "bm25":
+            res = self.milvus.search(self.collection, data=[query], anns_field="sparse", limit=limit, filter=expr,
+                                     output_fields=fields, search_params={"metric_type": "BM25"})
+        else:
+            res = self.milvus.search(self.collection, data=[self.embeddings.embed_query(query)], anns_field="dense",
+                                     limit=limit, filter=expr, output_fields=fields,
+                                     search_params={"metric_type": "COSINE", "params": {"ef": 64}})
+        return [(h["entity"]["evidence_id"], h["entity"]["text"], h["entity"]) for h in res[0]]
+
+    def _graph(self, query: str, categories, product_ids, limit: int) -> list[tuple[str, str, dict]]:
+        db = self.settings.neo4j_database
+        if product_ids:
+            records, _, _ = self.driver.execute_query(GRAPH_PRODUCT_QUERY, pids=list(product_ids), sid=self.snapshot_id,
+                                                      limit=limit, database_=db)
+        else:
+            terms = sorted({re.sub(r"\s+", " ", t.upper()) for t in SPEC_TERM.findall(query)})
+            if not terms:
+                return []
+            records, _, _ = self.driver.execute_query(GRAPH_SPEC_QUERY, terms=terms, categories=list(categories or []),
+                                                      sid=self.snapshot_id, limit=limit, database_=db)
+        return [(r["evidence_id"], r["text"], dict(r)) for r in records]
+
+    def search(self, query: str, categories: list[str] | None = None, product_ids: list[str] | None = None,
+               top_k: int = 8, routes: list[str] | None = None) -> dict[str, Any]:
+        routes = routes or list(ROUTES)
+        expr, depth = self._filter(categories, product_ids), top_k * 3
+        hits, degraded = {}, []
+        for route in routes:
+            try:
+                hits[route] = (self._graph(query, categories, product_ids, depth) if route == "graph"
+                               else self._milvus(route, query, expr, depth))
+            except Exception as exc:
+                degraded.append({"route": route, "error": type(exc).__name__})
+        return {"snapshot_id": self.snapshot_id, "retrieval_backend": "neo4j_milvus", "routes": routes,
+                "degraded_routes": degraded, "items": rrf_fuse(hits, top_k)}

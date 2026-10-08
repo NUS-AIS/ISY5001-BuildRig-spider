@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-08T13:06:20.048668+00:00",
+  "snapshot_id": "20260906T124528641415Z",
+  "manifest": {
+    "offers": 2236,
+    "reviews": 15,
+    "updated_at": "2026-10-08T13:04:15.293608+00:00",
+    "embedding_dimensions": 1024,
+    "snapshot_id": "20260906T124528641415Z",
+    "chunks": 4149,
+    "embedding_model": "bge-m3",
+    "status": "published",
+    "milvus_collection": "buildrig_chunks_bge_m3_v2"
+  },
+  "snapshot_files": {
+    "offers": 2236,
+    "reviews": 15,
+    "chunks": 4149
+  },
+  "neo4j": {
+    "evidence_items": 2251,
+    "products": 1624,
+    "offers_from_other_snapshots": 0
+  },
+  "milvus": {
+    "collection": "buildrig_chunks_bge_m3_v2",
+    "chunks": 4149,
+    "evidence_items": 2251,
+    "chunks_by_kind": {
+      "offer": 4134,
+      "review": 15
+    }
+  },
+  "problems": {
+    "orphan_chunks_evidence": [],
+    "orphan_chunks_evidence_count": 0,
+    "orphan_chunk_products": [],
+    "orphan_chunk_products_count": 0,
+    "graph_evidence_without_chunks": [],
+    "graph_evidence_without_chunks_count": 0,
+    "chunks_from_other_snapshots": {}
+  },
+  "consistent": true
+}

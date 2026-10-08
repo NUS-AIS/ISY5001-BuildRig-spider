@@ -170,10 +170,20 @@ def create_router(store, corpus, engine):
 
     @router.get("/health")
     def health():
-        return {"status": "ok" if engine.settings.retrieval_backend == "neo4j_milvus" else "degraded",
+        production = engine.settings.retrieval_backend == "neo4j_milvus"
+        store_status = corpus.status() if hasattr(corpus, "status") else None
+        published = bool(store_status) and store_status.get("manifest_status") == "published"
+        detail = None
+        if not production:
+            detail = "Local contract fallback is active; Neo4j and Milvus are not serving requests."
+        elif not published:
+            detail = "The pinned snapshot is not published in Neo4j/Milvus; run python -m backend.index_data."
+        return {"status": "ok" if production and published else "degraded",
                 "snapshot_id": corpus.snapshot_id,
                 "retrieval_backend": engine.settings.retrieval_backend,
-                "detail": None if engine.settings.retrieval_backend == "neo4j_milvus" else "Local contract fallback is active; Neo4j and Milvus are not serving requests.",
+                "knowledge_base": store_status,
+                "recent_degradations": getattr(corpus, "events", [])[-5:],
+                "detail": detail,
                 "models": {
                     "chat_provider": engine.settings.model_provider,
                     "chat_model": engine.settings.model_name,
