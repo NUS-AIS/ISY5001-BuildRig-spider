@@ -120,6 +120,16 @@ class LLMLayerTests(unittest.TestCase):
         self.assertEqual(owned["category"], "gpu")
         self.assertEqual(owned["specs"]["tdp_w"], 200)
 
+    def test_keeping_a_previously_recommended_part_locks_it(self):
+        recent = [{"name": "Gigabyte RTX 5070 WINDFORCE 12GB", "product_id": "p-5070b", "category": "gpu"}]
+        # The model misreads "keep" as "already owned"; the previous recommendation corrects it.
+        model = FakeModel(owned_components=["Gigabyte RTX 5070 WINDFORCE 12GB"])
+        req, questions = parse_requirements("Keep the Gigabyte RTX 5070 WINDFORCE 12GB and lower the budget to S$2500",
+                                            {"device_type": "desktop"}, model, Catalogue(), recent)
+        self.assertEqual(req["locked_product_ids"], ["p-5070b"])
+        self.assertEqual(req["owned_components"], [])
+        self.assertEqual(questions, [])
+
     def test_generic_or_invented_component_is_not_locked(self):
         model = FakeModel(device_type="laptop", must_buy_components=["laptop", "RTX 5090"])
         req, questions = parse_requirements("I need a laptop under S$2000", {}, model, Catalogue())

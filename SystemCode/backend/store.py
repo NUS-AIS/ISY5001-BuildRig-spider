@@ -126,7 +126,8 @@ class StateStore:
             row = db.execute("SELECT data_json FROM requirements WHERE session_id=? AND version=?", (sid, version)).fetchone()
             return json.loads(row[0]) if row else None
 
-    def create_run(self, sid: str, version: int, snapshot: str, mode: str, idempotency_key: str | None = None) -> dict[str, Any]:
+    def create_run(self, sid: str, version: int, snapshot: str, mode: str, idempotency_key: str | None = None,
+                   base_run_id: str | None = None) -> dict[str, Any]:
         rid = uuid7("run")
         stamp = now()
         with self.connect() as db:
@@ -137,7 +138,8 @@ class StateStore:
             db.execute("INSERT INTO runs(id,session_id,requirements_version,snapshot_id,orchestration_mode,status,stage,result_json,error_json,created_at,updated_at,idempotency_key) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                        (rid, sid, version, snapshot, mode, "queued", "queued", None, None, stamp, stamp, idempotency_key))
         self.event(rid, "queued", {"stage": "queued"})
-        self.checkpoint(rid, {"phase": "queued", "plan_version": 0, "completed_tasks": [], "artifacts": {}})
+        self.checkpoint(rid, {"phase": "queued", "plan_version": 0, "completed_tasks": [], "artifacts": {},
+                              "base_run_id": base_run_id})
         return self.run(rid)
 
     def run(self, rid: str) -> dict[str, Any] | None:
@@ -149,6 +151,12 @@ class StateStore:
             item["result"] = json.loads(item.pop("result_json")) if item["result_json"] else None
             item["error"] = json.loads(item.pop("error_json")) if item["error_json"] else None
             return item
+
+    def latest_completed_run(self, sid: str) -> dict[str, Any] | None:
+        with self.connect() as db:
+            row = db.execute("SELECT id FROM runs WHERE session_id=? AND status='completed' ORDER BY created_at DESC LIMIT 1",
+                             (sid,)).fetchone()
+        return self.run(row["id"]) if row else None
 
     def run_owner(self, rid: str) -> str | None:
         with self.connect() as db:

@@ -174,16 +174,18 @@ class EvidenceAgent(SpecialistAgent):
             except Exception:
                 pass
         merged: dict[str, dict] = {}
-        backend = None
+        backend, degraded = None, []
         for query in queries:
             result = context.tools.call(context.run_id, self.role, "retrieve_hybrid", query=query,
                                         categories=[], product_ids=product_ids, top_k=8)
             backend = result.get("retrieval_backend")
+            degraded += [d for d in result.get("degraded_routes", []) if d not in degraded]
             for item in result["items"]:
                 if item["evidence_id"] not in merged or item["score"] > merged[item["evidence_id"]]["score"]:
                     merged[item["evidence_id"]] = {**item, "query": query}
         items = sorted(merged.values(), key=lambda x: x["score"], reverse=True)[:10]
-        return {"items": items, "queries": queries, "query_source": source, "retrieval_backend": backend}
+        return {"items": items, "queries": queries, "query_source": source, "retrieval_backend": backend,
+                "degraded_routes": degraded}
 
 
 # --------------------------------------------------------------------------------- review

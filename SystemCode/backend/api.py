@@ -49,7 +49,11 @@ def create_router(store, corpus, engine):
         if session["requirements_version"] != body.expected_requirements_version:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_VERSION_CONFLICT", "current_version": session["requirements_version"]})
         mid = store.add_message(session_id, body.client_message_id, body.text)
-        requirements, questions = parse_requirements(body.text, session["requirements"], engine.model, corpus)
+        previous = store.latest_completed_run(session_id)
+        recent_items = [{"name": i["name"], "product_id": i["product_id"], "category": i["category"]}
+                        for o in ((previous or {}).get("result") or {}).get("options", []) for i in o["items"]
+                        if not i.get("owned_by_user")]
+        requirements, questions = parse_requirements(body.text, session["requirements"], engine.model, corpus, recent_items)
         status = "needs_clarification" if questions else "ready"
         try:
             version = store.update_requirements(session_id, body.expected_requirements_version, requirements, status)
@@ -72,7 +76,13 @@ def create_router(store, corpus, engine):
         _, questions = parse_requirements("", req)
         if questions:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_INCOMPLETE", "questions": questions})
-        run = store.create_run(session_id, body.requirements_version, corpus.snapshot_id, body.orchestration_mode, idempotency_key)
+        if body.base_run_id:
+            base = store.run(body.base_run_id)
+            if not base or base["session_id"] != session_id or base["status"] != "completed":
+                raise HTTPException(409, detail={"code": "BASE_RUN_UNUSABLE",
+                                                 "message": "base_run_id must be a completed run of this session"})
+        run = store.create_run(session_id, body.requirements_version, corpus.snapshot_id, body.orchestration_mode,
+                               idempotency_key, body.base_run_id)
         if run["status"] == "queued":
             background.add_task(engine.execute, run["id"], body.maximum_options)
         return {**run, "status_url": f"/api/v1/runs/{run['id']}", "events_url": f"/api/v1/runs/{run['id']}/events",

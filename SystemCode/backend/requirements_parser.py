@@ -103,7 +103,9 @@ EXTRACTION_PROMPT = (
     "message states; use null or an empty list for anything not mentioned. Do not infer a budget, memory size "
     "or device type that is not written. 'must_buy_components' are specific products the user wants included "
     "in the purchase; 'owned_components' are parts the user says they already have. Copy component names "
-    "as written by the user. The message may be in English or Chinese."
+    "as written by the user. If previously_recommended_parts is given, a request to keep or lock one of those "
+    "parts means it stays in the purchase (must_buy_components), not that the user owns it. The message may be "
+    "in English or Chinese."
 )
 
 
@@ -169,8 +171,24 @@ def _owned_component(mention: str, catalogue) -> dict:
     return record
 
 
-def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], regex_budget_set: bool) -> None:
-    extracted: RequirementExtraction = model.structured(EXTRACTION_PROMPT, {"message": text}, RequirementExtraction)
+def _recent_match(mention: str, recent_items: list[dict]) -> dict | None:
+    """The previously recommended part a mention refers to, if exactly one fits."""
+    tokens = [t for t in re.findall(r"[a-z0-9]+", mention.casefold()) if len(t) > 1]
+    hits = {i["product_id"]: i for i in recent_items
+            if tokens and all(t in re.sub(r"[™®©]", "", i["name"]).casefold() for t in tokens)}
+    return next(iter(hits.values())) if len(hits) == 1 else None
+
+
+def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], regex_budget_set: bool,
+               recent_items: list[dict]) -> None:
+    payload = {"message": text}
+    if recent_items:
+        payload["previously_recommended_parts"] = [i["name"] for i in recent_items[:12]]
+    extracted: RequirementExtraction = model.structured(EXTRACTION_PROMPT, payload, RequirementExtraction)
+    # "Keep the <part you recommended>" means keep buying it, not that the user already owns it.
+    moved = [m for m in extracted.owned_components if _recent_match(m, recent_items)]
+    extracted.owned_components = [m for m in extracted.owned_components if m not in moved]
+    extracted.must_buy_components = extracted.must_buy_components + moved
     if extracted.device_type and not req.get("device_type"):
         req["device_type"] = extracted.device_type
     if extracted.budget_sgd is not None:
@@ -202,6 +220,12 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
     owned = {o["mention"].casefold() for o in req["owned_components"]}
     must_buy = [m for m in extracted.must_buy_components if _specific_mention(m, text) and m.casefold() not in owned]
     for i, mention in enumerate(must_buy):
+        recent = _recent_match(mention, recent_items)
+        if recent:        # the user means the part we just recommended: lock exactly that product
+            if recent["product_id"] not in req["locked_product_ids"]:
+                req["locked_product_ids"].append(recent["product_id"])
+                req["locked_items"].append({"mention": mention, **recent})
+            continue
         hits = _match_catalogue(mention, catalogue)
         products = {str(r.get("product_id") or r["id"]): r for r in hits}
         if len(products) == 1:
@@ -252,7 +276,8 @@ def clarification_questions(req: dict) -> list[dict]:
     return questions
 
 
-def parse_requirements(text: str, current: dict, model=None, catalogue=None) -> tuple[dict, list[dict]]:
+def parse_requirements(text: str, current: dict, model=None, catalogue=None,
+                       recent_items: list[dict] | None = None) -> tuple[dict, list[dict]]:
     before = deepcopy(current or {})
     req = requirement_chain.invoke({"text": text, "current": current})
     if "keep my budget" in text.casefold():
@@ -262,7 +287,7 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None) -> 
     req["understanding_source"] = "rules"
     if text.strip() and model is not None and getattr(model, "enabled", False):
         try:
-            _apply_llm(req, text, model, catalogue, questions, regex_budget_set)
+            _apply_llm(req, text, model, catalogue, questions, regex_budget_set, recent_items or [])
             req["understanding_source"] = "llm+rules"
         except Exception as exc:  # model down or malformed output: the rule layer result stands
             req["understanding_source"] = f"rules (model unavailable: {type(exc).__name__})"

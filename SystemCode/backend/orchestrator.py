@@ -20,6 +20,7 @@ from backend.explanation_guard import guard, option_facts, unsupported
 from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
 from backend.planning import Chooser, revise
+from backend.revision import carry_over, requirement_changes, reuse_decision
 from backend.retrieval import LocalCorpus
 from backend.settings import Settings
 from backend.store import StateStore
@@ -106,17 +107,25 @@ class RecommendationEngine:
         harness.state["plan_version"] = plan["plan_version"]
         harness.transition("planned", "planner", "plan", plan)
 
-        self._progress(rid, "selecting", "Selecting compatible candidates from the pinned catalogue snapshot")
-        options = []
-        if "desktop_planner" in plan["branches"]:
+        follow_up, options = self._follow_up(run, req, harness)
+        corpus_events_before = len(getattr(self.corpus, "events", []))
+        if follow_up and follow_up["reused"]:
+            self._progress(rid, "selecting", "Reusing the previous recommendation; only affected parts will change")
+            options = carry_over(follow_up.pop("base_options"), req, self.corpus.products)
+            harness.transition("previous_options_reused", "replanner", "reuse_previous", {"changes": follow_up["changes"]})
+        else:
+            if follow_up:
+                follow_up.pop("base_options", None)
+            self._progress(rid, "selecting", "Selecting compatible candidates from the pinned catalogue snapshot")
+        if not options and "desktop_planner" in plan["branches"]:
             options += DesktopPlanningAgent().invoke({"context": context, "maximum_options": maximum_options})["options"]
             harness.transition("desktop_selected", "desktop_planner", "select_candidates", {"count": len(options)})
-        if "laptop_selector" in plan["branches"]:
+        if not (follow_up and follow_up["reused"]) and "laptop_selector" in plan["branches"]:
             laptops = LaptopSelectionAgent().invoke({"context": context, "maximum_options": maximum_options})["options"]
             options += laptops
             harness.transition("laptops_selected", "laptop_selector", "select_candidates", {"count": len(laptops)})
         for index, option in enumerate(options):
-            option["option_id"] = f"option_{index + 1}_{option['items'][0]['offer_id'] or 'owned'}"
+            option.setdefault("option_id", f"option_{index + 1}_{option['items'][0]['offer_id'] or 'owned'}")
             option["revision_history"] = []
 
         self._progress(rid, "retrieving_and_validating", "Running hybrid retrieval and deterministic checks")
@@ -132,6 +141,9 @@ class RecommendationEngine:
         assistant_message, generation_source, limitations = self._explain(context, harness, accepted, rejected)
         if self.settings.retrieval_backend != "neo4j_milvus":
             limitations.append("The local retrieval adapter implements the production contract; Neo4j and Milvus are not active.")
+        limitations += self._degradations(context, accepted + rejected, corpus_events_before)
+        if follow_up:
+            self._describe_follow_up(follow_up, accepted)
         for option in accepted:
             option.pop("tried_offer_ids", None)
         return {"run_id": rid, "status": "completed",
@@ -141,13 +153,49 @@ class RecommendationEngine:
                 "rejected_options": [{"option_id": o["option_id"], "device_type": o["device_type"],
                                       "failed_checks": [c for c in o["validation"]["checks"] if c["status"] == "failed"],
                                       "revision_history": o["revision_history"]} for o in rejected],
-                "revisions_exhausted": exhausted,
+                "revisions_exhausted": exhausted, "follow_up": follow_up,
                 "assistant_message": assistant_message, "generation_source": generation_source,
                 "plan": plan, "agent_trace": harness.state["completed_tasks"], "agent_log": context.log,
                 "tool_calls": [{"id": x["id"], "agent_role": x["agent_role"], "tool": x["tool_name"], "status": x["status"],
                                 "replay_policy": x["replay_policy"]} for x in self.store.tool_calls(rid)],
                 "memory_context": {"confirmed_memory_ids": [m["id"] for m in memories]},
                 "limitations": limitations}
+
+    def _follow_up(self, run: dict, req: dict, harness: RunHarness) -> tuple[dict | None, list]:
+        base_id = harness.state.get("base_run_id")
+        if not base_id:
+            return None, []
+        base = self.store.run(base_id)
+        base_req = self.store.requirements(base["session_id"], base["requirements_version"]) or {}
+        changes = requirement_changes(base_req, req)
+        reuse, reason = reuse_decision(base_req, req, changes)
+        base_options = (base.get("result") or {}).get("options", [])
+        info = {"base_run_id": base_id, "changes": changes, "reused": reuse and bool(base_options), "reason": reason,
+                "base_options": base_options}
+        if reuse and not base_options:
+            info["reason"] = "the previous run had no accepted option; planning again"
+        self.store.event(run["id"], "follow_up", {k: v for k, v in info.items() if k != "base_options"})
+        return info, []
+
+    @staticmethod
+    def _describe_follow_up(follow_up: dict, accepted: list[dict]) -> None:
+        if not follow_up["reused"]:
+            return
+        for option in accepted:
+            kept = [i["name"] for i in option["items"] if i.get("carried_over")]
+            changed = [i["name"] for i in option["items"] if not i.get("carried_over")]
+            option["follow_up"] = {"kept_parts": kept, "changed_parts": changed}
+
+    def _degradations(self, context: AgentContext, options: list[dict], events_before: int) -> list[str]:
+        notes = []
+        routes = sorted({f"{d['route']} ({d['error']})" for o in options for d in (o.get("retrieval") or {}).get("degraded_routes", [])})
+        if routes:
+            notes.append("Retrieval ran without " + ", ".join(routes) + "; evidence may be incomplete.")
+        if len(getattr(self.corpus, "events", [])) > events_before:
+            notes.append("The Neo4j candidate query failed during this run; candidates came from the pinned snapshot file.")
+        if any(e.get("event") in ("chooser_fallback", "laptop_ranking_fallback") for e in context.log):
+            notes.append("The local model was unavailable for part selection; deterministic choices were used.")
+        return notes
 
     def _review_loop(self, context: AgentContext, harness: RunHarness, option: dict, chooser: Chooser) -> str:
         """Evidence and validation run in parallel; failed reviews trigger targeted replanning."""
@@ -161,6 +209,7 @@ class RecommendationEngine:
                 evidence, review = evidence_future.result(), review_future.result()
             option["evidence"] = evidence["items"]
             option["evidence_queries"] = evidence["queries"]
+            option["retrieval"] = {"backend": evidence.get("retrieval_backend"), "degraded_routes": evidence.get("degraded_routes", [])}
             option["validation"] = review["validation"]
             option["review"] = {"decision": review["decision"], "notes": review["review_notes"], "source": review["review_source"]}
             harness.transition("reviewed", "evidence_agent+review_agent", f"review:{option['option_id']}:r{round_number}",
