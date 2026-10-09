@@ -79,8 +79,9 @@ def known_conflict(option: dict) -> bool:
     board = next((i["name"].upper() for i in option["items"] if i["category"] == "motherboard"), "")
     if not cpu or not board:
         return False
-    amd_board = bool(re.search(r"\b[ABX]\d{3}E?\b|\bAM[45]\b", board)) and not re.search(r"\b[BHZ][6-8]\d0\b", board)
-    intel_board = bool(re.search(r"\b[BHZ][6-8]\d0M?\b|LGA", board))
+    # Chipset names overlap in shape (AMD B650 vs Intel B660), so list them explicitly.
+    amd_board = bool(re.search(r"\b(?:A320|A520|A620|B350|B450|B550|B650|B840|B850|X370|X470|X570|X670|X870)E?M?\b|\bAM[45]\b", board))
+    intel_board = bool(re.search(r"\b(?:H610|B660|H670|Z690|B760|H770|Z790|H810|B860|Z890)M?\b|\bLGA\s?\d{4}", board))
     return ("INTEL" in cpu or re.search(r"\bI[3579]-|ULTRA", cpu)) and amd_board and not intel_board or \
         ("RYZEN" in cpu and intel_board and not amd_board)
 

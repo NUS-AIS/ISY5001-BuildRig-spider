@@ -149,6 +149,7 @@ class RecommendationEngine:
         if self.settings.retrieval_backend != "neo4j_milvus":
             limitations.append("The local retrieval adapter implements the production contract; Neo4j and Milvus are not active.")
         limitations += self._degradations(context, accepted + rejected, corpus_events_before)
+        limitations += list(dict.fromkeys(n for o in accepted for n in o.get("planning_notes") or []))
         if follow_up:
             self._describe_follow_up(follow_up, accepted)
         for option in accepted:

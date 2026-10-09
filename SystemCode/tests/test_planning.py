@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from backend.planning import Chooser, Picks, make_item, plan_desktop, plan_laptops, revise
+from backend.planning import Chooser, Picks, is_accessory, make_item, plan_desktop, plan_laptops, revise
 from backend.retrieval import LocalCorpus
 from backend.validation import validate_option
 
@@ -26,6 +26,31 @@ class PlanningTests(unittest.TestCase):
 
     def specs(self, option, category, field):
         return next(i for i in option["items"] if i["category"] == category)["specs"].get(field)
+
+    def test_overspend_is_closed_in_one_round_with_cheaper_parts_only(self):
+        req = {**self.req, "budget": {"currency": "SGD", "maximum_minor": 180000}}
+        option = plan_desktop(self.corpus.candidates, self.corpus.products, req, Chooser())
+        validation = validate_option(option, req)
+        if "budget_limit" in validation["failed_codes"]:
+            option, changes = revise(option, ["gpu"], validation, self.corpus.candidates, req, Chooser())
+            self.assertTrue(all(float(c["to_price"]) < float(c["from_price"]) for c in changes))
+        self.assertNotIn("budget_limit", validate_option(option, req)["failed_codes"])
+
+    def test_budget_below_any_graphics_card_build_uses_integrated_graphics(self):
+        req = {**self.req, "budget": {"currency": "SGD", "maximum_minor": 150000}}
+        option = plan_desktop(self.corpus.candidates, self.corpus.products, req, Chooser())
+        self.assertTrue(option["integrated_graphics_build"])
+        self.assertNotIn("gpu", [i["category"] for i in option["items"]])
+        self.assertIn("integrated graphics", option["planning_notes"][0])
+
+    def test_accessories_are_not_components(self):
+        self.assertTrue(is_accessory({"category": "case", "name": "DeepCool Vertical Base 100 for CH160", "specs": {}}))
+        self.assertTrue(is_accessory({"category": "ssd", "name": "Thermalright M.2 2280 SSD Heatsink", "specs": {}}))
+        self.assertFalse(is_accessory({"category": "case", "specs": {"max_form_factor": None},
+                                       "name": "MSI MAG PANO 100R PZ Mid-Tower Gaming PC Case - Tempered Glass Side Panel"}))
+        self.assertFalse(is_accessory({"category": "cooler", "name": "THERMALRIGHT ASSASSIN X 120 HEATSINK COOLER", "specs": {}}))
+        option = plan_desktop(self.corpus.candidates, self.corpus.products, self.req, Chooser())
+        self.assertFalse(any(is_accessory(i) for i in option["items"]))
 
     def test_desktop_parts_follow_compatibility_chain(self):
         option = plan_desktop(self.corpus.candidates, self.corpus.products, self.req, Chooser())

@@ -16,6 +16,8 @@ touches locked or owned parts, and excludes offers that were already tried.
 """
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any, Callable
@@ -128,6 +130,24 @@ def required_psu_watts(items: dict[str, dict]) -> int | None:
     return int((cpu_w + gpu_w + 100) * 1.2)
 
 
+# Listings filed under a component category that are really accessories for it. A real component's name
+# describes itself first ("... Mid-Tower Case - Tempered Glass Side Panel"), so the accessory word must lead.
+ACCESSORY = {
+    "case": re.compile(r"^(?:(?!\bcase\b|\bchassis\b|tower).)*\b(?:vertical (?:base|gpu kit)|front panel|"
+                       r"side panel|riser|bracket|dust filter|stand)\b", re.I),
+    "ssd": re.compile(r"\bheatsink\b|\benclosure\b|\badapter\b", re.I),
+    "gpu": re.compile(r"\b(?:riser|bracket|support|holder|backplate)\b", re.I),
+}
+PRIMARY_SPEC = {"case": "max_form_factor", "ssd": "capacity_gb", "gpu": "vram_gb"}
+
+
+def is_accessory(row: dict) -> bool:
+    """True for an accessory listed under a component category (a case base, an SSD heatsink): its name
+    reads as an accessory and it lacks the category's primary specification."""
+    pattern, key = ACCESSORY.get(row.get("category")), PRIMARY_SPEC.get(row.get("category"))
+    return bool(pattern and pattern.search(row.get("name", ""))) and row.get("specs", {}).get(key) is None
+
+
 def shortlist(query: Callable, category: str, share_minor: int, items: dict[str, dict], requirements: dict,
               exclude: list[str], limit: int = 5, hard_max: int | None = None,
               extra_require: dict | None = None) -> list[dict]:
@@ -160,6 +180,7 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
                      minimum_minor=int(share_minor * low) if low else None, require=require or None,
                      minimum_specs=minimum or None, exclude_ids=exclude, order="price_desc" if high else "price_asc",
                      limit=limit * 3)
+        rows = [r for r in rows if not is_accessory(r)]
         if category == "case" and board and board["specs"].get("form_factor"):
             need = FORM_FACTOR_RANK[board["specs"]["form_factor"]]
             rows = [r for r in rows if FORM_FACTOR_RANK.get(r["specs"].get("max_form_factor"), 0) >= need
@@ -190,10 +211,20 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
     shares = PROFILES[profile]
     # Everyday use does not need a graphics card when the CPU has integrated graphics.
     integrated = profile == "general" and "gpu" not in items
-    required = [c for c in DESKTOP_ORDER if not (integrated and c == "gpu")]
-    open_cats = [c for c in required if c not in items]
     spent = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
     free = max(budget - spent, 0)
+    notes = []
+    if not integrated and "gpu" not in items:
+        # If even the cheapest in-stock card plus the cheapest other parts cannot fit, a graphics card is
+        # impossible within this budget; build on integrated graphics and say so instead of failing.
+        floor = cheapest_build_minor(query, requirements, items, DESKTOP_ORDER)
+        if floor is not None and floor > free:
+            integrated = True
+            notes.append(f"No build with a graphics card fits this budget: the cheapest compatible one costs "
+                         f"S${floor / 100:,.0f}. This build uses the processor's integrated graphics, which suits "
+                         f"light or older games only.")
+    required = [c for c in DESKTOP_ORDER if not (integrated and c == "gpu")]
+    open_cats = [c for c in required if c not in items]
     weight = sum(shares[c] for c in open_cats) or 1
     share = {c: int(free * shares[c] / weight) for c in open_cats}
 
@@ -225,7 +256,23 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
         item["selection_reason"] = reasons.get(item["category"], "")
         item["selected_by"] = sources.get(item["category"], "user")
     return {"device_type": "desktop", "profile": profile, "items": ordered, "required_categories": required,
-            "integrated_graphics_build": integrated, "shares_minor": share}
+            "integrated_graphics_build": integrated, "shares_minor": share, "planning_notes": notes}
+
+
+def cheapest_build_minor(query: Callable, requirements: dict, fixed: dict, categories: list[str],
+                         extra_require: dict | None = None) -> int | None:
+    """Price of the cheapest compatible build: each open category takes its cheapest compatible offer,
+    following the same compatibility chain as planning. None if some category has no offer."""
+    items = dict(fixed)
+    for category in categories:
+        if category in items:
+            continue
+        rows = shortlist(query, category, 0, items, requirements, [],
+                         extra_require=extra_require if category == "cpu" else None)
+        if not rows:
+            return None
+        items[category] = make_item(min(rows, key=minor))
+    return sum(minor(i) for c, i in items.items() if c not in fixed)
 
 
 # ---------------------------------------------------------------------------------- laptop
@@ -305,15 +352,43 @@ def revise(option: dict, categories: list[str], validation: dict, query: Callabl
         return True
 
     if over and "budget_limit" in validation.get("failed_codes", []):
-        # Fix an overspend by making one part strictly cheaper: start with the part the check named,
-        # then fall back to the next most expensive unlocked part. Never pick something pricier.
-        others = sorted((c for c, i in items.items() if not i.get("locked") and c not in changeable),
+        # Fix an overspend with strictly cheaper parts. First look for one replacement that closes the whole
+        # gap (the part the check named, then the most expensive others); if none exists, take the largest
+        # saving available this round and let the next round continue. Never pick something pricier.
+        others = sorted((c for c, i in items.items()
+                         if not i.get("locked") and not i.get("owned_by_user") and c not in changeable),
                         key=lambda c: minor(items[c]), reverse=True)
-        for category in changeable + others:
+        candidates = [c for c in changeable if not items[c].get("owned_by_user")] + others
+        fixed = False
+        for category in candidates:
             old_minor = minor(items[category])
-            target = max(old_minor - over, int(old_minor * 0.3))
-            if replace_part(category, target, hard_max=old_minor - 1):
+            if old_minor - over > 0 and replace_part(category, old_minor - over, hard_max=old_minor - over):
+                fixed = True
                 break
+        if not fixed:
+            # No single part closes the gap: within this round, keep replacing the part whose cheapest
+            # compatible alternative saves most until the total fits or nothing cheaper is left.
+            def best_saving(category: str) -> int:
+                others_now = {c: i for c, i in items.items() if c != category}
+                rows = shortlist(query, category, 0, others_now, requirements,
+                                 tried.get(category, []) + [items[category]["offer_id"]], hard_max=minor(items[category]) - 1)
+                return minor(items[category]) - min((minor(r) for r in rows), default=minor(items[category]))
+            remaining_over = over
+            while remaining_over > 0:
+                savings = {c: best_saving(c) for c in candidates}
+                ranked = sorted((c for c in candidates if savings[c] > 0), key=savings.get, reverse=True)
+                before = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
+                # Prefer the smallest single saving that closes the rest of the gap; otherwise the largest.
+                closing = [c for c in ranked if savings[c] >= remaining_over]
+                for category in ([min(closing, key=savings.get)] if closing else []) + ranked:
+                    old_minor = minor(items[category])
+                    cap = old_minor - remaining_over if savings[category] >= remaining_over else old_minor - 1
+                    if replace_part(category, 0 if cap == old_minor - 1 else cap, hard_max=cap):
+                        break
+                after = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
+                if after >= before:
+                    break
+                remaining_over -= before - after
     else:
         for category in changeable:
             if not replace_part(category, int(free * shares.get(category, 1) / weight), hard_max=None):

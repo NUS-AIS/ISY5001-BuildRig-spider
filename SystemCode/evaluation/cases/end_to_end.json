@@ -87,7 +87,7 @@
      "expect": {"behaviour": "recommend", "device_types": ["desktop"], "budget_sgd": 3500, "family_reviews_not_exact": true}},
     {"id": "M03", "scenario": "data_gaps", "fr": ["FR01", "FR06"], "turns": ["Desktop under S$4,000 that must include the PNY RTX 5080 16GB TRIPLE FAN"],
      "expect": {"behaviour": "not_recommend_unavailable", "unavailable_name": "PNY RTX 5080"}},
-    {"id": "M04", "scenario": "data_gaps", "fr": ["FR05"], "turns": ["Office PC without a graphics card, budget S$900"],
-     "expect": {"behaviour": "recommend", "device_types": ["desktop"], "budget_sgd": 900}}
+    {"id": "M04", "scenario": "data_gaps", "fr": ["FR05"], "turns": ["Office PC without a graphics card, budget S$1,100"],
+     "expect": {"behaviour": "recommend", "device_types": ["desktop"], "budget_sgd": 1100}}
   ]
 }

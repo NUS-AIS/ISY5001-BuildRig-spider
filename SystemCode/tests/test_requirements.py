@@ -76,6 +76,30 @@ class RuleLayerTests(unittest.TestCase):
 
 
 class LLMLayerTests(unittest.TestCase):
+    def test_capacities_are_requirements_not_products(self):
+        model = FakeModel(device_type="desktop", must_buy_components=["64GB RAM", "2TB SSD"])
+        req, questions = parse_requirements("Deep learning desktop with 64GB RAM and a 2TB SSD, budget S$5,000", {},
+                                            model, Catalogue())
+        self.assertEqual(req["hard_constraints"], {"minimum_memory_gb": 64, "minimum_storage_gb": 2048})
+        self.assertEqual(req["locked_product_ids"], [])
+        self.assertEqual(questions, [])
+
+    def test_owned_part_needs_an_ownership_statement(self):
+        model = FakeModel(device_type="desktop", owned_components=["128GB RAM"])
+        req, _ = parse_requirements("Desktop with 128GB RAM, budget S$1,000", {}, model)
+        self.assertEqual(req["owned_components"], [])
+        self.assertEqual(req["hard_constraints"]["minimum_memory_gb"], 128)
+
+    def test_owned_part_without_model_number(self):
+        model = FakeModel(owned_components=["2TB SSD"])
+        current = {"device_type": "desktop", "budget": {"currency": "SGD", "maximum_minor": 250000, "is_hard_limit": True}}
+        req, _ = parse_requirements("I already have a 2TB SSD, reuse it", current, model)
+        self.assertEqual([(o["category"], o["specs"].get("capacity_gb")) for o in req["owned_components"]], [("ssd", 2048)])
+
+    def test_pc_means_desktop(self):
+        req, _ = parse_requirements("Office PC without a graphics card, budget S$900", {})
+        self.assertEqual(req["device_type"], "desktop")
+
     def test_llm_fills_free_text_fields(self):
         model = FakeModel(device_type="laptop", workloads=["Python development"], preferences=["quiet", "light"])
         req, questions = parse_requirements("Something light and quiet for Python dev, S$1,600 max", {}, model)

@@ -45,7 +45,7 @@ def _parse(payload: dict) -> dict:
         req["device_type"] = "compare"
     elif any(x in lower for x in ("笔记本", "laptop", "notebook")):
         req["device_type"] = "laptop"
-    elif any(x in lower for x in ("台式", "组装", "装机", "desktop", "build a pc", "gaming pc", "workstation")):
+    elif any(x in lower for x in ("台式", "组装", "装机", "desktop", "workstation")) or re.search(r"\bpc\b", lower):
         req["device_type"] = "desktop"
     money = (re.search(r"(?:预算|budget|max(?:imum)? budget|under|up to|maximum|below|within)\s*(?:是|为|is|of|:)?\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?", normalized)
              or re.search(r"(?:s\$|sgd|\$)\s*([1-9]\d{2,5})(?:\.\d{1,2})?", normalized)
@@ -109,14 +109,28 @@ EXTRACTION_PROMPT = (
 )
 
 
+# Capacities, small numbers and category words do not identify a product ("64GB RAM", "2 TB SSD").
+GENERIC_TOKEN = re.compile(r"\d{1,2}|\d+(?:gb|tb|w|mhz|mt|hz|mm|cm)|gb|tb|ddr\d|gddr\d|ram|memory|ssd|nvme|hdd|storage|drive")
+OWNERSHIP = re.compile(r"already (?:have|own|got|has)|\bi (?:have|own)\b|i've got|\bre-?use\b|\bexisting\b|"
+                       r"\bmy (?:old|current|own)\b|已有|我有|现有|旧的", re.I)
+
+
 def _specific_mention(mention: str, text: str) -> bool:
-    """A component mention must name a concrete model (contain a digit) and come from the message itself,
-    so a model cannot turn "I need a computer" into a locked product."""
-    if not re.search(r"\d", mention):
-        return False
+    """A component mention must name a concrete model and come from the message itself, so a model cannot turn
+    "I need a computer" or a capacity such as "64GB RAM" into a locked product."""
     tokens = re.findall(r"[a-z0-9]+", mention.casefold())
+    if not any(re.search(r"\d", t) and not GENERIC_TOKEN.fullmatch(t) for t in tokens):
+        return False
     squashed = re.sub(r"\s+", "", text.casefold())
     return all(t in squashed for t in tokens)
+
+
+def _owned_mention(mention: str, text: str) -> bool:
+    """An owned part needs no model number ("I already have a 2TB SSD"), but it must come from the message
+    and name a recognisable component type."""
+    tokens = re.findall(r"[a-z0-9]+", mention.casefold())
+    squashed = re.sub(r"\s+", "", text.casefold())
+    return bool(tokens) and all(t in squashed for t in tokens) and _category_of(mention, []) is not None
 
 
 def _number_in_text(number: float | int | None, text: str) -> bool:
@@ -214,7 +228,9 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
     seen = {p.casefold() for p in req["preferences"]}
     req["preferences"] += [p for p in extracted.preferences if p.casefold() not in seen]
 
-    for mention in filter(lambda m: _specific_mention(m, text), extracted.owned_components):
+    if not OWNERSHIP.search(text):          # "a PC with 128GB RAM" is a requirement, not a part the user owns
+        extracted.owned_components = []
+    for mention in filter(lambda m: _owned_mention(m, text), extracted.owned_components):
         if not any(o["mention"].casefold() == mention.casefold() for o in req["owned_components"]):
             req["owned_components"].append(_owned_component(mention, catalogue))
     owned = {o["mention"].casefold() for o in req["owned_components"]}
