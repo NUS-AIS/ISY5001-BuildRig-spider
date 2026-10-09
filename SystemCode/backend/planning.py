@@ -231,8 +231,10 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
     if not integrated and "gpu" not in items:
         # If even the cheapest in-stock card plus the cheapest other parts cannot fit, a graphics card is
         # impossible within this budget; build on integrated graphics and say so instead of failing.
+        # Judge against the user's real budget, not a scaled-down alternative's share of it.
+        user_free = max(requirements["budget"]["maximum_minor"] - spent, 0)
         floor = cheapest_build_minor(query, requirements, items, DESKTOP_ORDER)
-        if floor is not None and floor > free:
+        if floor is not None and floor > user_free:
             integrated = True
             notes.append(f"No build with a graphics card fits this budget: the cheapest compatible one costs "
                          f"S${floor / 100:,.0f}. This build uses the processor's integrated graphics, which suits "

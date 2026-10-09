@@ -51,6 +51,12 @@ class PlanningTests(unittest.TestCase):
         self.assertEqual(statuses["minimum_storage"], "passed")
         self.assertEqual(statuses["minimum_memory"], "passed")
 
+    def test_cheaper_alternative_keeps_a_graphics_card_when_the_budget_allows_one(self):
+        req = {**self.req, "budget": {"currency": "SGD", "maximum_minor": 200000}}
+        cheaper = plan_desktop(self.corpus.candidates, self.corpus.products, req, Chooser(), scale=0.85)
+        self.assertFalse(cheaper["integrated_graphics_build"])
+        self.assertEqual(cheaper["planning_notes"], [])
+
     def test_accessories_are_not_components(self):
         self.assertTrue(is_accessory({"category": "case", "name": "DeepCool Vertical Base 100 for CH160", "specs": {}}))
         self.assertTrue(is_accessory({"category": "ssd", "name": "Thermalright M.2 2280 SSD Heatsink", "specs": {}}))
