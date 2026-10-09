@@ -1,0 +1,195 @@
+{
+  "desktop": {
+    "finished": true,
+    "cards": 2,
+    "groups": 1,
+    "compare": false,
+    "checks": {
+      "passed": 15,
+      "unknown": 3,
+      "failed": 0
+    },
+    "checkReasons": [
+      "psu headroom \u2014 Power draw or PSU rating is not stated, so headroom cannot be checked.",
+      "gpu case clearance \u2014 Graphics card length or case clearance is not stated.",
+      "budget limit \u2014 Total S$2,948.00 is within the S$3,000.00 budget."
+    ],
+    "sourceLinks": 16,
+    "priceDates": 16,
+    "keptBadges": 0,
+    "lockedBadges": 0,
+    "followUp": false,
+    "timelineSteps": 1,
+    "limitations": [
+      "Some compatibility checks are unknown because the source listings lack the required specifications."
+    ],
+    "mode": "DAG workflow",
+    "noOption": false,
+    "assistantTexts": [
+      "Hi! Tell me how you plan to use your computer, your maximum budget in SGD, and whether you prefer a desktop or laptop.",
+      "Understood \u2014 you want a gaming desktop for 1440p resolution with at least 32GB of RAM, within a budget of S$3,000. Let me generate the recommendation.",
+      "I've found two desktop builds that fit your gaming requirements and budget. Option 1 includes a high-end CPU and GPU with a total cost of SGD 2,948, while Option 2 offers a slightly more affordable build at SGD 2,776. Both options meet your minimum memory requirement of 32GB. However, there are some unresolved checks: Option 1 has unknown PSU headroom and GPU case clearance, while Option 2 has unknown GPU case clearance. I recommend checking these details for compatibility."
+    ],
+    "evidenceItems": 10
+  },
+  "followUp": {
+    "updateButton": true,
+    "finished": true,
+    "cards": 2,
+    "groups": 1,
+    "compare": false,
+    "checks": {
+      "passed": 16,
+      "unknown": 4,
+      "failed": 0
+    },
+    "checkReasons": [
+      "psu headroom \u2014 Power draw or PSU rating is not stated, so headroom cannot be checked.",
+      "gpu case clearance \u2014 Graphics card length or case clearance is not stated.",
+      "budget limit \u2014 Total S$2,576.00 is within the S$2,700.00 budget."
+    ],
+    "sourceLinks": 16,
+    "priceDates": 16,
+    "keptBadges": 11,
+    "lockedBadges": 2,
+    "followUp": true,
+    "timelineSteps": 2,
+    "limitations": [
+      "Some compatibility checks are unknown because the source listings lack the required specifications."
+    ],
+    "mode": "DAG workflow",
+    "noOption": false,
+    "assistantTexts": [
+      "Hi! Tell me how you plan to use your computer, your maximum budget in SGD, and whether you prefer a desktop or laptop.",
+      "Understood \u2014 you want a gaming desktop for 1440p resolution with at least 32GB of RAM, within a budget of S$3,000. Let me generate the recommendation.",
+      "I've found two desktop builds that fit your gaming requirements and budget. Option 1 includes a high-end CPU and GPU with a total cost of SGD 2,948, while Option 2 offers a slightly more affordable build at SGD 2,776. Both options meet your minimum memory requirement of 32GB. However, there are some unresolved checks: Option 1 has unknown PSU headroom and GPU case clearance, while Option 2 has unknown GPU case clearance. I recommend checking these details for compatibility.",
+      "I understand you want to keep the XFX Swift AMD Radeon RX 9070XT Triple Fan Gaming Edition 16GB GDDR6 Graphics Card. Your requirements are for a desktop system with a budget of up to SGD 3000, focused on gaming, with a minimum of 32GB memory. The recommendation can be generated.",
+      "I understand you want a desktop computer within a budget of S$2,700 for gaming, with a minimum of 32GB of memory. The XFX Swift AMD Radeon RX 9070XT Triple Fan Gaming Edition 16GB GDDR6 graphics card is locked in. Let me generate the recommendation for you.",
+      "I've found two options that fit your budget and requirements. Option 1 includes a Thermaltake View 390 case and a 1200W power supply, offering good cooling and power headroom. Option 2 uses a Phanteks Evolv S2 case and a 750W power supply, which is slightly cheaper but may have less power headroom. Both options have unresolved checks for power supply headroom and GPU case clearance. Choose based on your preference for cooling and power capacity."
+    ]
+  },
+  "compare": {
+    "finished": true,
+    "cards": 4,
+    "groups": 2,
+    "compare": true,
+    "checks": {
+      "passed": 22,
+      "unknown": 2,
+      "failed": 0
+    },
+    "checkReasons": [
+      "budget limit \u2014 Total S$2,696.00 is within the S$2,800.00 budget.",
+      "in stock \u2014 Every purchased item was in stock when the catalogue was collected.",
+      "configuration completeness \u2014 All required component categories are present."
+    ],
+    "sourceLinks": 18,
+    "priceDates": 18,
+    "keptBadges": 0,
+    "lockedBadges": 0,
+    "followUp": false,
+    "timelineSteps": 0,
+    "limitations": [
+      "Some compatibility checks are unknown because the source listings lack the required specifications."
+    ],
+    "mode": "DAG workflow",
+    "noOption": false,
+    "assistantTexts": [
+      "Hi! Tell me how you plan to use your computer, your maximum budget in SGD, and whether you prefer a desktop or laptop.",
+      "Understood \u2014 you're looking to compare desktop vs. laptop options for video editing within a budget of S$2,800. Let me know if you'd like recommendations based on your preferred device type.",
+      "Here are the top options for a desktop or laptop suitable for video editing within your SGD 2800 budget. Option 1 and Option 2 are desktop builds with powerful GPUs and high-speed components, while Option 3 and Option 4 are laptops with dedicated graphics and ample RAM. All options are within budget, but Option 3 and Option 4 have unresolved regional configuration checks that need confirmation."
+    ]
+  },
+  "laptop": {
+    "finished": true,
+    "cards": 2,
+    "groups": 1,
+    "compare": false,
+    "checks": {
+      "passed": 6,
+      "unknown": 2,
+      "failed": 0
+    },
+    "checkReasons": [
+      "regional configuration match \u2014 The exact regional configuration (keyboard layout, warranty) must be confirmed on the merchant page.",
+      "budget limit \u2014 Total S$1,799.00 is within the S$1,800.00 budget.",
+      "in stock \u2014 Every purchased item was in stock when the catalogue was collected."
+    ],
+    "sourceLinks": 2,
+    "priceDates": 2,
+    "keptBadges": 0,
+    "lockedBadges": 0,
+    "followUp": false,
+    "timelineSteps": 0,
+    "limitations": [
+      "Some compatibility checks are unknown because the source listings lack the required specifications."
+    ],
+    "mode": "DAG workflow",
+    "noOption": false,
+    "assistantTexts": [
+      "Hi! Tell me how you plan to use your computer, your maximum budget in SGD, and whether you prefer a desktop or laptop.",
+      "Understood \u2014 you need a laptop for university programming within a budget of S$1,800. The recommendation can be generated.",
+      "Based on your requirements for a laptop suitable for programming and university work within a budget of SGD 1800, two options have been identified. Option 1 offers 32GB RAM and 1TB SSD, making it ideal for heavy workloads, while Option 2 provides a competitive price with 16GB RAM and 1TB SSD. Both options are within budget and in stock, but the regional configuration (keyboard layout, warranty) is unknown and must be confirmed on the merchant page."
+    ]
+  },
+  "replan": {
+    "finished": true,
+    "cards": 2,
+    "groups": 1,
+    "compare": false,
+    "checks": {
+      "passed": 16,
+      "unknown": 0,
+      "failed": 0
+    },
+    "checkReasons": [
+      "budget limit \u2014 Total S$1,182.00 is within the S$1,200.00 budget.",
+      "in stock \u2014 Every purchased item was in stock when the catalogue was collected.",
+      "configuration completeness \u2014 All required component categories are present."
+    ],
+    "sourceLinks": 14,
+    "priceDates": 14,
+    "keptBadges": 0,
+    "lockedBadges": 0,
+    "followUp": false,
+    "timelineSteps": 1,
+    "limitations": [],
+    "mode": "DAG workflow",
+    "noOption": false,
+    "assistantTexts": [
+      "Hi! Tell me how you plan to use your computer, your maximum budget in SGD, and whether you prefer a desktop or laptop.",
+      "Understood \u2013 you need a quiet office desktop within a budget of S$1,200. The recommendation can be generated.",
+      "Both options are within your budget and meet your requirements for a quiet desktop setup for office work. Option 1 offers a slightly higher total cost but includes a more robust power supply and a tempered glass case, while Option 2 is more cost-effective with a compact case and a reliable power supply. No unresolved checks were found."
+    ]
+  },
+  "pi": {
+    "finished": true,
+    "cards": 1,
+    "groups": 1,
+    "compare": false,
+    "checks": {
+      "passed": 5,
+      "unknown": 3,
+      "failed": 0
+    },
+    "checkReasons": [
+      "psu headroom \u2014 Power draw or PSU rating is not stated, so headroom cannot be checked.",
+      "gpu case clearance \u2014 Graphics card length or case clearance is not stated.",
+      "case form factor \u2014 Motherboard size or case support is not stated."
+    ],
+    "sourceLinks": 8,
+    "priceDates": 8,
+    "keptBadges": 0,
+    "lockedBadges": 0,
+    "followUp": false,
+    "timelineSteps": 1,
+    "limitations": [],
+    "mode": "Pi runtime",
+    "noOption": false,
+    "assistantTexts": [
+      "Hi! Tell me how you plan to use your computer, your maximum budget in SGD, and whether you prefer a desktop or laptop.",
+      "Understood \u2013 you're looking for a gaming desktop within a budget of S$2,500. The recommendation can be generated.",
+      "The Pi supervisor found 1 validated option."
+    ]
+  }
+}
