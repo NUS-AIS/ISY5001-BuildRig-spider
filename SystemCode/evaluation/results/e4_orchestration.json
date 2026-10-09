@@ -1,0 +1,975 @@
+{
+  "experiment": "E4 orchestration and recovery",
+  "summary": {
+    "dag_vs_pi": {
+      "dag": {
+        "cases": 8,
+        "task_completed": 1.0,
+        "constraint_satisfaction": 1.0,
+        "mean_seconds": 42.23,
+        "mean_tool_calls": 20.5,
+        "mean_llm_calls": 6.38,
+        "mean_tokens": 7021.88
+      },
+      "pi": {
+        "cases": 8,
+        "task_completed": 0.75,
+        "constraint_satisfaction": 0.75,
+        "mean_seconds": 234.91,
+        "mean_tool_calls": 7.12,
+        "mean_llm_calls": 7.62,
+        "mean_tokens": 8569.38
+      }
+    },
+    "fault_recovery": {
+      "with_replan": {
+        "socket_mismatch": {
+          "trials": 5,
+          "recovery_rate": 1.0,
+          "mean_rounds": 1.6,
+          "parts_kept_share": 0.775,
+          "first_round_targeted_rate": 1.0
+        },
+        "memory_mismatch": {
+          "trials": 5,
+          "recovery_rate": 1.0,
+          "mean_rounds": 1.4,
+          "parts_kept_share": 0.825,
+          "first_round_targeted_rate": 0.8
+        },
+        "psu_too_small": {
+          "trials": 4,
+          "recovery_rate": 1.0,
+          "mean_rounds": 1.0,
+          "parts_kept_share": 0.875,
+          "first_round_targeted_rate": 1.0
+        },
+        "over_budget": {
+          "trials": 5,
+          "recovery_rate": 1.0,
+          "mean_rounds": 1.4,
+          "parts_kept_share": 0.7,
+          "first_round_targeted_rate": 1.0
+        }
+      },
+      "without_replan": {
+        "socket_mismatch": {
+          "trials": 5,
+          "recovery_rate": 0.0,
+          "mean_rounds": 0.0,
+          "parts_kept_share": 1.0,
+          "first_round_targeted_rate": 1.0
+        },
+        "memory_mismatch": {
+          "trials": 5,
+          "recovery_rate": 0.0,
+          "mean_rounds": 0.0,
+          "parts_kept_share": 1.0,
+          "first_round_targeted_rate": 1.0
+        },
+        "psu_too_small": {
+          "trials": 4,
+          "recovery_rate": 0.0,
+          "mean_rounds": 0.0,
+          "parts_kept_share": 1.0,
+          "first_round_targeted_rate": 1.0
+        },
+        "over_budget": {
+          "trials": 5,
+          "recovery_rate": 0.0,
+          "mean_rounds": 0.0,
+          "parts_kept_share": 1.0,
+          "first_round_targeted_rate": 1.0
+        }
+      }
+    }
+  },
+  "pi_cases": [
+    {
+      "case_id": "D01",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 32.3,
+      "tool_calls": 3,
+      "llm_calls": 3,
+      "tokens": 2248,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
+    },
+    {
+      "case_id": "D02",
+      "scenario": "desktop",
+      "fr": [
+        "FR05",
+        "FR07"
+      ],
+      "seconds": 147.0,
+      "tool_calls": 10,
+      "llm_calls": 10,
+      "tokens": 9178,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
+    },
+    {
+      "case_id": "D04",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 600.5,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": false,
+      "detail": "outcome=None kinds=[] questions=[]"
+    },
+    {
+      "case_id": "D07",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 442.8,
+      "tool_calls": 11,
+      "llm_calls": 14,
+      "tokens": 19664,
+      "task_completed": false,
+      "detail": "outcome=no_feasible_option kinds=[] questions=[]"
+    },
+    {
+      "case_id": "L01",
+      "scenario": "laptop",
+      "fr": [
+        "FR05",
+        "FR07"
+      ],
+      "seconds": 58.5,
+      "tool_calls": 4,
+      "llm_calls": 4,
+      "tokens": 4631,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "memory": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
+    },
+    {
+      "case_id": "L02",
+      "scenario": "laptop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 40.3,
+      "tool_calls": 3,
+      "llm_calls": 4,
+      "tokens": 2716,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
+    },
+    {
+      "case_id": "K01",
+      "scenario": "locked",
+      "fr": [
+        "FR04",
+        "FR06"
+      ],
+      "seconds": 171.2,
+      "tool_calls": 6,
+      "llm_calls": 6,
+      "tokens": 10360,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "locked_kept": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
+    },
+    {
+      "case_id": "M04",
+      "scenario": "data_gaps",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 386.7,
+      "tool_calls": 20,
+      "llm_calls": 20,
+      "tokens": 19758,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
+    }
+  ],
+  "fault_trials": [
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "motherboard"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 2903.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 2,
+      "changed_categories": [
+        "gpu",
+        "ram"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 2464.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "psu"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 2999.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "cpu",
+        "gpu"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 2964.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 2,
+      "changed_categories": [
+        "case",
+        "motherboard"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 2490.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "ram"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 2395.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "psu"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 2475.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket",
+        "psu_headroom"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "cpu",
+        "gpu"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 2354.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 2,
+      "changed_categories": [
+        "case",
+        "motherboard",
+        "ram"
+      ],
+      "parts_kept_share": 0.625,
+      "first_round_targeted": true,
+      "total_after_sgd": 4193.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "ram"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 4132.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "psu"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 4274.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 3,
+      "changed_categories": [
+        "case",
+        "gpu",
+        "motherboard",
+        "ram"
+      ],
+      "parts_kept_share": 0.5,
+      "first_round_targeted": true,
+      "total_after_sgd": 4311.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 2000.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "motherboard"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 1837.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 2000.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "motherboard_memory_type"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 2,
+      "changed_categories": [
+        "cpu",
+        "ram"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": false,
+      "total_after_sgd": 1992.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "gaming",
+      "budget_sgd": 2000.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "cpu",
+        "gpu"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 1992.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 2,
+      "changed_categories": [
+        "case",
+        "motherboard"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 3482.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "ram"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 3403.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "psu"
+      ],
+      "parts_kept_share": 0.875,
+      "first_round_targeted": true,
+      "total_after_sgd": 3481.0
+    },
+    {
+      "max_revisions": 3,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit"
+      ],
+      "status": "accepted",
+      "recovered": true,
+      "rounds": 1,
+      "changed_categories": [
+        "cpu",
+        "gpu"
+      ],
+      "parts_kept_share": 0.75,
+      "first_round_targeted": true,
+      "total_after_sgd": 3297.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2653.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2910.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2856.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 3000.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 5078.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2004.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2301.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2255.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "SolidWorks",
+      "budget_sgd": 2500.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket",
+        "psu_headroom"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 4969.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 3651.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 4052.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 3863.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "deep learning",
+      "budget_sgd": 4500.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 5316.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 2000.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 1942.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 2000.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "motherboard_memory_type"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2025.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "gaming",
+      "budget_sgd": 2000.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit",
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 4907.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "socket_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "cpu_motherboard_socket"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 2762.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "memory_mismatch",
+      "synthetic": false,
+      "failed_before": [
+        "motherboard_memory_type"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 3309.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "psu_too_small",
+      "synthetic": true,
+      "failed_before": [
+        "psu_headroom"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 3269.0
+    },
+    {
+      "max_revisions": 0,
+      "workload": "video editing",
+      "budget_sgd": 3500.0,
+      "fault": "over_budget",
+      "synthetic": false,
+      "failed_before": [
+        "budget_limit"
+      ],
+      "status": "exhausted",
+      "recovered": false,
+      "rounds": 0,
+      "changed_categories": [],
+      "parts_kept_share": 1.0,
+      "first_round_targeted": true,
+      "total_after_sgd": 5427.0
+    }
+  ]
+}

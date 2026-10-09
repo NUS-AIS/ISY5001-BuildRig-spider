@@ -1,0 +1,1056 @@
+{
+  "experiment": "E5 data quality",
+  "coverage": {
+    "cpu": {
+      "offers": 53,
+      "fields": {
+        "socket": {
+          "found": 52,
+          "coverage": 0.981,
+          "by_method": {
+            "regex": 29,
+            "rule_inferred": 23
+          },
+          "missing": 1,
+          "conflict": 0
+        },
+        "tdp_w": {
+          "found": 34,
+          "coverage": 0.642,
+          "by_method": {
+            "regex": 26,
+            "llm": 8
+          },
+          "missing": 19,
+          "conflict": 0
+        },
+        "integrated_graphics": {
+          "found": 48,
+          "coverage": 0.906,
+          "by_method": {
+            "rule_inferred": 48
+          },
+          "missing": 5,
+          "conflict": 0
+        }
+      }
+    },
+    "motherboard": {
+      "offers": 253,
+      "fields": {
+        "socket": {
+          "found": 251,
+          "coverage": 0.992,
+          "by_method": {
+            "regex": 217,
+            "rule_inferred": 34
+          },
+          "missing": 1,
+          "conflict": 1
+        },
+        "memory_type": {
+          "found": 252,
+          "coverage": 0.996,
+          "by_method": {
+            "regex": 203,
+            "rule_inferred": 49
+          },
+          "missing": 1,
+          "conflict": 0
+        },
+        "form_factor": {
+          "found": 191,
+          "coverage": 0.755,
+          "by_method": {
+            "regex": 183,
+            "llm": 8
+          },
+          "missing": 62,
+          "conflict": 0
+        }
+      }
+    },
+    "ram": {
+      "offers": 170,
+      "fields": {
+        "memory_type": {
+          "found": 169,
+          "coverage": 0.994,
+          "by_method": {
+            "regex": 169
+          },
+          "missing": 1,
+          "conflict": 0
+        },
+        "capacity_gb": {
+          "found": 165,
+          "coverage": 0.971,
+          "by_method": {
+            "regex": 165
+          },
+          "missing": 5,
+          "conflict": 0
+        }
+      }
+    },
+    "gpu": {
+      "offers": 135,
+      "fields": {
+        "chip": {
+          "found": 129,
+          "coverage": 0.956,
+          "by_method": {
+            "regex": 129
+          },
+          "missing": 6,
+          "conflict": 0
+        },
+        "vram_gb": {
+          "found": 98,
+          "coverage": 0.726,
+          "by_method": {
+            "regex": 98
+          },
+          "missing": 37,
+          "conflict": 0
+        },
+        "tdp_w": {
+          "found": 125,
+          "coverage": 0.926,
+          "by_method": {
+            "rule_inferred": 125
+          },
+          "missing": 10,
+          "conflict": 0
+        },
+        "length_mm": {
+          "found": 56,
+          "coverage": 0.415,
+          "by_method": {
+            "regex": 40,
+            "llm": 16
+          },
+          "missing": 79,
+          "conflict": 0
+        }
+      }
+    },
+    "psu": {
+      "offers": 241,
+      "fields": {
+        "wattage_w": {
+          "found": 238,
+          "coverage": 0.988,
+          "by_method": {
+            "regex": 165,
+            "rule_inferred": 73
+          },
+          "missing": 3,
+          "conflict": 0
+        }
+      }
+    },
+    "case": {
+      "offers": 332,
+      "fields": {
+        "max_form_factor": {
+          "found": 276,
+          "coverage": 0.831,
+          "by_method": {
+            "regex": 276
+          },
+          "missing": 56,
+          "conflict": 0
+        },
+        "max_gpu_length_mm": {
+          "found": 144,
+          "coverage": 0.434,
+          "by_method": {
+            "regex": 121,
+            "llm": 23
+          },
+          "missing": 166,
+          "conflict": 22
+        }
+      }
+    },
+    "ssd": {
+      "offers": 124,
+      "fields": {
+        "capacity_gb": {
+          "found": 120,
+          "coverage": 0.968,
+          "by_method": {
+            "regex": 120
+          },
+          "missing": 4,
+          "conflict": 0
+        }
+      }
+    },
+    "laptop": {
+      "offers": 72,
+      "fields": {
+        "ram_gb": {
+          "found": 62,
+          "coverage": 0.861,
+          "by_method": {
+            "regex": 62
+          },
+          "missing": 0,
+          "conflict": 10
+        },
+        "storage_gb": {
+          "found": 72,
+          "coverage": 1.0,
+          "by_method": {
+            "regex": 68,
+            "llm": 4
+          },
+          "missing": 0,
+          "conflict": 0
+        }
+      }
+    },
+    "_cross_store_possible_duplicates": 0,
+    "_bundle_suspects": 64,
+    "_llm_enabled": true
+  },
+  "llm_vs_rules": {
+    "pairs": 60,
+    "accepted_by_guard": 40,
+    "agreement_when_accepted": 0.975,
+    "abstained_or_rejected": 20,
+    "rows": [
+      {
+        "offer_id": "d4b4fb49dec3e5f150c2",
+        "category": "gpu",
+        "field": "length_mm",
+        "rule_value": 229,
+        "llm_value": 229,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "9b33dc040623d458165c",
+        "category": "case",
+        "field": "max_gpu_length_mm",
+        "rule_value": 450,
+        "llm_value": 450,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "ecae9950d69479bf09ed",
+        "category": "gpu",
+        "field": "length_mm",
+        "rule_value": 357,
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "ad2259224ba0ad2478c5",
+        "category": "gpu",
+        "field": "length_mm",
+        "rule_value": 281,
+        "llm_value": 281,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "edc42369a542190ef349",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 1200,
+        "llm_value": 1200,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "3c371402f870712b0f20",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "201f58e549891460c240",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 1100,
+        "llm_value": 1100,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "37aa0384aa379f28db50",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 1250,
+        "llm_value": 1250,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "cf85590cb06a99d6c05c",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 750,
+        "llm_value": 750,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "870847c1767d33471a95",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "eee6dceb71e565cc2cc6",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "fecc6c9bde9257ea414e",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 750,
+        "llm_value": 750,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "4b5cbc8e5eac7704f54a",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "e1d21a9341b42c031b41",
+        "category": "cpu",
+        "field": "tdp_w",
+        "rule_value": 65,
+        "llm_value": 65,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "3155c6b54e76318f0934",
+        "category": "case",
+        "field": "max_gpu_length_mm",
+        "rule_value": 413,
+        "llm_value": 413,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "7316dd2cb9bc7d608c4e",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "6c2cc494efe77c9b746c",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "5cbecb0cd7744bb56995",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 1200,
+        "llm_value": 1200,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "816594df01354d4b5b7f",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "8a4c76038e82904378d1",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "bdb8c09e380b6747298f",
+        "category": "laptop",
+        "field": "storage_gb",
+        "rule_value": 1024,
+        "llm_value": 1024,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "ea921ee8e1e1790645af",
+        "category": "gpu",
+        "field": "length_mm",
+        "rule_value": 229,
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "c0ba027dacce7d4deef8",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "3ac39bbd598ef367f812",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 750,
+        "llm_value": 750,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "d34703ba19460f5a9232",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "0b899279b21bed4e90f4",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 1000,
+        "llm_value": 1000,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "40d1819ca5e53fd1a0e5",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": "DDR5",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "27ea85ba73f2d2000e53",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "ee245aec35102e9309d6",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "2b0f32e4e9d3217c1691",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 850,
+        "llm_value": 850,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "08b465946422d4083466",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "E-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "e475c50bd9dc5f81cf30",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "ATX",
+        "llm_value": "Micro-ATX",
+        "accepted": true,
+        "agrees": false
+      },
+      {
+        "offer_id": "2f321977d46dc513249f",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": "DDR5",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "ca3ac0361d70a6f23c5a",
+        "category": "gpu",
+        "field": "length_mm",
+        "rule_value": 348,
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "bb41c9ef1c0861a51cbb",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "35381b28660f610799cf",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "5438a76f160bae6fc4e3",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "E-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "01e7c77fa5e3c3d29d4b",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 850,
+        "llm_value": 850,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "f3d4fea4e738c3e9a02e",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 850,
+        "llm_value": 850,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "841e59d7cd0454f45c09",
+        "category": "case",
+        "field": "max_gpu_length_mm",
+        "rule_value": 322,
+        "llm_value": 322,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "a1b87a762e54dd123cdd",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "ee6c2e64d9ebb80a7fdb",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "d1a6684b5814ace8dd2b",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "ec626ad80834bf908057",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": "DDR5",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "956c7550ef137edefc3d",
+        "category": "gpu",
+        "field": "length_mm",
+        "rule_value": 304,
+        "llm_value": 304,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "69f364a0b581c52c6a8f",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "E-ATX",
+        "llm_value": "E-ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "ac3baaae86c1967c950f",
+        "category": "laptop",
+        "field": "storage_gb",
+        "rule_value": 512,
+        "llm_value": 512,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "bfe43b9278614e1e9284",
+        "category": "case",
+        "field": "max_gpu_length_mm",
+        "rule_value": 445,
+        "llm_value": 445,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "3db988385f15a559e689",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "a8714322502f0180432b",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": "Micro-ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "1dcf93e6d94d5019883a",
+        "category": "case",
+        "field": "max_gpu_length_mm",
+        "rule_value": 370,
+        "llm_value": 370,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "6a3086df085841dc1cf7",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Mini-ITX",
+        "llm_value": "Mini-ITX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "8f2c544098376301313d",
+        "category": "psu",
+        "field": "wattage_w",
+        "rule_value": 1000,
+        "llm_value": 1000,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "9f16397dd84ab15dcf34",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "5df7c727e14d9cc531a4",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "904d47160565526d7148",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR4",
+        "llm_value": null,
+        "accepted": false,
+        "agrees": false
+      },
+      {
+        "offer_id": "36c8d1500b5becf85bfb",
+        "category": "case",
+        "field": "max_form_factor",
+        "rule_value": "Micro-ATX",
+        "llm_value": "Micro-ATX",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "9674d7eb0ddc5f6f8bc3",
+        "category": "motherboard",
+        "field": "memory_type",
+        "rule_value": "DDR5",
+        "llm_value": "DDR5",
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "004f066f688ded9a9105",
+        "category": "laptop",
+        "field": "ram_gb",
+        "rule_value": 16,
+        "llm_value": 16,
+        "accepted": true,
+        "agrees": true
+      },
+      {
+        "offer_id": "6942827b4f35ff66adc3",
+        "category": "motherboard",
+        "field": "form_factor",
+        "rule_value": "ATX",
+        "llm_value": "ATX",
+        "accepted": true,
+        "agrees": true
+      }
+    ]
+  },
+  "compatibility": {
+    "pairs": 40,
+    "decided": 40,
+    "accuracy_when_decided": 1.0,
+    "unknown_rate": 0.0,
+    "false_passes": 0,
+    "rows": [
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD RYZEN 7 9800X3D 4.7GHz 8C/16T 104MB CACHE TRAY PROCESSOR",
+        "b": "ASUS TUF GAMING B850-BTF WIFI WHITE - 197105941885",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD RYZEN 9 9950X3D 4.3GHz 16C/32T 144MB CACHE TRAY PROCESSO",
+        "b": "ASUS Prime Z690-A LGA 1700(Intel 12th) ATX Motherboard - 195",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen 9 9950X3D2 Dual Edition Desktop Processor",
+        "b": "Gigabyte X870E AORUS PRO ICE X870 AMD Ryzen 9000 Series DDR5",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 9 9950X3D2 Dual Edition Desktop Processor - 73014",
+        "b": "ASUS ROG CROSSHAIR X870E APEX (Socket AM5, DDR5, PCIe 5.0, W",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 7 RYZEN 7 9850X3D Desktop Processor Ryzen 9000 Se",
+        "b": "ASUS ROG STRIX X870-F GAMING WIFI MOTHERBOARD - 197105732056",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD RYZEN 5 5600 3.5GHz 6CORE/12THREAD AM4 TRAY PROCESSOR(3Y",
+        "b": "ASUS ROG STRIX X870-A GAMING WIFI MOTHERBOARD - 197105737860",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 9 9950X3D TRAY - Ryzen 9000 Series Desktop Proces",
+        "b": "GIGABYTE B850 AORUS ELITE WIFI7 ICE AM5 ATX MOTHERBOARD - 47",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 7 RYZEN 7 9850X3D Desktop Processor Ryzen 9000 Se",
+        "b": "MSI B760M GAMING PLUS WIFI DDR5 Intel LGA1700 mATX Motherboa",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen 7 5700G 8CORE/16THREAD AM4 CPU TRAY - 100-00000026",
+        "b": "ASUS PRIME B840M-A WIFI-CSM AMD B840 mATX Motherboard - 1971",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen 7 7800X3D 8 Core AM5 Zen4 PCIe 5.0 CPU/TRAY Proces",
+        "b": "MSI MAG X870E TOMAHAWK MAX WiFi AM5 DDR5 PCIe 5.0 ATX Mother",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "[LOCAL STOCK] AMD Ryzen 7 7700 TRAY AM5, 8-CORE, 16-THREAD D",
+        "b": "ASUS ROG STRIX B650E-E GAMING WIFI MOTHERBOARD - 19555390621",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 7 Ryzen 7 9800X3D TRAY Desktop Processor - Ryzen ",
+        "b": "MSI B850 GAMING PLUS WIFI Supports AMD Ryzen™ 9000/ 8000/ 70",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "Intel CORE i9-14900KF / i9-14900K 14th Gen",
+        "b": "GIGABYTE B850 AORUS ELITE WIFI7 ICE AM5 ATX MOTHERBOARD - 47",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD RYZEN 5 5600 3.5GHz 6CORE/12THREAD AM4 TRAY PROCESSOR(3Y",
+        "b": "Gigabyte X870E AORUS MASTER X3D Wi-Fi 7 DDR5 PCIe 5.0 AM5 AT",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD RYZEN 5 7500X3D 4GHz 6C/12T 96MB CACHE TRAY PROCESSOR(4Y",
+        "b": "Gigabyte X870E EAGLE X3D WIFI7 ATX AMD AM5 DDR5 Motherboard ",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 5 8500G with Wraith Stealth Cooler - Ryzen 5 8000",
+        "b": "ASUS TUF GAMING B850-E WIFI - 197105987555",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen™ 9 9950X3D TRAY - Ryzen 9000 Series Desktop Proces",
+        "b": "ASUS ROG Strix B850-A Gaming WiFi7 Neo DDR5 AMD Motherboard ",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen 7 5700G 8CORE/16THREAD AM4 CPU TRAY - 100-00000026",
+        "b": "Gigabyte X870E AORUS Master X3D ICE AMD AM5 DDR5 ATX Motherb",
+        "truth": "incompatible",
+        "verdict": "failed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen 9 9950X3D2 Dual Edition Desktop Processor",
+        "b": "ASUS TUF GAMING B650-E WIFI MOTHERBOARD - 197105423084",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "cpu_motherboard_socket",
+        "a": "AMD Ryzen 7 7700 8 Cores / 16 Threads 65 Watts 40MB Cache Ga",
+        "b": "ASUS ROG STRIX X870E-E GAMING WIFI MOTHERBOARD - 19710572417",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Micron DDR5-6400MHz RDIMM 2Rx4 CL52 (32Gbit) Single Pack - 1",
+        "b": "ASUS ROG STRIX X870-F GAMING WIFI MOTHERBOARD (3YR BLT) - 47",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "ADATA UDIMM DDR5 5600 CL46 32GB",
+        "b": "Asus ROG Strix B850-F GAMING WIFI7 NEO AMD ATX Motherboard -",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "LEXAR DDR5 5600 16GB CL46 DESKTOP SINGLE STICK RAM - 8433671",
+        "b": "ASUS PRIME A620AM-K-CSM AMD A620 Micro-ATX Motherboard - 471",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "CRUCIAL DDR5 PRO BLACK 6400MT/s 32GB(16GBx2) CL32 AMD/INTEL ",
+        "b": "GIGABYTE X870 GAMING X WIFI7 SOCKET AM5 ATX MOTHERBOARD (3YR",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "ADATA UDIMM DDR5 5600 CL46 32GB",
+        "b": "ASUS ROG STRIX B650E-I GAMING WIFI MOTHERBOARD - 19555395789",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Kingston FURY Beast RGB 32GB (2 x 16GB) DDR5 6400MHz CL32 De",
+        "b": "ASUS ROG STRIX B850-G GAMING WIFI MOTHERBOARD - 197105823631",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "CRUCIAL DDR5 PRO BLACK 6400MT/s 32GB(16GBx2) CL32 AMD/INTEL ",
+        "b": "ASUS ProArt X870E-CREATOR WIFI AMD AM5 ATX MOTHERBOARD - 197",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "CRUCIAL DDR5 PRO BLACK 6400MT/s 32GB(16GBx2) CL32 AMD/INTEL ",
+        "b": "MSI MAG B850 TOMAHAWK MAX WIFI AM5 ATX MOTHERBOARD(3YRS) - 4",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "CRUCIAL DDR5 PRO BLACK 6400MT/s 32GB(16GBx2) CL32 AMD/INTEL ",
+        "b": "MSI MAG X870E TOMAHAWK WIFI AM5 ATX MOTHERBOARD - D5 - MSIMA",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Kingston FURY Beast RGB 32GB (2 x 16GB) DDR5 6400MHz CL32 De",
+        "b": "Asus PRIME B650M-A WIFI II AMD B650 Micro-ATX motherboard DD",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "TEAM T-CREATE EXPERT DDR5 BLACK 6000MHz 32GB(16GBx2) CL30 KI",
+        "b": "MSI MAG X870E TOMAHAWK MAX WiFi AM5 DDR5 PCIe 5.0 ATX Mother",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "ADATA UDIMM DDR5 5600 CL46 32GB",
+        "b": "ASUS ROG STRIX B850-G GAMING WIFI MOTHERBOARD - 199291092273",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Kingston FURY Beast RGB 32GB (2 x 16GB) DDR5 6400MHz CL32 De",
+        "b": "MSI B850 GAMING PLUS WIFI Supports AMD Ryzen™ 9000/ 8000/ 70",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "TEAM T-CREATE EXPERT DDR5 BLACK 6000MHz 32GB(16GBx2) CL30 KI",
+        "b": "ASUS ROG STRIX B850-F GAMING WIFI MOTHERBOARD - 197105771024",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Micron DDR5-6400MHz RDIMM 2Rx4 CL52 (32Gbit) Single Pack - 1",
+        "b": "ASUS ROG STRIX X870E-E GAMING WIFI7 NEO ATX Gaming Mobo Moth",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "LEXAR DDR5 5600 16GB CL46 DESKTOP SINGLE STICK RAM - 8433671",
+        "b": "MSI PRO X870-P WIFI AMD Ryzen 9000 Series DDR5 Gaming Mother",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "TEAM T-CREATE EXPERT DDR5 BLACK 6000MHz 32GB(16GBx2) CL30 KI",
+        "b": "MSI B850 GAMING PLUS WIFI Supports AMD Ryzen™ 9000/ 8000/ 70",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Kingston FURY Beast RGB 32GB (2 x 16GB) DDR5 6400MHz CL32 De",
+        "b": "Gigabyte X870E EAGLE X3D WIFI7 ATX AMD AM5 DDR5 Motherboard ",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "Kingston FURY Beast RGB 32GB (2 x 16GB) DDR5 6400MHz CL32 De",
+        "b": "Gigabyte X870E AERO X3D Dark Wood AMD AM5 ATX Motherboard - ",
+        "truth": "compatible",
+        "verdict": "passed"
+      },
+      {
+        "rule": "motherboard_memory_type",
+        "a": "TEAM T-CREATE EXPERT DDR5 BLACK 6000MHz 32GB(16GBx2) CL30 KI",
+        "b": "MSI MAG B850 TOMAHAWK MAX WIFI AM5 ATX MOTHERBOARD(3YRS) - 4",
+        "truth": "compatible",
+        "verdict": "passed"
+      }
+    ]
+  }
+}

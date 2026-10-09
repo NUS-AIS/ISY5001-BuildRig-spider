@@ -82,14 +82,14 @@ def build(results: Path) -> None:
         b2 = a1.bar([x + 0.2 for x in xs], [_rate(sgl, k) or 0 for k, _ in keys], 0.4, color=ORANGE, label="Single agent")
         _bar_labels(a1, b1); _bar_labels(a1, b2)
         a1.set_xticks(list(xs)); a1.set_xticklabels([l for _, l in keys], rotation=20, ha="right"); a1.set_ylim(0, 1.15)
-        a1.legend(fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=2, frameon=False); a1.set_title("Quality")
+        fig.legend(handles=[b1, b2], fontsize=8, loc="lower center", ncol=2, frameon=False); a1.set_title("Quality")
         costs = [("mean_seconds", "Latency s"), ("mean_llm_calls", "LLM calls"), ("mean_tool_calls", "Tool calls")]
         xs = range(len(costs))
         a2.bar([x - 0.2 for x in xs], [m.get(k) or 0 for k, _ in costs], 0.4, color=BLUE)
         a2.bar([x + 0.2 for x in xs], [sgl.get(k) or 0 for k, _ in costs], 0.4, color=ORANGE)
         a2.set_xticks(list(xs)); a2.set_xticklabels([l for _, l in costs]); a2.set_title("Cost per case")
         fig.suptitle(f"E2 multi-agent vs single agent ({len(e2['cases'])} cases, same model and tools)")
-        fig.tight_layout(); fig.savefig(figs / "e2_multi_vs_single.png"); plt.close(fig)
+        fig.tight_layout(rect=(0, 0.08, 1, 1)); fig.savefig(figs / "e2_multi_vs_single.png"); plt.close(fig)
         lines += ["## E2 Multi-agent vs single agent", "", "| Metric | Multi-agent (DAG) | Single agent |", "|---|---|---|"]
         for k, l in keys:
             lines.append(f"| {l} | {_fmt(_rate(m, k))} | {_fmt(_rate(sgl, k))} |")

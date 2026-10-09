@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-10-09T08:21:37.146164+00:00",
+  "git_commit": "992b1cd",
+  "snapshot_id": "20260906T124528641415Z",
+  "chat_model": "qwen3:8b",
+  "embedding_model": "bge-m3",
+  "milvus_collection": "buildrig_chunks_bge_m3_v2",
+  "max_revisions": 3,
+  "experiments": [
+    "consistency",
+    "e1",
+    "e2",
+    "e3",
+    "e4",
+    "e5"
+  ],
+  "finished_at": "2026-10-09T10:03:46.229636+00:00"
+}

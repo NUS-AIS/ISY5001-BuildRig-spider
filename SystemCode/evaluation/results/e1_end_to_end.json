@@ -1,0 +1,1700 @@
+{
+  "experiment": "E1 end-to-end",
+  "summary": {
+    "task_completed": {
+      "rate": 1.0,
+      "n": 40
+    },
+    "constraint_satisfaction": {
+      "rate": 1.0,
+      "n": 32
+    },
+    "compatibility_correct": {
+      "rate": 1.0,
+      "n": 29
+    },
+    "source_accuracy": {
+      "rate": 1.0,
+      "n": 29
+    },
+    "unknown_handling": {
+      "rate": 1.0,
+      "n": 29
+    },
+    "adjustment_success": {
+      "rate": 1.0,
+      "n": 5
+    },
+    "evidence_levels_respected": {
+      "rate": 1.0,
+      "n": 1
+    },
+    "explanation_quality_mean": 5.0,
+    "explanation_guard": {
+      "cases_with_filtered_sentences": 0,
+      "sentences_filtered": 0,
+      "cases_with_options": 29
+    },
+    "mean_seconds": 64.1,
+    "mean_tool_calls": 18.8,
+    "mean_llm_calls": 7.5,
+    "mean_tokens": 8362.2,
+    "task_completed_by_scenario": {
+      "desktop": 1.0,
+      "laptop": 1.0,
+      "compare": 1.0,
+      "ambiguous": 1.0,
+      "low_budget": 1.0,
+      "locked": 1.0,
+      "follow_up": 1.0,
+      "data_gaps": 1.0
+    }
+  },
+  "cases": [
+    {
+      "case_id": "D01",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 42.6,
+      "tool_calls": 20,
+      "llm_calls": 6,
+      "tokens": 8319,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's gaming workload, budget, and preferences. The trade-offs are honestly acknowledged, including the unknown checks for GPU case clearance and case form factor.",
+          "explanation": {
+            "title": "Gaming Desktop Build",
+            "reasons": [
+              "The AMD Ryzen 7 7800X3D provides strong gaming performance with 8 cores and 120W TDP.",
+              "The XFX RX 9070XT GPU offers 16GB GDDR6 VRAM and 304W TDP, suitable for modern gaming.",
+              "The Gigabyte B850M AORUS PRO motherboard supports DDR5 and has a Micro-ATX form factor.",
+              "The 1300W power supply ensures sufficient wattage for all components."
+            ],
+            "trade_offs": [
+              "The build does not include a dedicated cooling system for the GPU, which may affect performance in high-temperature environments.",
+              "The case and GPU compatibility are not fully confirmed due to unknown checks.",
+              "The build uses a Micro-ATX motherboard, which may limit expansion options compared to an ATX motherboard."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D02",
+      "scenario": "desktop",
+      "fr": [
+        "FR05",
+        "FR07"
+      ],
+      "seconds": 38.5,
+      "tool_calls": 24,
+      "llm_calls": 6,
+      "tokens": 7353,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons directly address the user's workloads (SolidWorks, MATLAB), budget (SGD 2000), and preferences (not explicitly stated but implied by the selection). The trade-offs are honestly acknowledged, particularly the unknown power supply headroom. No unsupported claims or invented information are present.",
+          "explanation": {
+            "title": "AMD Ryzen 7 7800X3D with MSI RTX 5060",
+            "reasons": [
+              "The AMD Ryzen 7 7800X3D offers strong performance for both SolidWorks and MATLAB at a competitive price.",
+              "The MSI RTX 5060 GPU provides sufficient VRAM and performance for MATLAB and SolidWorks.",
+              "DDR5 RAM ensures fast data access and compatibility with the motherboard."
+            ],
+            "trade_offs": [
+              "The power supply headroom is unknown, so ensure the PSU can handle the system's actual power draw.",
+              "The system is slightly more expensive than some alternatives, but the performance justifies the cost."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D03",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 54.6,
+      "tool_calls": 27,
+      "llm_calls": 8,
+      "tokens": 10574,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "memory": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons directly address the user's workload (deep learning), budget (SGD 5000), and preferences (high performance). The trade-offs are honestly acknowledged, including the unknowns related to case and GPU compatibility, and the slight budget under-spending.",
+          "explanation": {
+            "title": "High-Performance Deep Learning Desktop Build",
+            "reasons": [
+              "The Intel i9-14900KF CPU provides excellent multi-threaded performance, ideal for deep learning tasks.",
+              "The 64GB DDR5 RAM ensures smooth data handling and reduces the need for frequent data swapping.",
+              "The RTX 5070 GPU offers strong CUDA capabilities and 12GB of VRAM, suitable for training and inference in deep learning.",
+              "The 1000W PSU provides ample power for all components, ensuring stable operation."
+            ],
+            "trade_offs": [
+              "The build is slightly under budget, leaving room for potential upgrades.",
+              "The case and GPU compatibility are unknown, which could affect installation.",
+              "The system may be more expensive than some alternatives, depending on the specific needs."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D04",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 52.5,
+      "tool_calls": 24,
+      "llm_calls": 8,
+      "tokens": 8489,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's workloads (office), budget (SGD 1200), and preferences (quiet). The trade-offs are honestly acknowledged, and there is no invented information. Each point is supported by the items and checks provided.",
+          "explanation": {
+            "title": "Quiet Office Desktop Build",
+            "reasons": [
+              "The AMD Ryzen 5 7600 provides sufficient performance for office tasks with integrated graphics, eliminating the need for a dedicated GPU.",
+              "The ASUS PRIME A620AM-K-CSM motherboard supports DDR5 memory and is quiet, making it ideal for office environments.",
+              "The 16GB DDR5 RAM ensures smooth multitasking and compatibility with the motherboard.",
+              "The 850W PSU offers reliable power delivery and is sufficient for the build's needs.",
+              "The Asus Prime AP202 case is quiet and fits the Micro-ATX form factor, enhancing the system's overall quietness.",
+              "The 500GB SSD provides fast storage and is cost-effective for the budget."
+            ],
+            "trade_offs": [
+              "The system lacks a dedicated graphics card, which may limit performance for more demanding tasks.",
+              "The 500GB SSD storage is relatively small, which may not be ideal for users requiring more storage space.",
+              "The build is optimized for quiet operation, which may result in slightly lower cooling efficiency compared to louder systems."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D05",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 42.5,
+      "tool_calls": 24,
+      "llm_calls": 6,
+      "tokens": 8023,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's workloads (gaming, streaming), budget (SGD 2500), and preferences (white). The explanation acknowledges the unknown checks (gpu_case_clearance and case_form_factor) and lists them as trade-offs, showing honesty.",
+          "explanation": {
+            "title": "Catalogue-based candidate",
+            "reasons": [
+              "AMD Ryzen 5 8500G with Wraith Stealth Cooler offers integrated graphics, white aesthetics, and a TDP of 65W at a competitive price of SGD 309.",
+              "Gigabyte B850M FORCE V2 AM5 M-ATX Motherboard Black - 4719331879747 priced at 199.0 SGD with AM5 socket, DDR5 memory type, and Micro-ATX form factor.",
+              "Matched to the motherboard's memory generation.",
+              "XFX Swift AMD Radeon RX 9070XT Triple Fan Gaming Edition provides 16GB GDDR6 VRAM and a TDP of 304W at SGD 959, suitable for gaming and streaming."
+            ],
+            "trade_offs": [
+              "Unknown checks are listed with the option and should be confirmed before purchase."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D06",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 48.5,
+      "tool_calls": 31,
+      "llm_calls": 8,
+      "tokens": 8949,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "memory": true,
+          "storage": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons directly address the user's workload (video editing), budget (SGD 3000), and preferences (minimum memory and storage). The trade-offs are honestly acknowledged, and there are no invented claims or unsupported assertions.",
+          "explanation": {
+            "title": "Option 1",
+            "reasons": [
+              "The AMD Ryzen 7 7700 provides 8 cores and 16 threads for efficient multitasking and rendering.",
+              "The MSI B650M PROJECT ZERO motherboard supports DDR5 and offers good performance for video editing.",
+              "The 32GB DDR5 RAM ensures smooth video editing with large files and multiple applications.",
+              "The MSI RTX 5060 GPU delivers strong performance for video rendering and effects.",
+              "The 2TB NVMe SSD ensures fast data access and storage for large video files.",
+              "The 1000W PSU provides ample power for the system's components."
+            ],
+            "trade_offs": [
+              "The system is slightly more expensive than some alternatives, but it offers a good balance of performance and cost.",
+              "The RTX 5060 is a newer GPU, which may be more expensive than older models with similar performance.",
+              "The build includes a premium case, which increases the overall cost but offers better aesthetics and cooling."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D07",
+      "scenario": "desktop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 40.5,
+      "tool_calls": 23,
+      "llm_calls": 6,
+      "tokens": 7328,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's requirements for gaming, budget, and preferences. The trade-offs are honestly acknowledged, including the unknown PSU headroom, which is a valid concern for system stability.",
+          "explanation": {
+            "title": "Gaming Desktop Build with Integrated Graphics",
+            "reasons": [
+              "The AMD Ryzen 5 7500X3D offers a high clock speed and 96MB cache at a competitive price.",
+              "The Gigabyte B850M FORCE V2 motherboard supports DDR5 memory and the AM5 socket, ensuring compatibility with the CPU.",
+              "The 16GB DDR5 RAM provides sufficient memory for gaming and multitasking.",
+              "The 1000W power supply ensures stable power delivery for the components.",
+              "The SilverStone ALG1MB case supports Micro-ATX form factor and has a max GPU length of 355mm.",
+              "The SanDisk Optimus GX 7100 SSD offers fast read/write speeds for quick game loading."
+            ],
+            "trade_offs": [
+              "The build uses integrated graphics, which may not provide the best gaming performance compared to a dedicated GPU.",
+              "The PSU headroom is unknown, which could affect system stability under heavy load.",
+              "The build is optimized for gaming but may not support future upgrades easily."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "D08",
+      "scenario": "desktop",
+      "fr": [
+        "FR05",
+        "FR07"
+      ],
+      "seconds": 36.4,
+      "tool_calls": 22,
+      "llm_calls": 6,
+      "tokens": 7728,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons directly address the user's workloads (SolidWorks and gaming) and the budget. The trade-offs are honestly acknowledged, and there are no invented claims or unsupported statements.",
+          "explanation": {
+            "title": "Balanced Gaming and Workstation Build",
+            "reasons": [
+              "The AMD Ryzen 7 7800X3D provides strong 8-core performance for SolidWorks and gaming.",
+              "The MSI RTX 5060 GPU delivers excellent gaming performance with 8GB VRAM.",
+              "The ASUS B650 motherboard supports DDR5 and AM5, ensuring compatibility with the CPU and RAM."
+            ],
+            "trade_offs": [
+              "The system is slightly more expensive than some alternatives, but it offers a good balance of performance and cost."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "L01",
+      "scenario": "laptop",
+      "fr": [
+        "FR05",
+        "FR07"
+      ],
+      "seconds": 36.4,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 3898,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "memory": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's workloads (programming and university), budget (SGD 1800), and preferences (minimum 16GB RAM). The trade-offs are honestly acknowledged, including the unknown regional configuration and the use of integrated graphics.",
+          "explanation": {
+            "title": "ASUS VIVOBOOK S16 M3607GA-SH053W",
+            "reasons": [
+              "Offers 32GB RAM, which is more than the minimum requirement and ideal for multitasking and programming.",
+              "Includes a 1TB SSD for fast data access and storage, suitable for university work.",
+              "Runs Windows 11, which is compatible with most programming tools and university software."
+            ],
+            "trade_offs": [
+              "The regional configuration (keyboard layout, warranty) is unknown and needs confirmation.",
+              "The laptop uses integrated graphics, which may not be ideal for intensive graphic tasks."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "L02",
+      "scenario": "laptop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 36.4,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 3800,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. It is relevant to the user's requirements (portable, budget), and it honestly acknowledges the unknown regional configuration and the trade-off of integrated graphics.",
+          "explanation": {
+            "title": "Lenovo IdeaPad Slim 3 15IRH10R",
+            "reasons": [
+              "Offers a good balance of performance and portability at a competitive price.",
+              "Includes a 3-year premium care warranty, which is worth $299.",
+              "16GB RAM and 512GB SSD storage provide sufficient capacity for most tasks."
+            ],
+            "trade_offs": [
+              "Regional configuration (keyboard layout, warranty) is unknown and must be confirmed.",
+              "Integrated graphics may not be ideal for heavy gaming or video editing."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "L03",
+      "scenario": "laptop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 40.4,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 3872,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are directly supported by the listed items and prices. The trade-offs are clearly acknowledged, and the explanation addresses the user's gaming workload and budget constraints. No unsupported claims or hidden information are present.",
+          "explanation": {
+            "title": "MSI Cyborg 15 Max C2WF-237SG",
+            "reasons": [
+              "Offers a powerful RTX 5060 GPU for smooth gaming performance.",
+              "Equipped with an Intel Core 7 240H processor for efficient multitasking.",
+              "Includes 16GB DDR5 RAM and 1TB SSD for fast data access and storage."
+            ],
+            "trade_offs": [
+              "Regional configuration (keyboard layout, warranty) is unknown and must be confirmed.",
+              "The price is close to the budget limit, leaving little room for additional accessories."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "L04",
+      "scenario": "laptop",
+      "fr": [
+        "FR05",
+        "FR07"
+      ],
+      "seconds": 38.4,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 3900,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items and checks. The reasons are relevant to the user's workload (MATLAB), budget (under SGD 2000), and preferences (not explicitly stated but implied by the choice). The trade-offs are honestly acknowledged, including the unknown regional configuration and the use of integrated graphics.",
+          "explanation": {
+            "title": "ASUS VIVOBOOK S16 M3607GA-SH053W",
+            "reasons": [
+              "32GB RAM ensures smooth multitasking and efficient MATLAB performance.",
+              "1TB SSD provides sufficient storage for large datasets and MATLAB projects.",
+              "Integrated graphics are sufficient for MATLAB, as it primarily uses CPU resources."
+            ],
+            "trade_offs": [
+              "The regional configuration (keyboard layout, warranty) is unknown and needs verification.",
+              "The laptop uses integrated graphics, which may not be ideal for future GPU-intensive tasks."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "L05",
+      "scenario": "laptop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 40.5,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 3772,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "storage": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. It is relevant to the user's budget and minimum storage requirement. The trade-offs are honestly acknowledged, including the unknown regional configuration match and the use of integrated graphics.",
+          "explanation": {
+            "title": "ASUS VIVOBOOK 16 - X1607AA-MB016W",
+            "reasons": [
+              "Offers 16GB RAM and 1TB SSD, which is more than your minimum storage requirement.",
+              "Runs on an Intel Core Ultra 5 325H processor, providing good performance for everyday tasks.",
+              "Priced at SGD 1,379, which is well within your budget of SGD 1,600."
+            ],
+            "trade_offs": [
+              "Regional configuration match is unknown; check the merchant page for keyboard layout and warranty details.",
+              "Uses integrated graphics only, which may not be ideal for heavy gaming or graphic design tasks."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "L06",
+      "scenario": "laptop",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 40.5,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 3871,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are directly supported by the listed items, prices, and checks. The reasons address the user's preferences for portability and performance. The trade-offs are honestly acknowledged, including the unknown regional configuration and the absence of a dedicated graphics card.",
+          "explanation": {
+            "title": "ASUS VIVOBOOK S16 M3607GA-SH053W",
+            "reasons": [
+              "Offers 32GB RAM and 1TB SSD for excellent performance.",
+              "16\" FHD OLED display provides vibrant visuals.",
+              "1.70kg weight makes it portable for on-the-go use."
+            ],
+            "trade_offs": [
+              "Regional configuration (keyboard layout, warranty) is unknown and must be confirmed.",
+              "No dedicated graphics card, relying on integrated graphics for performance."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C01",
+      "scenario": "compare",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 72.9,
+      "tool_calls": 25,
+      "llm_calls": 9,
+      "tokens": 11287,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop', 'laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        },
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons directly address the user's workload (video editing) and budget (SGD 2800). The trade-offs are honestly acknowledged, and there are no invented claims or unsupported statements.",
+          "explanation": {
+            "title": "Desktop Build for Video Editing",
+            "reasons": [
+              "Offers a powerful RTX 5060 GPU for rendering and real-time video editing.",
+              "DDR5 RAM and NVMe SSD ensure fast data access and smooth multitasking.",
+              "High wattage PSU (1200W) provides stable power for demanding workloads."
+            ],
+            "trade_offs": [
+              "Requires a desktop setup, which is less portable than a laptop.",
+              "Higher power consumption and heat output compared to laptops."
+            ]
+          }
+        },
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are directly supported by the item's specifications (32GB LPDDR5x RAM, 1TB SSD, Intel GPU), and the trade-offs are honestly acknowledged (regional configuration match issue, less powerful GPU compared to desktop). The explanation is fully grounded in the provided data and addresses the user's workload (video editing), budget (under SGD 2800), and acknowledges unknown factors (regional configuration match).",
+          "explanation": {
+            "title": "High-End Laptop for Video Editing",
+            "reasons": [
+              "Includes 32GB LPDDR5x RAM for handling large video files and multitasking.",
+              "1TB SSD ensures fast file access and storage for video projects.",
+              "Integrated Intel GPU provides decent performance for video editing tasks."
+            ],
+            "trade_offs": [
+              "Unresolved regional configuration match may affect warranty or keyboard layout.",
+              "Less powerful GPU compared to the desktop option."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C02",
+      "scenario": "compare",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 74.9,
+      "tool_calls": 18,
+      "llm_calls": 9,
+      "tokens": 10896,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop', 'laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        },
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's workload (programming), budget (SGD 2000), and preferences (future-proofing, performance). The trade-offs are honestly acknowledged, and there are no invented claims or unsupported statements.",
+          "explanation": {
+            "title": "Desktop Build",
+            "reasons": [
+              "Offers a good balance of performance and price at SGD 309 for the CPU.",
+              "MSI B650M motherboard supports DDR5 memory and AM5 socket for future-proofing.",
+              "DDR5 RAM provides faster data transfer for efficient programming tasks.",
+              "1000W PSU ensures stable power delivery for all components.",
+              "KIOXIA SSD offers fast storage with 10,000MB/s speed for quick file access.",
+              "Integrated graphics from the CPU eliminate the need for a dedicated GPU."
+            ],
+            "trade_offs": [
+              "Higher cost compared to a laptop with similar specs.",
+              "Requires more space and setup compared to a laptop."
+            ]
+          }
+        },
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items and checks. The reasons are relevant to the user's workload (programming), budget (under SGD 2000), and preferences (not explicitly stated but implied by the choice of a laptop). The trade-offs are honestly acknowledged, including the unresolved regional configuration check.",
+          "explanation": {
+            "title": "High-End Laptop",
+            "reasons": [
+              "32GB RAM ensures smooth multitasking for programming tasks.",
+              "1TB SSD provides ample storage for large projects and files.",
+              "Integrated graphics are sufficient for programming without a dedicated GPU.",
+              "16\" FHD OLED display offers good visual clarity for coding."
+            ],
+            "trade_offs": [
+              "Higher cost compared to a desktop build with similar specs.",
+              "Limited upgrade options compared to a desktop.",
+              "Unresolved regional configuration check needs confirmation."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C03",
+      "scenario": "compare",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 74.8,
+      "tool_calls": 26,
+      "llm_calls": 9,
+      "tokens": 11454,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop', 'laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        },
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's workload (video editing), budget (SGD 3000), and preferences (desktop). The trade-offs are honestly acknowledged without inventing any new information.",
+          "explanation": {
+            "title": "Desktop Setup",
+            "reasons": [
+              "Offers a powerful GPU (RTX 5060) for efficient video editing.",
+              "Includes a high-speed NVMe SSD for fast data access.",
+              "Uses DDR5 memory for improved performance and future-proofing."
+            ],
+            "trade_offs": [
+              "Higher power consumption due to the RTX 5060 GPU.",
+              "Requires a dedicated space for the desktop components."
+            ]
+          }
+        },
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items and checks. The reasons are relevant to the user's workload (video editing), budget, and preferences (laptop). The trade-offs are honestly acknowledged, including the regional configuration issue which is marked as unknown in the checks.",
+          "explanation": {
+            "title": "Laptop",
+            "reasons": [
+              "Provides a high-end processor and 32GB of RAM for smooth multitasking.",
+              "Includes a 1TB SSD for ample storage space.",
+              "Integrated Intel GPU is sufficient for basic video editing tasks."
+            ],
+            "trade_offs": [
+              "Limited GPU power compared to the desktop setup.",
+              "Regional configuration needs confirmation before purchase."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C04",
+      "scenario": "compare",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 72.9,
+      "tool_calls": 29,
+      "llm_calls": 9,
+      "tokens": 10943,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop', 'laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        },
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's gaming workload and budget. The trade-offs are honestly acknowledged, including the unknown GPU case clearance.",
+          "explanation": {
+            "title": "Desktop Build with Dedicated GPU",
+            "reasons": [
+              "Offers a dedicated GPU (RX 9070 XT) for better gaming performance.",
+              "Includes a powerful CPU (Ryzen 5 8500G) with integrated graphics.",
+              "Uses DDR5 RAM and supports future upgrades.",
+              "Includes a high-wattage PSU (850W) for stable power delivery."
+            ],
+            "trade_offs": [
+              "The GPU case clearance is unknown, which may affect installation.",
+              "Requires more space and setup compared to a laptop."
+            ]
+          }
+        },
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's gaming workload and budget. The trade-offs are honestly acknowledged, including the unknown regional configuration match.",
+          "explanation": {
+            "title": "Laptop with Dedicated GPU",
+            "reasons": [
+              "Offers a compact and portable gaming solution with an RTX 5060 GPU.",
+              "Includes a high-core Intel processor and 1TB SSD for storage.",
+              "All-in-one system with no need for separate components."
+            ],
+            "trade_offs": [
+              "Regional configuration match is unknown; check the merchant page for specifics.",
+              "Less upgradability compared to a desktop build."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "A01",
+      "scenario": "ambiguous",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_device_type', 'q_budget']"
+    },
+    {
+      "case_id": "A02",
+      "scenario": "ambiguous",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_device_type']"
+    },
+    {
+      "case_id": "A03",
+      "scenario": "ambiguous",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_budget']"
+    },
+    {
+      "case_id": "A04",
+      "scenario": "ambiguous",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_device_type', 'q_budget']"
+    },
+    {
+      "case_id": "A05",
+      "scenario": "ambiguous",
+      "fr": [
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_budget']"
+    },
+    {
+      "case_id": "B01",
+      "scenario": "low_budget",
+      "fr": [
+        "FR06",
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_budget_low']"
+    },
+    {
+      "case_id": "B02",
+      "scenario": "low_budget",
+      "fr": [
+        "FR06"
+      ],
+      "seconds": 286.5,
+      "tool_calls": 8,
+      "llm_calls": 13,
+      "tokens": 13846,
+      "task_completed": true,
+      "constraint_satisfaction": true,
+      "detail": "no_feasible_option"
+    },
+    {
+      "case_id": "B03",
+      "scenario": "low_budget",
+      "fr": [
+        "FR06"
+      ],
+      "seconds": 282.4,
+      "tool_calls": 11,
+      "llm_calls": 14,
+      "tokens": 16676,
+      "task_completed": true,
+      "constraint_satisfaction": true,
+      "detail": "no_feasible_option"
+    },
+    {
+      "case_id": "B04",
+      "scenario": "low_budget",
+      "fr": [
+        "FR06"
+      ],
+      "seconds": 6.2,
+      "tool_calls": 1,
+      "llm_calls": 1,
+      "tokens": 309,
+      "task_completed": true,
+      "constraint_satisfaction": true,
+      "detail": "no_feasible_option"
+    },
+    {
+      "case_id": "K01",
+      "scenario": "locked",
+      "fr": [
+        "FR04",
+        "FR06"
+      ],
+      "seconds": 40.4,
+      "tool_calls": 15,
+      "llm_calls": 6,
+      "tokens": 7707,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "locked_kept": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's gaming workload, budget, and preferences. The trade-offs are honestly acknowledged, including the unknown PSU headroom and the potential storage limitations of the SSD. No unsupported claims or invented information are present.",
+          "explanation": {
+            "title": "Gaming Desktop Build",
+            "reasons": [
+              "The AMD Ryzen 7 7800X3D provides excellent gaming performance with its high clock speeds and 3D V-Cache.",
+              "The ASUS TUF B650-E motherboard supports DDR5 and offers reliable performance for gaming and multitasking.",
+              "The 16GB DDR5 RAM ensures smooth gameplay and efficient multitasking.",
+              "The RTX 5070 GPU is a top-tier choice for high-end gaming with 12GB of VRAM.",
+              "The 1200W power supply provides ample headroom for the system's power demands.",
+              "The Thermaltake View 390 case offers good airflow and aesthetics with tempered glass.",
+              "The 500GB SSD ensures fast boot times and quick game loading."
+            ],
+            "trade_offs": [
+              "The build is slightly under budget, leaving little room for upgrades or additional components.",
+              "The PSU headroom is unknown, which could affect system stability under heavy workloads.",
+              "The 500GB SSD may be limiting for large game libraries or storage needs."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "K02",
+      "scenario": "locked",
+      "fr": [
+        "FR04",
+        "FR06"
+      ],
+      "seconds": 42.5,
+      "tool_calls": 14,
+      "llm_calls": 6,
+      "tokens": 7756,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "owned_reused": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's gaming workload, budget, and preference for an existing RTX 4070 GPU. The trade-offs are honestly acknowledged, including the unresolved GPU case clearance check.",
+          "explanation": {
+            "title": "Gaming Build with AMD Ryzen 7 7800X3D",
+            "reasons": [
+              "The AMD Ryzen 7 7800X3D provides strong gaming performance with integrated graphics, making it a cost-effective choice.",
+              "The Gigabyte B650I AX motherboard supports DDR5 and offers a compact Mini-ITX form factor, ideal for small gaming builds.",
+              "The 16GB DDR5 RAM and 500GB NVMe SSD ensure smooth multitasking and fast game loading times.",
+              "The 1000W power supply provides ample power for the high-end GPU and CPU."
+            ],
+            "trade_offs": [
+              "The build includes an older generation GPU (RTX 4070) that may not be the latest in performance, though it's still a strong choice for gaming.",
+              "The Mini-ITX case may limit some upgrade options due to its compact size.",
+              "There is an unresolved check regarding GPU case clearance, which could affect compatibility."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "K03",
+      "scenario": "locked",
+      "fr": [
+        "FR04",
+        "FR07"
+      ],
+      "seconds": 0,
+      "tool_calls": 0,
+      "llm_calls": 0,
+      "tokens": 0,
+      "task_completed": true,
+      "detail": "questions=['q_locked_0']"
+    },
+    {
+      "case_id": "K04",
+      "scenario": "locked",
+      "fr": [
+        "FR04",
+        "FR06"
+      ],
+      "seconds": 38.4,
+      "tool_calls": 15,
+      "llm_calls": 6,
+      "tokens": 7545,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "locked_kept": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. It is relevant to the user's gaming workload, budget, and locked GPU. The explanation honestly acknowledges the unknown checks (PSU headroom, GPU case clearance, case form factor) and lists them as trade-offs, without inventing any information or hiding potential issues.",
+          "explanation": {
+            "title": "Gaming Desktop Build",
+            "reasons": [
+              "The system is within your budget of SGD 2,600, with a total cost of SGD 2,515.",
+              "The locked graphics card (XFX Swift AMD Radeon RX 9070XT 16GB) is included, ensuring your preferred GPU is used.",
+              "The 14th-gen Intel i5-14400 CPU provides strong performance for gaming and multitasking.",
+              "DDR5 RAM and a 1000W PSU ensure future-proof memory and sufficient power for the GPU.",
+              "The mid-tower RGB case offers good aesthetics and cooling, while the NVMe SSD ensures fast storage."
+            ],
+            "trade_offs": [
+              "The PSU headroom and GPU case clearance are unknown, so you should verify these before building.",
+              "The case form factor compatibility with the motherboard is not confirmed, which could affect the build."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "F01",
+      "scenario": "follow_up",
+      "fr": [
+        "FR06",
+        "FR08"
+      ],
+      "seconds": 84.8,
+      "tool_calls": 42,
+      "llm_calls": 14,
+      "tokens": 14226,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "memory": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "adjustment_success": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's requirements for gaming, budget, and minimum memory. The trade-offs are honestly acknowledged, including the unknown checks for power supply headroom and GPU case clearance, as well as the slight budget under-spending.",
+          "explanation": {
+            "title": "Gaming Desktop Build",
+            "reasons": [
+              "Offers a strong gaming CPU with the AMD Ryzen 5 7500F, which provides excellent performance for gaming.",
+              "Includes a high-performance GPU with the MSI RTX 5060, ensuring smooth gameplay and high frame rates.",
+              "Features a fast Gen5 NVMe SSD for quick game loading and data access.",
+              "The build includes 32GB DDR5 RAM, meeting your minimum memory requirement and providing ample multitasking capability."
+            ],
+            "trade_offs": [
+              "The power supply has an unknown headroom, which could affect system stability under heavy load.",
+              "The GPU case clearance is unknown, which might lead to potential overheating or installation issues.",
+              "The build is slightly under budget, leaving little room for future upgrades or additional components."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "F02",
+      "scenario": "follow_up",
+      "fr": [
+        "FR06",
+        "FR08"
+      ],
+      "seconds": 58.599999999999994,
+      "tool_calls": 9,
+      "llm_calls": 9,
+      "tokens": 5671,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "memory": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "adjustment_success": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are directly supported by the listed items, prices, and checks. The reasons are relevant to the user's workloads (programming), budget, and preferences. The trade-offs are honestly acknowledged, including the unknown regional configuration match.",
+          "explanation": {
+            "title": "ASUS VIVOBOOK S16 M3607GA-SH053W",
+            "reasons": [
+              "Offers 32GB RAM and 1TB SSD, ideal for heavy programming tasks.",
+              "Within your budget of S$1,800.00.",
+              "All required components are present and in stock."
+            ],
+            "trade_offs": [
+              "Uses integrated graphics only, which may not be suitable for tasks requiring a dedicated GPU.",
+              "Regional configuration match is unknown and needs confirmation."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "F03",
+      "scenario": "follow_up",
+      "fr": [
+        "FR06",
+        "FR08"
+      ],
+      "seconds": 62.7,
+      "tool_calls": 28,
+      "llm_calls": 10,
+      "tokens": 11685,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "adjustment_success": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is fully grounded in the provided items, checks, and requirements. It addresses the user's workload (gaming), budget (SGD 2500), and preference (quiet). The trade-offs are honestly acknowledged, including the unknown GPU case clearance, the cost of DDR5 RAM, and the PSU headroom. No unsupported claims or invented information are present.",
+          "explanation": {
+            "title": "Gaming Desktop with Quiet Cooling",
+            "reasons": [
+              "The AMD Ryzen 5 8500G provides a good balance of performance and efficiency with integrated graphics.",
+              "The XFX RX 9070XT GPU delivers strong gaming performance for its price.",
+              "The NZXT Kraken 280 RGB cooler ensures quiet operation and efficient thermal management."
+            ],
+            "trade_offs": [
+              "The RX 9070XT may not fit in the Gigabyte C103 case due to unknown clearance.",
+              "The build uses DDR5 RAM, which is more expensive than DDR4.",
+              "The 850W PSU is sufficient for the build, but it may be overkill for lower-end systems."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "F04",
+      "scenario": "follow_up",
+      "fr": [
+        "FR06",
+        "FR08"
+      ],
+      "seconds": 62.7,
+      "tool_calls": 28,
+      "llm_calls": 10,
+      "tokens": 11594,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "owned_reused": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "adjustment_success": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The explanation is relevant to the user's requirements (gaming, budget, and storage). The trade-offs are honestly acknowledged, and there are no invented reasons or unsupported claims.",
+          "explanation": {
+            "title": "Catalogue-based candidate",
+            "reasons": [
+              "AMD Ryzen 5 8500G with Wraith Stealth Cooler offers integrated graphics, AM5 socket, 65W TDP, and a price of SGD 309.",
+              "Gigabyte B850M FORCE V2 AM5 M-ATX Motherboard Black - 4719331879747 offers DDR5 memory, AM5 socket, and Micro-ATX form factor at 199 SGD.",
+              "Matched to the motherboard's memory generation.",
+              "XFX Swift AMD Radeon RX 9070XT Triple Fan Gaming Edition provides 16GB GDDR6 VRAM, RX 9070 XT chip, and a price of SGD 959."
+            ],
+            "trade_offs": [
+              "Unknown checks are listed with the option and should be confirmed before purchase."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "F05",
+      "scenario": "follow_up",
+      "fr": [
+        "FR06",
+        "FR08"
+      ],
+      "seconds": 109.1,
+      "tool_calls": 23,
+      "llm_calls": 14,
+      "tokens": 14776,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "adjustment_success": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are relevant to the user's workload (programming), budget (under SGD 2000), and preferences (not explicitly stated but implied by the features). The trade-offs are honestly acknowledged, including the unknown regional configuration and the use of integrated graphics.",
+          "explanation": {
+            "title": "ASUS VIVOBOOK S16 M3607GA-SH053W",
+            "reasons": [
+              "Offers 32GB RAM and 1TB SSD, ideal for demanding programming tasks.",
+              "Runs Windows 11, providing a modern and efficient environment for development.",
+              "Features a 16\" FHD OLED display for clear and vibrant visuals."
+            ],
+            "trade_offs": [
+              "The regional configuration (keyboard layout, warranty) is unknown and must be confirmed.",
+              "Uses integrated graphics instead of a dedicated GPU, which may impact performance for more intensive tasks."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "M01",
+      "scenario": "data_gaps",
+      "fr": [
+        "FR02",
+        "FR05"
+      ],
+      "seconds": 40.4,
+      "tool_calls": 24,
+      "llm_calls": 6,
+      "tokens": 7676,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons directly address the user's workload (gaming), budget (SGD 2200), and preferences (not explicitly stated but implied by the build). The trade-offs are honestly acknowledged, and there is no invented information. All checks are passed, and the explanation is clear and well-structured.",
+          "explanation": {
+            "title": "Gaming Desktop Build",
+            "reasons": [
+              "The AMD Ryzen 5 8500G provides a good balance of performance and efficiency for gaming.",
+              "The Gigabyte B850M motherboard supports DDR5 and offers reliable performance for gaming.",
+              "The MSI RTX 5060 GPU delivers strong gaming performance with 8GB GDDR7 VRAM.",
+              "The 850W PSU ensures stable power delivery for the components."
+            ],
+            "trade_offs": [
+              "The build uses a Micro-ATX case, which may limit some expansion options compared to a full ATX case.",
+              "The 16GB DDR5 RAM may be sufficient for most gaming tasks, but higher capacity could be beneficial for multitasking.",
+              "The 500GB SSD provides fast storage, but additional storage may be needed for larger game libraries."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "M02",
+      "scenario": "data_gaps",
+      "fr": [
+        "FR03"
+      ],
+      "seconds": 40.5,
+      "tool_calls": 19,
+      "llm_calls": 6,
+      "tokens": 7856,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "evidence_levels_respected": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is excellent. All reasons are grounded in the provided items, prices, and checks. The reasons are directly relevant to the user's gaming workload, budget, and preferences. The trade-offs are honestly acknowledged, including the unknown GPU case clearance, budget limitations, and mid-tower case limitations. No unsupported claims or hidden trade-offs are present.",
+          "explanation": {
+            "title": "Gaming Desktop Build",
+            "reasons": [
+              "Includes a locked AMD Ryzen 7 9800X3D CPU for strong gaming performance.",
+              "Features a powerful RX 9070 XT GPU with 16GB VRAM for high-end gaming.",
+              "Uses DDR5 RAM and a fast NVMe SSD for quick data access and smooth gameplay.",
+              "Includes a 1000W PSU for stable power delivery to all components."
+            ],
+            "trade_offs": [
+              "The GPU case clearance is unknown, so you should verify if the case can accommodate the GPU length.",
+              "The build is slightly under budget, leaving little room for future upgrades.",
+              "The case is a mid-tower, which may not be ideal for extreme cooling or large components."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "M03",
+      "scenario": "data_gaps",
+      "fr": [
+        "FR01",
+        "FR06"
+      ],
+      "seconds": 26.3,
+      "tool_calls": 12,
+      "llm_calls": 4,
+      "tokens": 4893,
+      "task_completed": true,
+      "detail": "no_feasible_option"
+    },
+    {
+      "case_id": "M04",
+      "scenario": "data_gaps",
+      "fr": [
+        "FR05"
+      ],
+      "seconds": 50.5,
+      "tool_calls": 48,
+      "llm_calls": 9,
+      "tokens": 9281,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true,
+      "explanation_quality": 5.0,
+      "judge": [
+        {
+          "grounded": 5,
+          "relevant": 5,
+          "honest": 5,
+          "overall": 5.0,
+          "comment": "The explanation is fully grounded in the provided items, checks, and requirements. Each reason is directly supported by the listed components and their specifications. The explanation is relevant to the user's workload (office tasks), budget (SGD 1100), and preferences (compact build). The trade-offs are honestly acknowledged, including limitations in handling demanding tasks, future expansion, and graphics capabilities. No unsupported claims or invented information are present.",
+          "explanation": {
+            "title": "Office Desktop Build",
+            "reasons": [
+              "The AMD Ryzen 7 7700 provides 8 cores and 16 threads for smooth multitasking and efficient performance for office tasks.",
+              "DDR5 RAM ensures fast data access and compatibility with the motherboard.",
+              "The Micro-ATX form factor offers a compact and efficient build with adequate cooling.",
+              "The 500GB NVMe SSD provides quick boot times and storage for office files.",
+              "The 650W power supply is sufficient for the system's power needs."
+            ],
+            "trade_offs": [
+              "The system is optimized for office use and may not handle more demanding tasks like video editing or gaming.",
+              "The build is compact, which may limit future upgrades or expansion options.",
+              "The integrated graphics are suitable for office tasks but may not support advanced graphical applications."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
