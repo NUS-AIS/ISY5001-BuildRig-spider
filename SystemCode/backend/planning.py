@@ -170,7 +170,14 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
         minimum["max_gpu_length_mm"] = gpu["specs"]["length_mm"]
     if category == "ssd":
         minimum["capacity_gb"] = constraints.get("minimum_storage_gb") or 500
-    rows = []
+    rows, fallback = [], []
+    # A user's hard minimum (memory, storage) must be verifiable: prefer a wider price window with an offer
+    # known to satisfy it over a narrower one whose offers leave the value unknown.
+    hard = [k for k in minimum if (category, k) in {("ram", "capacity_gb"), ("ssd", "capacity_gb")}]
+
+    def verified(candidates: list[dict]) -> list[dict]:
+        return [r for r in candidates if all(r["specs"].get(k) is not None for k in hard)]
+
     # Stay inside the share first; only then allow a small overshoot; finally take the cheapest match.
     for low, high in ((0.35, 1.0), (0.0, 1.15), (0.0, None)):
         if high and share_minor <= 0:        # an empty price window cannot match anything
@@ -187,8 +194,13 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
             need = FORM_FACTOR_RANK[board["specs"]["form_factor"]]
             rows = [r for r in rows if FORM_FACTOR_RANK.get(r["specs"].get("max_form_factor"), 0) >= need
                     or r["specs"].get("max_form_factor") is None]
+        if hard and rows and not verified(rows):
+            fallback = fallback or rows
+            continue
         if rows:
+            rows = verified(rows) if hard else rows
             break
+    rows = rows or fallback
     known_first = sorted(rows, key=lambda r: any(r["specs"].get(k) is None for k in list(require) + list(minimum)))
     return known_first[:limit]
 

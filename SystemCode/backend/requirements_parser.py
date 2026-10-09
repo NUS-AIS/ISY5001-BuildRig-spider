@@ -307,7 +307,29 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
             req["understanding_source"] = "llm+rules"
         except Exception as exc:  # model down or malformed output: the rule layer result stands
             req["understanding_source"] = f"rules (model unavailable: {type(exc).__name__})"
+    known = {o.get("category") for o in req.get("owned_components", [])}
+    for mention in _owned_by_rule(text):     # deterministic backstop when the model misses an owned part
+        record = _owned_component(mention, catalogue)
+        if record["category"] and record["category"] not in known:
+            req.setdefault("owned_components", []).append(record)
+            known.add(record["category"])
     return req, questions + clarification_questions(req)
+
+
+OWNED_PHRASE = re.compile(r"(?:already (?:have|own|got)|\bi (?:have|own)|i've got|已经有|已有|我有)\s*"
+                          r"(?:an?\s+|one\s+|my\s+|一张|一块|一个|一条|一套)?([^,.;!?，。；]+)", re.I)
+
+
+def _owned_by_rule(text: str) -> list[str]:
+    """Parts introduced by an ownership phrase ("I already have a 2TB SSD, reuse it")."""
+    out = []
+    for match in OWNED_PHRASE.finditer(text):
+        clause = re.split(r"\b(?:but|so|that|which|to|for)\b|，|帮|请", match.group(1), maxsplit=1)[0]
+        for part in re.split(r"\band\b|和", clause):
+            mention = re.sub(r"^\s*(?:an?|one|my)\s+", "", part.strip(), flags=re.I)
+            if mention and _category_of(mention, []) is not None:
+                out.append(mention)
+    return out
 
 
 def for_model(req: dict) -> dict:

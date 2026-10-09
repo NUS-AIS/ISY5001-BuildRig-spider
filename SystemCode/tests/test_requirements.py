@@ -96,6 +96,14 @@ class LLMLayerTests(unittest.TestCase):
         req, _ = parse_requirements("I already have a 2TB SSD, reuse it", current, model)
         self.assertEqual([(o["category"], o["specs"].get("capacity_gb")) for o in req["owned_components"]], [("ssd", 2048)])
 
+    def test_owned_parts_are_found_by_rules_when_the_model_misses_them(self):
+        model = FakeModel()          # extracts nothing
+        current = {"device_type": "desktop", "budget": {"currency": "SGD", "maximum_minor": 250000, "is_hard_limit": True}}
+        req, _ = parse_requirements("I already own 32GB DDR5 RAM and a 1TB SSD", current, model)
+        self.assertEqual(sorted(o["category"] for o in req["owned_components"]), ["ram", "ssd"])
+        req, _ = parse_requirements("I have a budget of S$2,000", current, model)
+        self.assertEqual(req["owned_components"], [])
+
     def test_pc_means_desktop(self):
         req, _ = parse_requirements("Office PC without a graphics card, budget S$900", {})
         self.assertEqual(req["device_type"], "desktop")

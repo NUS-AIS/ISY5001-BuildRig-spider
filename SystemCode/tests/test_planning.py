@@ -43,6 +43,14 @@ class PlanningTests(unittest.TestCase):
         self.assertNotIn("gpu", [i["category"] for i in option["items"]])
         self.assertIn("integrated graphics", option["planning_notes"][0])
 
+    def test_hard_storage_minimum_is_met_by_an_offer_with_known_capacity(self):
+        req = {**self.req, "workloads": ["video editing"], "budget": {"currency": "SGD", "maximum_minor": 300000},
+               "hard_constraints": {"minimum_memory_gb": 32, "minimum_storage_gb": 2048}}
+        option = plan_desktop(self.corpus.candidates, self.corpus.products, req, Chooser())
+        statuses = {c["code"]: c["status"] for c in validate_option(option, req)["checks"]}
+        self.assertEqual(statuses["minimum_storage"], "passed")
+        self.assertEqual(statuses["minimum_memory"], "passed")
+
     def test_accessories_are_not_components(self):
         self.assertTrue(is_accessory({"category": "case", "name": "DeepCool Vertical Base 100 for CH160", "specs": {}}))
         self.assertTrue(is_accessory({"category": "ssd", "name": "Thermalright M.2 2280 SSD Heatsink", "specs": {}}))
