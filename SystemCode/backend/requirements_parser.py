@@ -112,7 +112,7 @@ EXTRACTION_PROMPT = (
 # Capacities, small numbers and category words do not identify a product ("64GB RAM", "2 TB SSD").
 GENERIC_TOKEN = re.compile(r"\d{1,2}|\d+(?:gb|tb|w|mhz|mt|hz|mm|cm)|gb|tb|ddr\d|gddr\d|ram|memory|ssd|nvme|hdd|storage|drive")
 OWNERSHIP = re.compile(r"already (?:have|own|got|has)|\bi (?:have|own)\b|i've got|\bre-?use\b|\bexisting\b|"
-                       r"\bmy (?:old|current|own)\b|已有|我有|现有|旧的", re.I)
+                       r"\bmy (?:old|current|own)\b|已有|已经有|我有|现有|旧的", re.I)
 
 
 def _specific_mention(mention: str, text: str) -> bool:

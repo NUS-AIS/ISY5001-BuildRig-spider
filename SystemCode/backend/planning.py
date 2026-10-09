@@ -173,6 +173,8 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
     rows = []
     # Stay inside the share first; only then allow a small overshoot; finally take the cheapest match.
     for low, high in ((0.35, 1.0), (0.0, 1.15), (0.0, None)):
+        if high and share_minor <= 0:        # an empty price window cannot match anything
+            continue
         ceiling = int(share_minor * high) if high else None
         if hard_max is not None:
             ceiling = min(ceiling, hard_max) if ceiling is not None else hard_max
@@ -370,25 +372,23 @@ def revise(option: dict, categories: list[str], validation: dict, query: Callabl
             # compatible alternative saves most until the total fits or nothing cheaper is left.
             def best_saving(category: str) -> int:
                 others_now = {c: i for c, i in items.items() if c != category}
+                extra = {"integrated_graphics": True} if option.get("integrated_graphics_build") and category == "cpu" else None
                 rows = shortlist(query, category, 0, others_now, requirements,
-                                 tried.get(category, []) + [items[category]["offer_id"]], hard_max=minor(items[category]) - 1)
+                                 tried.get(category, []) + [items[category]["offer_id"]], hard_max=minor(items[category]) - 1,
+                                 extra_require=extra)
                 return minor(items[category]) - min((minor(r) for r in rows), default=minor(items[category]))
+            savings = {c: best_saving(c) for c in candidates}      # one query per part, computed once
             remaining_over = over
-            while remaining_over > 0:
-                savings = {c: best_saving(c) for c in candidates}
-                ranked = sorted((c for c in candidates if savings[c] > 0), key=savings.get, reverse=True)
-                before = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
-                # Prefer the smallest single saving that closes the rest of the gap; otherwise the largest.
-                closing = [c for c in ranked if savings[c] >= remaining_over]
-                for category in ([min(closing, key=savings.get)] if closing else []) + ranked:
-                    old_minor = minor(items[category])
-                    cap = old_minor - remaining_over if savings[category] >= remaining_over else old_minor - 1
-                    if replace_part(category, 0 if cap == old_minor - 1 else cap, hard_max=cap):
-                        break
-                after = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
-                if after >= before:
+            ranked = sorted((c for c in candidates if savings[c] > 0), key=savings.get, reverse=True)
+            closing = [c for c in ranked if savings[c] >= remaining_over]
+            # Prefer the smallest single saving that closes the gap; otherwise take the largest savings in turn.
+            for category in sorted(closing, key=savings.get) + [c for c in ranked if c not in closing]:
+                if remaining_over <= 0:
                     break
-                remaining_over -= before - after
+                old_minor = minor(items[category])
+                cap = old_minor - remaining_over if savings[category] >= remaining_over else old_minor - 1
+                if replace_part(category, 0 if cap == old_minor - 1 else cap, hard_max=cap):
+                    remaining_over -= old_minor - minor(items[category])
     else:
         for category in changeable:
             if not replace_part(category, int(free * shares.get(category, 1) / weight), hard_max=None):
