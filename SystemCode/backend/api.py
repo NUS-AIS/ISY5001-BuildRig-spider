@@ -4,7 +4,7 @@ from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, HybridRequest, MemoryPatch, MessageCreate, RunCreate,
                             SessionCreate, ValidationRequest)
-from backend.planning import Chooser, assemble_option, plan_desktop, plan_laptops
+from backend.planning import Chooser, assemble_option, budget_repair, plan_desktop, plan_laptops
 from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
 
@@ -22,6 +22,21 @@ def create_router(store, corpus, engine):
         configured = engine.settings.internal_api_token
         if configured and token != configured:
             raise HTTPException(403, "Invalid internal service token")
+
+    def offer_view(row: dict) -> dict:
+        return {"offer_id": row["id"], "product_id": str(row.get("product_id") or row["id"]), "category": row["category"],
+                "name": row["name"], "price_sgd": float(row["price"]), "merchant": row.get("store"),
+                "specs": {k: v for k, v in row.get("specs", {}).items() if v is not None}}
+
+    known_spec_keys: dict[str, set[str]] = {}
+
+    def spec_keys() -> dict[str, set[str]]:
+        """Specification names that at least one offer of each category carries in the pinned snapshot."""
+        if not known_spec_keys:
+            for row in corpus.prices:
+                keys = known_spec_keys.setdefault(row["category"], set())
+                keys.update(k for k, v in corpus.specs.get(row["id"], {}).items() if v is not None)
+        return known_spec_keys
 
     def owned_run(run_id: str, owner_id: str):
         if store.run_owner(run_id) != owner_id:
@@ -179,13 +194,26 @@ def create_router(store, corpus, engine):
     def internal_candidates_filtered(body: CandidateRequest, x_internal_token: str | None = Header(None)):
         """Compatible in-stock offers for the Pi runtime's find_parts tool."""
         require_internal(x_internal_token)
-        rows = (corpus.products(body.product_ids) if body.product_ids else
-                corpus.candidates(body.category, body.maximum_minor, body.limit, body.minimum_minor,
-                                  body.require or None, body.minimum_specs or None, body.exclude_ids, body.order))
-        return {"snapshot_id": corpus.snapshot_id, "items": [
-            {"offer_id": r["id"], "product_id": str(r.get("product_id") or r["id"]), "category": r["category"],
-             "name": r["name"], "price_sgd": float(r["price"]), "merchant": r.get("store"),
-             "specs": {k: v for k, v in r.get("specs", {}).items() if v is not None}} for r in rows]}
+        if body.product_ids:
+            return {"snapshot_id": corpus.snapshot_id, "items": [offer_view(r) for r in corpus.products(body.product_ids)]}
+        # A filter on a specification the category does not have matches nothing useful: offers with an
+        # unknown value are kept by design, so the caller would be handed parts that were never checked.
+        known = spec_keys().get(body.category)
+        if known is None:
+            return {"snapshot_id": corpus.snapshot_id, "items": [],
+                    "invalid_filters": {"unknown_category": body.category, "valid_categories": sorted(spec_keys())}}
+        unknown = sorted(k for k in {**body.require, **body.minimum_specs} if k not in known)
+        if unknown:
+            return {"snapshot_id": corpus.snapshot_id, "items": [],
+                    "invalid_filters": {"unknown_keys": unknown, "valid_keys": sorted(known)}}
+        filters = (body.require or None, body.minimum_specs or None, body.exclude_ids)
+        rows = corpus.candidates(body.category, body.maximum_minor, body.limit, body.minimum_minor, *filters, body.order)
+        response = {"snapshot_id": corpus.snapshot_id, "items": [offer_view(r) for r in rows]}
+        if not rows and (body.maximum_minor is not None or body.minimum_minor is not None):
+            # Tell the caller where matching offers start, so it does not probe the price one dollar at a time.
+            cheapest = corpus.candidates(body.category, None, 1, None, *filters, "price_asc")
+            response["cheapest_match_sgd"] = float(cheapest[0]["price"]) if cheapest else None
+        return response
 
     @router.post("/internal/options/draft")
     def draft(body: DraftRequest, x_internal_token: str | None = Header(None)):
@@ -210,7 +238,14 @@ def create_router(store, corpus, engine):
             option = assemble_option(corpus, body.device_type, body.offer_ids, body.requirements)
         except KeyError as exc:
             raise HTTPException(422, detail={"code": "UNKNOWN_OFFER", "offer_ids": exc.args[0]})
-        return {"option": option, "validation": validate_option(option, body.requirements)}
+        validation = validate_option(option, body.requirements)
+        response = {"option": option, "validation": validation}
+        repair = budget_repair(option, validation, corpus.candidates, body.requirements, validate_option)
+        if repair:
+            for entry in repair["single_swaps"] + repair["partial_savings"]:
+                entry["alternatives"] = [offer_view(r) for r in entry["alternatives"]]
+            response["budget_repair"] = repair
+        return response
 
     @router.post("/internal/options/validate")
     def validate(body: ValidationRequest, x_internal_token: str | None = Header(None)):

@@ -88,6 +88,10 @@ interface Session {
   build: Record<string, Json>;           // category -> selected offer (from find_parts results only)
   seen: Record<string, Json>;            // offer_id -> offer returned by find_parts in this session
   submitted?: { title: string; reasons: string[]; assembled: Json };
+  emptySearches: Record<string, number>; // category -> find_parts calls in a row that returned nothing
+  drafted: boolean;                      // draft_build has loaded the starting build
+  budgetAdvice: boolean;                 // the last failed check came with server-computed swaps
+  shortfallSgd?: number;                 // set when no cheaper compatible part can close the budget gap
   attempts: Json[];
   toolCalls: Json[];
   usage: { calls: number; input_tokens: number; output_tokens: number };
@@ -137,10 +141,55 @@ function progress(session: Session): Json {
   };
 }
 
+/**
+ * What a failed validation asks the model to do next. The budget check names only the most expensive
+ * part, which may have no cheaper compatible alternative, so an overspend comes with swaps the server
+ * has already verified. They are registered as seen offers and can go straight to select_part.
+ */
+function repairAdvice(session: Session, assembled: Json): Json {
+  const v = assembled.validation;
+  const repair = assembled.budget_repair;
+  const failed = v.checks.filter((c: Json) => c.status === "failed").map((c: Json) =>
+    c.code === "budget_limit" && repair ? { code: c.code, reason: c.reason } : { code: c.code, reason: c.reason, replace: c.affected_categories });
+  const others = failed.some((c: Json) => c.code !== "budget_limit");
+  session.budgetAdvice = false;
+  if (!repair) {
+    return { failed, then: "Replace the named categories with find_parts + select_part, then check_build again." };
+  }
+  const swap = (entry: Json) => {
+    const offer: Json = { ...compact(entry.alternatives[0]), category: entry.category };
+    session.seen[offer.offer_id] = offer;
+    return { category: entry.category, offer_id: offer.offer_id, name: offer.name, price_sgd: offer.price_sgd, saves_sgd: entry.saving_minor / 100 };
+  };
+  const advice: Json = { failed, over_budget_by_sgd: repair.over_minor / 100 };
+  if (repair.single_swaps.length) {
+    session.budgetAdvice = true;
+    advice.any_one_of_these_swaps_fixes_the_budget = repair.single_swaps.slice(0, 3).map(swap);
+    advice.then = "Call select_part with ONE of these offers, then check_build. Do not search for other parts.";
+  } else if (repair.reachable) {
+    session.budgetAdvice = true;
+    advice.cheaper_swaps_largest_saving_first = repair.partial_savings.slice(0, 3).map(swap);
+    advice.then = "No single swap is enough. Call select_part with the first offer, then check_build for updated advice.";
+  } else if (!others) {
+    const saved = repair.partial_savings.reduce((sum: number, e: Json) => sum + e.saving_minor, 0);
+    session.shortfallSgd = (repair.over_minor - saved) / 100;
+    advice.then = "No cheaper compatible parts can close this gap. Stop: the budget cannot be met.";
+  }
+  if (others) advice.then = `${advice.then || ""} Also replace the categories named by the other failed checks with find_parts + select_part.`.trim();
+  return advice;
+}
+
 function tools(session: Session): AgentTool<any>[] {
   const log = (tool: string, args: Json, outcome: string) => session.toolCalls.push({ tool, args, outcome });
   const guard = () => {
     if (session.toolCalls.length >= maxToolCalls) throw new Error("Tool call budget exhausted for this run.");
+  };
+  // Building part by part from an empty build spends the budget on the first category; the draft is
+  // a compatible build within budget shares, so every other tool waits for it.
+  const needsDraft = (tool: string, args: Json) => {
+    if (session.drafted) return null;
+    log(tool, args, "needs draft");
+    return { content: text("Call draft_build first: it loads a compatible starting build to review and repair."), details: null };
   };
   const assemble = () => backend("/api/v1/internal/options/assemble", {
     run_id: session.runId, device_type: session.deviceType,
@@ -163,6 +212,7 @@ function tools(session: Session): AgentTool<any>[] {
         session.build[item.category] = offer;
         session.seen[offer.offer_id] = offer;
       }
+      session.drafted = true;
       log("draft_build", {}, `${draft.items.length} parts`);
       return { content: text({ ...progress(session), then: "Call check_build next." }), details: draft };
     },
@@ -173,7 +223,8 @@ function tools(session: Session): AgentTool<any>[] {
     label: "Find compatible parts",
     description:
       "List in-stock offers of one category from the Singapore catalogue, highest price first within the range. " +
-      "Use 'require' for exact spec matches ({\"socket\": \"AM5\"}) and 'minimum' for lower bounds ({\"wattage_w\": 750}).",
+      "Use 'require' for exact spec matches ({\"socket\": \"AM5\"}) and 'minimum' for lower bounds ({\"wattage_w\": 750}). " +
+      "Each category has its own spec names; an unknown one is rejected with the valid list.",
     parameters: Type.Object({
       category: Type.String({ description: "cpu, motherboard, ram, gpu, psu, case, ssd, cooler or laptop" }),
       max_price_sgd: Type.Optional(Type.Number()),
@@ -184,20 +235,43 @@ function tools(session: Session): AgentTool<any>[] {
     async execute(_id, raw) {
       const params = raw as Json;
       guard();
+      const early = needsDraft("find_parts", params);
+      if (early) return early;
       const result = await backend("/api/v1/internal/candidates", {
         run_id: session.runId, category: params.category,
         maximum_minor: params.max_price_sgd != null ? Math.round(params.max_price_sgd * 100) : null,
         minimum_minor: params.min_price_sgd != null ? Math.round(params.min_price_sgd * 100) : null,
         require: params.require || {}, minimum_specs: params.minimum || {}, limit: 5,
       });
+      if (result.invalid_filters) {
+        log("find_parts", params, "invalid filters");
+        const bad = result.invalid_filters;
+        return {
+          content: text(bad.unknown_category
+            ? { error: `Unknown category '${bad.unknown_category}'.`, valid_categories: DESKTOP.concat("laptop") }
+            : { error: `A ${params.category} has no spec named ${bad.unknown_keys.join(", ")}.`, valid_spec_names: bad.valid_keys,
+                then: "Search again with valid spec names only, or with none." }),
+          details: result,
+        };
+      }
       const offers = result.items.map(compact);
       for (const o of offers) session.seen[o.offer_id] = { ...o, category: params.category };
       log("find_parts", params, `${offers.length} offers`);
-      return {
-        content: text(offers.length ? { offers, then: "Pick one with select_part." }
-          : "No matching in-stock offers. Raise max_price_sgd or drop a soft preference, never a hard constraint."),
-        details: result,
-      };
+      if (offers.length) {
+        session.emptySearches[params.category] = 0;
+        return { content: text({ offers, then: "Pick one with select_part." }), details: result };
+      }
+      const empty = (session.emptySearches[params.category] = (session.emptySearches[params.category] || 0) + 1);
+      let message = result.cheapest_match_sgd != null
+        ? `No in-stock ${params.category} in that price range. The cheapest one matching these filters costs S$${result.cheapest_match_sgd}.`
+        : result.cheapest_match_sgd === null
+          ? `No in-stock ${params.category} matches these spec filters at any price.`
+          : "No matching in-stock offers. Drop a soft preference, never a hard constraint.";
+      if (empty >= 2) {
+        message += ` Stop searching ${params.category}: ` + (session.budgetAdvice
+          ? "use one of the swaps check_build listed." : "keep the current one and change a different part instead.");
+      }
+      return { content: text(message), details: result };
     },
   };
 
@@ -209,6 +283,8 @@ function tools(session: Session): AgentTool<any>[] {
     async execute(_id, raw) {
       const params = raw as Json;
       guard();
+      const early = needsDraft("select_part", params);
+      if (early) return early;
       const offer = session.seen[params.offer_id];
       if (!offer || offer.category !== params.category) {
         log("select_part", params, "rejected");
@@ -231,17 +307,21 @@ function tools(session: Session): AgentTool<any>[] {
     parameters: Type.Object({}),
     async execute() {
       guard();
+      const early = needsDraft("check_build", {});
+      if (early) return early;
       const assembled = await assemble();
       const v = assembled.validation;
       session.attempts.push({ offer_ids: Object.values(session.build).map((o) => o.offer_id), status: v.overall_status,
         failed: v.failed_codes, total_minor: v.total_minor });
       log("check_build", {}, v.overall_status);
-      const failed = v.checks.filter((c: Json) => c.status === "failed").map((c: Json) => ({ code: c.code, reason: c.reason, replace: c.affected_categories }));
-      return {
-        content: text({ overall_status: v.overall_status, total_sgd: v.total_minor / 100, failed,
-          then: failed.length ? "Replace the named categories with find_parts + select_part, then check_build again." : "Call submit_build." }),
-        details: assembled,
-      };
+      const summary = { overall_status: v.overall_status, total_sgd: v.total_minor / 100 };
+      if (v.overall_status !== "failed") {
+        session.budgetAdvice = false;
+        return { content: text({ ...summary, failed: [], then: "Call submit_build." }), details: assembled };
+      }
+      const advice = repairAdvice(session, assembled);
+      // Nothing cheaper exists: end the turn instead of letting the model search for parts that are not there.
+      return { content: text({ ...summary, ...advice }), details: assembled, terminate: session.shortfallSgd != null };
     },
   };
 
@@ -280,7 +360,7 @@ function tools(session: Session): AgentTool<any>[] {
       const v = assembled.validation;
       if (v.overall_status === "failed") {
         log("submit_build", params, "rejected");
-        return { content: text({ accepted: false, failed: v.checks.filter((c: Json) => c.status === "failed").map((c: Json) => ({ code: c.code, reason: c.reason, replace: c.affected_categories })) }), details: v };
+        return { content: text({ accepted: false, ...repairAdvice(session, assembled) }), details: v, terminate: session.shortfallSgd != null };
       }
       session.submitted = { title: params.title, reasons: params.reasons, assembled };
       log("submit_build", params, "accepted");
@@ -297,8 +377,9 @@ function briefing(session: Session): string {
     `Preferences: ${JSON.stringify(r.preferences || [])}. Hard constraints: ${JSON.stringify(r.hard_constraints || {})}. ` +
     `Locked products (must be included): ${JSON.stringify((r.locked_items || []).map((i: Json) => i.name || i.mention))}. ` +
     `Already owned (do not buy): ${JSON.stringify((r.owned_components || []).map((o: Json) => o.mention))}.`;
-  const steps = "Steps: 1) draft_build. 2) check_build. 3) If a check failed, replace only the categories it names " +
-    "(find_parts with the suggested filters, then select_part) and check_build again. 4) If a part clearly does not fit the " +
+  const steps = "Steps: 1) draft_build. 2) check_build. 3) If a check failed, follow its 'then' instruction: when it lists " +
+    "ready-made swaps, select_part one of them directly; otherwise replace only the categories it names (find_parts with " +
+    "the suggested filters, then select_part). Then check_build again. 4) If a part clearly does not fit the " +
     "workloads or preferences, you may replace it the same way. 5) Optionally find_evidence. 6) submit_build with a title " +
     "and 2-4 reasons taken from tool results. Always act through tool calls.";
   if (session.deviceType === "laptop") return `/no_think Recommend ONE in-stock laptop. ${common} ${steps}`;
@@ -307,7 +388,7 @@ function briefing(session: Session): string {
 
 async function superviseOne(runId: string, deviceType: "desktop" | "laptop", requirements: Json) {
   const session: Session = { runId, deviceType, requirements, build: {}, seen: {}, attempts: [], toolCalls: [],
-    usage: { calls: 0, input_tokens: 0, output_tokens: 0 } };
+    emptySearches: {}, drafted: false, budgetAdvice: false, usage: { calls: 0, input_tokens: 0, output_tokens: 0 } };
   // Locked products are part of the build from the start; the model cannot remove them.
   const lockedIds = (requirements.locked_product_ids || []).map(String);
   if (lockedIds.length) {
@@ -351,7 +432,8 @@ async function superviseOne(runId: string, deviceType: "desktop" | "laptop", req
     }
   });
   await agent.prompt(briefing(session));
-  for (let nudge = 0; nudge < 2 && !session.submitted && !agent.state.errorMessage && session.toolCalls.length < maxToolCalls; nudge++) {
+  for (let nudge = 0; nudge < 2 && !session.submitted && session.shortfallSgd == null && !agent.state.errorMessage
+      && session.toolCalls.length < maxToolCalls; nudge++) {
     await agent.prompt(`/no_think You have not submitted an accepted build yet. Status: ${JSON.stringify(progress(session))}. Continue with tool calls.`);
   }
   return { session, error: agent.state.errorMessage };
@@ -364,15 +446,30 @@ async function execute(payload: Json): Promise<Json> {
   const trace: Json[] = [];
   const usage = { calls: 0, input_tokens: 0, output_tokens: 0 };
   const limitations: string[] = [];
+  const failures: ("error" | "budget" | "steps")[] = [];
   for (const branch of branches) {
     const { session, error } = await superviseOne(run.id, branch, requirements);
     trace.push({ agent: `pi_supervisor:${branch}`, tool_calls: session.toolCalls, attempts: session.attempts });
     usage.calls += session.usage.calls; usage.input_tokens += session.usage.input_tokens; usage.output_tokens += session.usage.output_tokens;
-    if (error) limitations.push(`Pi ${branch} supervisor stopped with an error: ${error}`);
     if (!session.submitted) {
-      limitations.push(`Pi ${branch} supervisor did not reach an accepted build within ${maxToolCalls} tool calls.`);
+      // Say why this branch ended without a build: the three causes call for different actions by the user.
+      const last = session.attempts.at(-1);
+      const closest = last ? ` Its last attempt cost S$${(last.total_minor / 100).toFixed(0)} and failed: ${last.failed.join(", ")}.` : "";
+      if (error) {
+        failures.push("error");
+        limitations.push(`Pi ${branch} supervisor stopped with an error: ${error}`);
+      } else if (session.shortfallSgd != null) {
+        failures.push("budget");
+        limitations.push(`Pi ${branch} supervisor found no compatible ${branch} within the budget: with the cheapest compatible ` +
+          `alternatives its build is still about S$${session.shortfallSgd.toFixed(0)} over.`);
+      } else {
+        failures.push("steps");
+        limitations.push(`Pi ${branch} supervisor stopped after ${session.toolCalls.length} of ${maxToolCalls} tool calls ` +
+          `without an accepted build.${closest}`);
+      }
       continue;
     }
+    if (error) limitations.push(`Pi ${branch} supervisor stopped with an error: ${error}`);
     const { option } = session.submitted.assembled;
     const offerIds = option.items.filter((i: Json) => i.offer_id).map((i: Json) => i.offer_id);
     const evidence = await backend("/api/v1/internal/retrieval/hybrid", {
@@ -393,6 +490,13 @@ async function execute(payload: Json): Promise<Json> {
     });
   }
   const toolCalls = trace.flatMap((t) => t.tool_calls.map((c: Json) => ({ agent_role: t.agent, tool: c.tool, status: c.outcome })));
+  // Stopping short is a limit of this run, not evidence that the request is impossible.
+  const retry = run.orchestration_mode === "pi" ? "generate again or switch to the DAG workflow" : "generate again";
+  const noBuild = failures.includes("error")
+    ? "The Pi supervisor could not finish because a model call failed; no recommendation was produced."
+    : failures.includes("steps")
+      ? `The Pi supervisor stopped before reaching a build that passes every check. This does not mean the request is impossible: ${retry}.`
+      : "The Pi supervisor found no compatible build within this budget. Raise the budget or relax a requirement.";
   return {
     run_id: run.id,
     status: "completed",
@@ -403,7 +507,7 @@ async function execute(payload: Json): Promise<Json> {
     options,
     assistant_message: options.length
       ? `The Pi supervisor found ${options.length} validated option${options.length === 1 ? "" : "s"}.`
-      : "The Pi supervisor could not reach a build that passes every hard constraint. Hard constraints were not relaxed.",
+      : `${noBuild} Hard constraints were not relaxed.`,
     generation_source: "llm",
     plan: { active_agents: branches.map((b) => `pi_supervisor:${b}`), tasks: ["find_parts", "check_build", "find_evidence", "submit_build"] },
     agent_trace: trace,

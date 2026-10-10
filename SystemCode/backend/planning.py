@@ -412,6 +412,57 @@ def revise(option: dict, categories: list[str], validation: dict, query: Callabl
     return new, changes
 
 
+def budget_repair(option: dict, validation: dict, query: Callable, requirements: dict, validate: Callable,
+                  per_category: int = 2) -> dict | None:
+    """Concrete ways to bring an over-budget option back within budget, for a runtime that repairs a build
+    itself. The budget check names only the most expensive part, which may have no cheaper compatible
+    alternative; this lists what can actually be swapped.
+
+    ``single_swaps`` are replacements that close the whole gap on their own and leave no failed check.
+    ``partial_savings`` holds, for every other part, the cheapest compatible alternative; several of them
+    may be needed. Both empty means no cheaper compatible part exists at all."""
+    budget = (requirements.get("budget") or {}).get("maximum_minor")
+    if budget is None or "budget_limit" not in validation.get("failed_codes", []):
+        return None
+    over = validation["total_minor"] - budget
+    items = {i["category"]: i for i in option["items"]}
+    changeable = sorted((c for c, i in items.items() if not i.get("locked") and not i.get("owned_by_user")),
+                        key=lambda c: minor(items[c]), reverse=True)
+    single, partial = [], []
+    unknown_now = sum(c["status"] == "unknown" for c in validation["checks"])
+
+    def failed_after(category: str, row: dict) -> list[str] | None:
+        """Failed checks after the swap, or None when it would leave more checks unverifiable than before."""
+        swapped = {**option, "items": [make_item(row) if i["category"] == category else i for i in option["items"]]}
+        result = validate(swapped, requirements)
+        if sum(c["status"] == "unknown" for c in result["checks"]) > unknown_now:
+            return None
+        return result["failed_codes"]
+
+    for category in changeable:
+        current, old = items[category], minor(items[category])
+        others = {c: i for c, i in items.items() if c != category}
+        extra = {"integrated_graphics": True} if option.get("integrated_graphics_build") and category == "cpu" else None
+        entry = {"category": category, "current_name": current["name"], "current_minor": old}
+        closing = []
+        if old - over > 0:
+            rows = shortlist(query, category, old - over, others, requirements, [current["offer_id"]],
+                             limit=per_category * 2, hard_max=old - over, extra_require=extra)
+            closing = [r for r in rows if failed_after(category, r) == []][:per_category]
+        if closing:
+            single.append({**entry, "alternatives": closing, "saving_minor": old - minor(closing[0])})
+            continue
+        rows = shortlist(query, category, 0, others, requirements, [current["offer_id"]], limit=per_category * 2,
+                         hard_max=old - 1, extra_require=extra)
+        cheaper = [r for r in rows if failed_after(category, r) in ([], ["budget_limit"])][:1]
+        if cheaper:
+            partial.append({**entry, "alternatives": cheaper, "saving_minor": old - minor(cheaper[0])})
+    single.sort(key=lambda e: e["saving_minor"])        # the smallest downgrade that closes the gap first
+    partial.sort(key=lambda e: e["saving_minor"], reverse=True)
+    return {"over_minor": over, "single_swaps": single, "partial_savings": partial,
+            "reachable": bool(single) or sum(e["saving_minor"] for e in partial) >= over}
+
+
 def assemble_option(corpus, device_type: str, offer_ids: list[str], requirements: dict) -> dict:
     """Build an option on the server from offer ids (plus owned parts) so no runtime can invent items."""
     rows = [corpus.offer(oid) for oid in offer_ids]
