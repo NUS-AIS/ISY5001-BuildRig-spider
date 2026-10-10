@@ -16,6 +16,7 @@ touches locked or owned parts, and excludes offers that were already tried.
 """
 from __future__ import annotations
 
+import json
 import re
 
 from dataclasses import dataclass, field
@@ -289,6 +290,142 @@ def cheapest_build_minor(query: Callable, requirements: dict, fixed: dict, categ
             return None
         items[category] = make_item(min(rows, key=minor))
     return sum(minor(i) for c, i in items.items() if c not in fixed)
+
+
+# ---------------------------------------------------------------------------------- feasibility
+
+FLOOR_SEARCH_WIDTH = 200       # offers per category considered when pricing the cheapest build
+_floor_cache: dict[str, dict | None] = {}
+
+
+def feasibility_floor(corpus, requirements: dict) -> dict | None:
+    """The lowest price at which the pinned snapshot can meet the request's hard requirements (memory and
+    storage minimums, locked and owned parts), so a budget below it can be answered at once instead of
+    after a full run. ``graphics_card_floor_minor`` is the budget from which planning includes a graphics
+    card, set when the workloads call for one and the floor is only reached on integrated graphics.
+    None when the request cannot be priced."""
+    device = requirements.get("device_type")
+    key = json.dumps([corpus.snapshot_id, device, profile_for(requirements) == "general",
+                      requirements.get("hard_constraints") or {}, sorted(map(str, requirements.get("locked_product_ids", []))),
+                      [[o.get("category"), o.get("specs")] for o in requirements.get("owned_components", [])]],
+                     sort_keys=True, default=str)
+    if key not in _floor_cache:
+        desktop = _desktop_floor(corpus.candidates, corpus.products, requirements) if device in ("desktop", "compare") else None
+        laptop = _laptop_floor(corpus.candidates, requirements) if device in ("laptop", "compare") else None
+        floors = [f["floor_minor"] for f in (desktop, laptop) if f]
+        _floor_cache[key] = None if not floors else {
+            "device_type": device, "floor_minor": min(floors),
+            # A comparison can always fall back to the cheaper device, so the card threshold is not reported.
+            "graphics_card_floor_minor": desktop.get("graphics_card_floor_minor") if desktop and device == "desktop" else None,
+            "desktop_builds": desktop["builds"] if desktop else []}
+    return _floor_cache[key]
+
+
+def cheapest_desktop_option(corpus, requirements: dict) -> dict | None:
+    """The cheapest compatible desktop within the budget, as a plannable option: with a graphics card when
+    the workloads call for one and it fits, otherwise on integrated graphics. Share-based planning aims
+    near the budget and may not find its way down to this build within the revision budget."""
+    floor = feasibility_floor(corpus, {**requirements, "device_type": "desktop"})
+    budget = (requirements.get("budget") or {}).get("maximum_minor")
+    if not floor or budget is None:
+        return None
+    profile = profile_for(requirements)
+    wanted = [b for b in floor["desktop_builds"] if b["total_minor"] <= budget]
+    # Everyday use takes integrated graphics; other workloads take a card whenever one fits.
+    wanted.sort(key=lambda b: b["has_card"] == (profile == "general"))
+    if not wanted:
+        return None
+    build = wanted[0]
+    items = [dict(i) for i in build["items"]]
+    for item in items:
+        if item.get("owned_by_user"):
+            item["selection_reason"], item["selected_by"] = "Already owned by the user; reused at no cost.", "user"
+        elif item.get("locked"):
+            item["selection_reason"], item["selected_by"] = "Locked by the user.", "user"
+        else:
+            item["selection_reason"] = "Cheapest compatible offer; the budget leaves no room for a higher tier."
+            item["selected_by"] = "rules"
+    notes = []
+    if not build["has_card"] and profile != "general":
+        notes.append("No build with a graphics card fits this budget. This build uses the processor's integrated "
+                     "graphics, which suits light or older games only.")
+    return {"device_type": "desktop", "profile": profile, "items": items,
+            "required_categories": [i["category"] for i in items], "integrated_graphics_build": not build["has_card"],
+            "shares_minor": {}, "planning_notes": notes}
+
+
+def _cheapest_per(rows: list[dict], spec: str) -> list[dict]:
+    """The cheapest offer for each value of one specification (an unknown value is its own group)."""
+    best: dict[Any, dict] = {}
+    for row in rows:
+        value = row["specs"].get(spec)
+        if value not in best or minor(row) < minor(best[value]):
+            best[value] = row
+    return [make_item(r) for r in best.values()]
+
+
+def _desktop_floor(query: Callable, products: Callable, requirements: dict) -> dict | None:
+    fixed: dict[str, dict] = {}
+    for owned in requirements.get("owned_components", []):
+        if owned.get("category") in DESKTOP_ORDER:
+            fixed[owned["category"]] = owned_item(owned)
+    for row in products(requirements.get("locked_product_ids", [])):
+        if row["category"] in DESKTOP_ORDER and row["category"] not in fixed:
+            fixed[row["category"]] = make_item(row, locked=True)
+
+    def wide(category: str, items: dict, extra: dict | None = None) -> list[dict]:
+        return shortlist(query, category, 0, items, requirements, [], limit=FLOOR_SEARCH_WIDTH, extra_require=extra)
+
+    def cheapest(categories: list[str], integrated: bool) -> dict | None:
+        # The cheapest processor can force a dearer board, and the cheapest board a dearer memory generation,
+        # so every socket and memory generation is priced; the remaining parts are independent of each other.
+        if "cpu" in fixed:
+            cpus = [fixed["cpu"]] if not integrated or fixed["cpu"]["specs"].get("integrated_graphics") else []
+        else:
+            cpus = _cheapest_per(wide("cpu", fixed, {"integrated_graphics": True} if integrated else None), "socket")
+        best = None
+        for cpu in cpus:
+            with_cpu = {**fixed, "cpu": cpu}
+            boards = [fixed["motherboard"]] if "motherboard" in fixed else _cheapest_per(wide("motherboard", with_cpu), "memory_type")
+            for board in boards:
+                build = {**with_cpu, "motherboard": board}
+                for category in categories:
+                    if category in build:
+                        continue
+                    rows = wide(category, build)
+                    if not rows:
+                        break
+                    build[category] = make_item(min(rows, key=minor))
+                else:
+                    total = sum(minor(i) for i in build.values() if not i.get("owned_by_user"))
+                    if best is None or total < best["total_minor"]:
+                        best = {"total_minor": total, "has_card": "gpu" in build,
+                                "items": [build[c] for c in DESKTOP_ORDER if c in build]}
+        return best
+
+    with_card = cheapest(DESKTOP_ORDER, integrated=False)
+    # Planning falls back to integrated graphics when no card fits, unless the user fixed a card.
+    without_card = None if "gpu" in fixed else cheapest([c for c in DESKTOP_ORDER if c != "gpu"], integrated=True)
+    builds = [b for b in (with_card, without_card) if b]
+    if not builds:
+        return None
+    floor = min(b["total_minor"] for b in builds)
+    # The budget from which plan_desktop itself puts a card in the build (same rule, same numbers).
+    spent = sum(minor(i) for i in fixed.values() if not i.get("owned_by_user"))
+    open_cost = cheapest_build_minor(query, requirements, fixed, DESKTOP_ORDER)
+    card_from = spent + open_cost if open_cost is not None else None
+    wants_card = profile_for(requirements) != "general" and "gpu" not in fixed and card_from is not None and card_from > floor
+    return {"floor_minor": floor, "graphics_card_floor_minor": card_from if wants_card else None, "builds": builds}
+
+
+def _laptop_floor(query: Callable, requirements: dict) -> dict | None:
+    constraints = requirements.get("hard_constraints") or {}
+    minimum = {k: v for k, v in (("ram_gb", constraints.get("minimum_memory_gb")),
+                                 ("storage_gb", constraints.get("minimum_storage_gb"))) if v}
+    rows = query(category="laptop", minimum_specs=minimum or None, order="price_asc", limit=FLOOR_SEARCH_WIDTH * 3)
+    # A stated minimum has to be verifiable, as in planning: a laptop with an unknown value does not count.
+    rows = [r for r in rows if all(r["specs"].get(k) is not None for k in minimum)]
+    return {"floor_minor": min(minor(r) for r in rows)} if rows else None
 
 
 # ---------------------------------------------------------------------------------- laptop

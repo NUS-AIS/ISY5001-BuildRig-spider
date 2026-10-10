@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 
 COMPARE_PATTERNS = ("台式还是笔记本", "笔记本还是台式", "desktop or laptop", "laptop or desktop", "desktop vs laptop",
                     "laptop vs desktop", "not sure whether", "compare a desktop", "compare desktop")
+# Rough floors used only when no catalogue is at hand; with one, the floor is priced from the snapshot.
 MINIMUM_FEASIBLE_MINOR = {"desktop": 60000, "laptop": 50000, "compare": 60000}
 PREFERENCE_PATTERNS = {
     "quiet": r"\bquiet\b|\bsilent\b|low[- ]noise|静音|安静",
@@ -261,7 +262,41 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
 
 # ------------------------------------------------------------------------------ public API
 
-def clarification_questions(req: dict) -> list[dict]:
+def budget_floor(req: dict, catalogue=None) -> dict | None:
+    """The lowest budget that can meet the request: priced from the pinned snapshot when a catalogue is
+    given (``priced`` is True), otherwise a rough figure per device type."""
+    if catalogue is not None and hasattr(catalogue, "candidates"):
+        from backend.planning import feasibility_floor
+        try:
+            floor = feasibility_floor(catalogue, req)
+        except Exception:      # a catalogue that cannot be queried must not block the conversation
+            floor = None
+        if floor:
+            return {**floor, "priced": True}
+    rough = MINIMUM_FEASIBLE_MINOR.get(req.get("device_type"))
+    return {"floor_minor": rough, "graphics_card_floor_minor": None, "priced": False} if rough else None
+
+
+def floor_summary(req: dict, floor: dict) -> str:
+    """One sentence stating the priced floor and what it covers, shared by the question and the run result."""
+    noun = {"desktop": "desktop", "laptop": "laptop", "compare": "desktop or laptop"}[req["device_type"]]
+    constraints = req.get("hard_constraints") or {}
+    needs = [f"{constraints[key]}GB of {label}" for key, label in (("minimum_memory_gb", "memory"), ("minimum_storage_gb", "storage"))
+             if constraints.get(key)]
+    needs += [f"the {item.get('name') or item.get('mention')}" for item in req.get("locked_items", [])]
+    detail = " with " + " and ".join(needs) if needs else ""
+    text = (f"The cheapest compatible {noun}{detail} in the current Singapore catalogue costs "
+            f"S${floor['floor_minor'] / 100:,.0f}.")
+    if floor.get("graphics_card_floor_minor"):
+        text += f" A build with a graphics card starts at about S${floor['graphics_card_floor_minor'] / 100:,.0f}."
+    return text
+
+
+def _round_up(minor: int, step: int = 1000) -> int:
+    return -(-minor // step) * step
+
+
+def clarification_questions(req: dict, catalogue=None) -> list[dict]:
     questions = []
     if not req.get("device_type"):
         questions.append({
@@ -279,16 +314,31 @@ def clarification_questions(req: dict) -> list[dict]:
             "text": "What is your maximum budget in Singapore dollars?",
             "options": [{"label": f"S${v:,}", "value": f"My maximum budget is S${v:,}."} for v in (1200, 1800, 2500, 3500)],
         })
-    elif req.get("device_type") in MINIMUM_FEASIBLE_MINOR and \
-            req["budget"]["maximum_minor"] < MINIMUM_FEASIBLE_MINOR[req["device_type"]] and not req.get("budget_low_acknowledged"):
-        floor = MINIMUM_FEASIBLE_MINOR[req["device_type"]] / 100
-        questions.append({
-            "question_id": "q_budget_low",
-            "text": f"S${req['budget']['maximum_minor'] / 100:,.0f} is below what a complete {req['device_type']} usually costs "
-                    f"in the current Singapore catalogue (about S${floor:,.0f}). Would you like to raise the budget?",
-            "options": [{"label": f"Raise to S${floor:,.0f}", "value": f"My maximum budget is S${floor:,.0f}."},
-                        {"label": "Keep my budget", "value": "Keep my budget and show what is possible."}],
-        })
+    elif req.get("device_type") in MINIMUM_FEASIBLE_MINOR and not req.get("budget_low_acknowledged"):
+        floor = budget_floor(req, catalogue)
+        budget = req["budget"]["maximum_minor"]
+        if floor and budget < floor["floor_minor"] and floor["priced"]:
+            # Offer budgets that are known to work: the floor itself and, where it differs, a build with a card.
+            raises = [(_round_up(floor["floor_minor"]), "")]
+            if floor.get("graphics_card_floor_minor"):
+                raises.append((_round_up(floor["graphics_card_floor_minor"]), " (with a graphics card)"))
+            questions.append({
+                "question_id": "q_budget_low",
+                "text": f"S${budget / 100:,.0f} is not enough for this request. {floor_summary(req, floor)} "
+                        "Would you like to raise the budget, or change a requirement?",
+                "options": [{"label": f"Raise to S${value / 100:,.0f}{note}", "value": f"My maximum budget is S${value / 100:,.0f}."}
+                            for value, note in raises],
+                "floor_minor": floor["floor_minor"],
+            })
+        elif floor and budget < floor["floor_minor"]:
+            rough = floor["floor_minor"] / 100
+            questions.append({
+                "question_id": "q_budget_low",
+                "text": f"S${budget / 100:,.0f} is below what a complete {req['device_type']} usually costs "
+                        f"in the current Singapore catalogue (about S${rough:,.0f}). Would you like to raise the budget?",
+                "options": [{"label": f"Raise to S${rough:,.0f}", "value": f"My maximum budget is S${rough:,.0f}."},
+                            {"label": "Keep my budget", "value": "Keep my budget and show what is possible."}],
+            })
     return questions
 
 
@@ -296,6 +346,8 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
                        recent_items: list[dict] | None = None) -> tuple[dict, list[dict]]:
     before = deepcopy(current or {})
     req = requirement_chain.invoke({"text": text, "current": current})
+    if req.get("budget") != before.get("budget"):
+        req.pop("budget_low_acknowledged", None)      # the acknowledgement was for the previous budget
     if "keep my budget" in text.casefold():
         req["budget_low_acknowledged"] = True
     questions: list[dict] = []
@@ -313,7 +365,7 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
         if record["category"] and record["category"] not in known:
             req.setdefault("owned_components", []).append(record)
             known.add(record["category"])
-    return req, questions + clarification_questions(req)
+    return req, questions + clarification_questions(req, catalogue)
 
 
 OWNED_PHRASE = re.compile(r"(?:already (?:have|own|got)|\bi (?:have|own)|i've got|已经有|已有|我有)\s*"

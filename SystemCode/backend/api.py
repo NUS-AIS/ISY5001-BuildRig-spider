@@ -90,7 +90,7 @@ def create_router(store, corpus, engine):
         req = store.requirements(session_id, body.requirements_version)
         if not req:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_VERSION_NOT_FOUND"})
-        _, questions = parse_requirements("", req)
+        _, questions = parse_requirements("", req, catalogue=corpus)
         if questions:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_INCOMPLETE", "questions": questions})
         if body.base_run_id:

@@ -32,7 +32,10 @@ def score(case: dict, record: dict, offers: dict, model=None) -> dict:
         s["detail"] = f"questions={final['questions']}"
         return s
     if behaviour == "infeasible":
-        s["task_completed"] = result.get("outcome") == "no_feasible_option"
+        # An impossible budget is either stopped at intake with the priced floor, or (if the user insists)
+        # ends the run as no_feasible_option. Recommending anything would be the failure.
+        asked = not final["can_generate"] and "q_budget_low" in final["questions"]
+        s["task_completed"] = asked or result.get("outcome") == "no_feasible_option"
         s["constraint_satisfaction"] = s["task_completed"] or all(
             option_constraints_ok(o, expect, final["requirements"])["within_budget"] for o in options)
         s["detail"] = result.get("outcome") or final["questions"]

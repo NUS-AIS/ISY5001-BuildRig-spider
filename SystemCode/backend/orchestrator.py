@@ -5,9 +5,11 @@ One run is pinned to one requirements version and one data snapshot. The DAG is:
     Planner -> Desktop Planner and/or Laptop Selector -> (Evidence || Validate) -> Review
             -> [Replan the affected parts, at most ``max_revisions`` rounds] -> Explanation
 
-When every option is still failing after the revision budget is used up and a Pi runtime is
-configured, the run is handed to Pi with the same tools and constraints. Hard constraints are never
-relaxed: an unsolvable request ends as ``no_feasible_option`` with the reasons.
+A budget below the cheapest compatible build in the snapshot is answered before any agent runs.
+When every option is still over budget after the revision budget is used up, the cheapest compatible
+build is tried once. If options are still failing and a Pi runtime is configured, the run is handed
+to Pi with the same tools and constraints. Hard constraints are never relaxed: an unsolvable request
+ends as ``no_feasible_option`` with the reasons.
 """
 import json
 import time
@@ -20,13 +22,16 @@ from backend.agents import (AgentContext, DesktopPlanningAgent, EvidenceAgent, E
 from backend.explanation_guard import guard, guard_message, option_facts, unsupported
 from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
-from backend.planning import Chooser, revise
-from backend.requirements_parser import for_model
+from backend.planning import Chooser, cheapest_desktop_option, feasibility_floor, revise
+from backend.requirements_parser import floor_summary, for_model
 from backend.revision import carry_over, requirement_changes, reuse_decision
 from backend.retrieval import LocalCorpus
 from backend.settings import Settings
 from backend.store import StateStore
 from backend.validation import validate_option
+
+
+FINAL_REVIEW_TOOL_CALLS = 8      # one validation plus the evidence queries of the last review
 
 
 class RecommendationEngine:
@@ -69,7 +74,10 @@ class RecommendationEngine:
         try:
             self._progress(run_id, "planning", "Creating the task plan")
             req = self.store.requirements(run["session_id"], run["requirements_version"])
-            if run["orchestration_mode"] == "pi":
+            result = self._below_floor(run, req)
+            if result:
+                pass
+            elif run["orchestration_mode"] == "pi":
                 result = self._execute_pi(run, req, maximum_options)
             else:
                 result = self._execute_dag(run, req, maximum_options)
@@ -88,6 +96,30 @@ class RecommendationEngine:
             error = {"code": "RUN_FAILED", "message": str(exc)}
             self.store.set_run(run_id, "failed", "failed", error=error)
             self.store.event(run_id, "failed", error)
+
+    def _below_floor(self, run: dict, req: dict) -> dict | None:
+        """The result for a budget that no compatible build in the snapshot can meet, or None if one can.
+        Planning, replanning and the Pi fallback cannot change that outcome, only delay it."""
+        budget = (req.get("budget") or {}).get("maximum_minor")
+        try:
+            floor = feasibility_floor(self.corpus, req)
+        except Exception:
+            floor = None
+        if not floor or budget is None or budget >= floor["floor_minor"]:
+            return None
+        self.store.event(run["id"], "infeasible", {"budget_minor": budget, "floor_minor": floor["floor_minor"]})
+        message = (f"S${budget / 100:,.0f} is not enough for this request. {floor_summary(req, floor)} "
+                   "Raise the budget or change a requirement. Hard constraints were not relaxed.")
+        return {"run_id": run["id"], "status": "completed", "outcome": "no_feasible_option",
+                "requirements_version": run["requirements_version"], "snapshot_id": run["snapshot_id"],
+                "orchestration_mode": run["orchestration_mode"], "options": [], "rejected_options": [],
+                "revisions_exhausted": False, "follow_up": None, "assistant_message": message,
+                "generation_source": "fallback", "plan": {"branches": [], "tasks": ["feasibility_check"]},
+                "agent_trace": [], "agent_log": [], "tool_calls": [], "memory_context": {"confirmed_memory_ids": []},
+                "feasibility": {"budget_minor": budget, "floor_minor": floor["floor_minor"],
+                                "graphics_card_floor_minor": floor.get("graphics_card_floor_minor")},
+                "limitations": ["The budget is below the cheapest compatible build in the pinned catalogue snapshot, "
+                                "so no planning was run."]}
 
     def _progress(self, rid: str, stage: str, message: str):
         self.store.set_run(rid, "running", stage)
@@ -139,10 +171,26 @@ class RecommendationEngine:
         accepted, rejected = [], []
         chooser = Chooser(context.model)
         exhausted = False
+        out_of_allowance = False
         for option in options:
-            status = self._review_loop(context, harness, option, chooser)
+            try:
+                status = self._review_loop(context, harness, option, chooser)
+            except RuntimeError as exc:
+                if "budget exhausted" not in str(exc):
+                    raise
+                # Replanning used up the run's tool or step allowance. Keep what was accepted so far and drop
+                # the remaining alternatives instead of failing the whole run.
+                out_of_allowance, exhausted = True, True
+                if "validation" in option:
+                    rejected.append(option)
+                break
             (accepted if status == "accepted" else rejected).append(option)
             exhausted = exhausted or status == "exhausted"
+        if not accepted:
+            rescued = self._cheapest_build(context, harness, rejected, chooser)
+            if rescued:
+                rejected.remove(rescued)
+                accepted.append(rescued)
 
         self._progress(rid, "explaining", "Explaining the recommendation from verified facts")
         assistant_message, generation_source, limitations = self._explain(context, harness, accepted, rejected)
@@ -150,6 +198,8 @@ class RecommendationEngine:
             limitations.append("The local retrieval adapter implements the production contract; Neo4j and Milvus are not active.")
         limitations += self._degradations(context, accepted + rejected, corpus_events_before)
         limitations += list(dict.fromkeys(n for o in accepted for n in o.get("planning_notes") or []))
+        if out_of_allowance:
+            limitations.append("Replanning used up this run's tool allowance, so not every alternative was explored.")
         if follow_up:
             self._describe_follow_up(follow_up, accepted)
         for option in accepted:
@@ -205,11 +255,42 @@ class RecommendationEngine:
             notes.append("The local model was unavailable for part selection; deterministic choices were used.")
         return notes
 
-    def _review_loop(self, context: AgentContext, harness: RunHarness, option: dict, chooser: Chooser) -> str:
-        """Evidence and validation run in parallel; failed reviews trigger targeted replanning."""
+    def _cheapest_build(self, context: AgentContext, harness: RunHarness, rejected: list[dict], chooser: Chooser) -> dict | None:
+        """Last step when every option is still over budget: swap one for the cheapest compatible build and
+        review it once. Planning aims near the budget, so a few replacement rounds may not reach the floor."""
+        option = next((o for o in rejected if o["device_type"] == "desktop"
+                       and "budget_limit" in o["validation"]["failed_codes"]), None)
+        cheapest = cheapest_desktop_option(self.corpus, context.requirements) if option else None
+        if not cheapest:
+            return None
+        # Replanning may have used the whole allowance; this one review is always allowed to run.
+        context.tools.max_calls = max(context.tools.max_calls, len(self.store.tool_calls(context.run_id)) + FINAL_REVIEW_TOOL_CALLS)
+        harness.max_agent_steps = max(harness.max_agent_steps, len(harness.state["completed_tasks"]) + 3)
+        old = {i["category"]: i for i in option["items"]}
+        new = {i["category"]: i for i in cheapest["items"]}
+        changes = [{"category": c, "from": old[c]["name"] if c in old else None, "to": new[c]["name"] if c in new else None,
+                    "from_price": old[c]["price"] if c in old else None, "to_price": new[c]["price"] if c in new else None}
+                   for c in dict.fromkeys(list(old) + list(new))
+                   if (old.get(c) or {}).get("offer_id") != (new.get(c) or {}).get("offer_id")]
+        reason = ["Revision budget used up while still over budget; switched to the cheapest compatible build."]
+        self.store.event(context.run_id, "replan", {"option_id": option["option_id"], "round": len(option["revision_history"]) + 1,
+                                                    "reason": reason, "categories": [c["category"] for c in changes]})
+        harness.state["plan_version"] += 1
+        option["revision_history"].append({"round": len(option["revision_history"]) + 1, "plan_version": harness.state["plan_version"],
+                                           "failed_checks": option["validation"]["failed_codes"], "reason": reason,
+                                           "changes": changes})
+        option.update(cheapest)
+        harness.transition("replanned", "replanner", f"cheapest:{option['option_id']}", {"changes": changes})
+        return option if self._review_loop(context, harness, option, chooser, final=True) == "accepted" else None
+
+    def _review_loop(self, context: AgentContext, harness: RunHarness, option: dict, chooser: Chooser,
+                     final: bool = False) -> str:
+        """Evidence and validation run in parallel; failed reviews trigger targeted replanning.
+        ``final`` reviews the option as it is: no further replanning, no preference revision."""
         evidence_agent, review_agent = EvidenceAgent(), ReviewAgent()
-        preference_revision_used = False
-        for round_number in range(self.settings.max_revisions + 1):
+        preference_revision_used = final
+        rounds = 0 if final else self.settings.max_revisions
+        for round_number in range(rounds + 1):
             with ThreadPoolExecutor(max_workers=2) as pool:
                 evidence_future = pool.submit(evidence_agent.invoke, {"context": context, "option": option})
                 review_future = pool.submit(review_agent.invoke, {"context": context, "option": option,
@@ -220,13 +301,14 @@ class RecommendationEngine:
             option["retrieval"] = {"backend": evidence.get("retrieval_backend"), "degraded_routes": evidence.get("degraded_routes", [])}
             option["validation"] = review["validation"]
             option["review"] = {"decision": review["decision"], "notes": review["review_notes"], "source": review["review_source"]}
-            harness.transition("reviewed", "evidence_agent+review_agent", f"review:{option['option_id']}:r{round_number}",
+            harness.transition("reviewed", "evidence_agent+review_agent",
+                               f"review:{option['option_id']}:{'final' if final else f'r{round_number}'}",
                                {"decision": review["review_decision"], "status": review["validation"]["overall_status"]})
             if review["review_decision"] == "pass":
                 return "accepted"
             if review["review_decision"] == "insufficient_information":
                 return "rejected"
-            if round_number == self.settings.max_revisions:
+            if round_number == rounds:
                 return "exhausted"
             if review["validation"]["overall_status"] != "failed":
                 preference_revision_used = True
