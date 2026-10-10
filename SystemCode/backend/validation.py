@@ -205,6 +205,23 @@ def rule_storage_capacity(option, req):
     return _check("minimum_storage", "failed", f"{size} GB is below the required {minimum} GB.", inputs, [item["category"]])
 
 
+def rule_gpu_memory(option, req):
+    minimum = (req.get("hard_constraints") or {}).get("minimum_gpu_memory_gb")
+    if not minimum or option.get("device_type") != "desktop":
+        return None
+    gpu = _first(option, "gpu")
+    inputs = {"gpu_memory_gb": _spec(gpu, "vram_gb"), "minimum_gb": minimum}
+    if not gpu:
+        return _check("minimum_gpu_memory", "failed", f"A graphics card with at least {minimum} GB is required, but this "
+                      "build has none.", inputs, ["gpu"])
+    size = inputs["gpu_memory_gb"]
+    if size is None:
+        return _check("minimum_gpu_memory", "unknown", "Graphics memory is not stated for the graphics card.", inputs)
+    if size >= minimum:
+        return _check("minimum_gpu_memory", "passed", f"{size} GB graphics memory meets the {minimum} GB requirement.", inputs)
+    return _check("minimum_gpu_memory", "failed", f"{size} GB graphics memory is below the required {minimum} GB.", inputs, ["gpu"])
+
+
 def rule_no_bundle_listing(option, req):
     bundles = [i for i in option.get("items", []) if (i.get("flags") or {}).get("bundle_suspect")]
     if not bundles:
@@ -224,7 +241,7 @@ def rule_laptop_regional_match(option, req):
 RULES: list[Callable[[dict, dict], dict | None]] = [
     rule_budget, rule_in_stock, rule_completeness, rule_locked_items, rule_no_bundle_listing,
     rule_socket, rule_memory_type, rule_psu_headroom, rule_gpu_clearance, rule_form_factor, rule_display_output,
-    rule_memory_capacity, rule_storage_capacity, rule_laptop_regional_match,
+    rule_memory_capacity, rule_storage_capacity, rule_gpu_memory, rule_laptop_regional_match,
 ]
 
 

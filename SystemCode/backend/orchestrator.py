@@ -406,6 +406,9 @@ class RecommendationEngine:
         try:
             with urlopen(request, timeout=self.settings.pi_runtime_timeout_seconds) as response:
                 result = json.loads(response.read())
+        except TimeoutError as exc:
+            raise RuntimeError(f"The Pi runtime did not finish within {self.settings.pi_runtime_timeout_seconds} seconds. "
+                               "Generate again or use the DAG workflow.") from exc
         except URLError as exc:
             raise RuntimeError(f"Pi runtime unavailable: {exc.reason}") from exc
         result.setdefault("orchestration_mode", "pi")

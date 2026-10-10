@@ -32,7 +32,10 @@ async function send(text = input.value) {
   error.value=''; say('user', text); input.value=''; busy.value=true; stage.value='Understanding your request'
   try {
     await ensureSession()
+    const previous = workspace.requirementsVersion
     const parsed = await api.sendMessage(workspace.sessionId, workspace.requirementsVersion, text)
+    // A message that changed nothing must not make the shown result look out of date.
+    if (parsed.requirements_changed === false && workspace.lastRunVersion === previous) workspace.setLastRun(workspace.lastRunId, parsed.requirements_version)
     workspace.setVersion(parsed.requirements_version); canGenerate.value=parsed.can_generate
     say('assistant', parsed.assistant_message || (parsed.questions?.length ? parsed.questions.map(q=>q.text).join(' ') : 'Your requirements are ready. I can now prepare an evidence-backed recommendation.'), {options:parsed.reply_options||[],source:parsed.generation_source})
   } catch(e){ error.value=e.message; say('assistant', 'I could not save that request. Please check the backend connection and try again.') }

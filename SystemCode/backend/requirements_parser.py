@@ -51,6 +51,17 @@ def ambiguous_amounts(text: str) -> dict[int, int]:
     return found
 
 
+_CARD = r"(?:vram|(?:gpu|graphics|video)(?:\s+card)?\s+(?:memory|ram)|显存)"
+_NOT_SYSTEM = r"(?!\s*(?:of\s+)?(?:ram\b|ddr|system memory|内存))"      # "GPU and 32GB RAM" is about the RAM
+GPU_MEMORY = (
+    re.compile(rf"(\d{{1,2}})\s*gb\s*(?:of\s+)?{_CARD}"),                                   # 12GB VRAM, 12GB of GPU memory
+    re.compile(rf"{_CARD}[^.,;\d]{{0,40}}?(\d{{1,2}})\s*gb{_NOT_SYSTEM}"),                   # GPU memory has to be more than 12GB
+    re.compile(r"(\d{1,2})\s*gb\s*(?:memory\s+|vram\s+)?(?:gpu|graphics card|显卡)"),          # a 12GB memory GPU
+    re.compile(r"(?:gpu|graphics card|显卡)\s*(?:with|of|has|having|至少|要)?\s*(?:at least\s*|more than\s*|over\s*)?"
+               rf"(\d{{1,2}})\s*gb{_NOT_SYSTEM}"),                                           # a GPU with at least 12GB
+)
+
+
 def _parse(payload: dict) -> dict:
     text = payload["text"]
     req = deepcopy(payload.get("current") or {})
@@ -69,9 +80,15 @@ def _parse(payload: dict) -> dict:
         money = re.fullmatch(r"\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:sgd)?\s*", normalized)
     if money:
         req["budget"] = {"currency": "SGD", "maximum_minor": int(money.group(1)) * 100, "is_hard_limit": True}
-    ram = re.search(r"(\d{1,3})\s*gb\s*(?:内存|ram|memory)", lower) or re.search(r"(?:内存|ram|memory)\s*(?:of\s*)?(\d{1,3})\s*gb", lower)
-    if not ram and not re.search(r"\d\s*(?:tb|gb)\s*(?:ssd|storage|硬盘|存储)|rtx|gtx|\brx\s?\d|vram|gddr|显卡|显存", lower):
-        ram = re.search(r"(\d{1,3})\s*gb", lower)
+    # Graphics memory is read first, and its wording is hidden from the system-memory rules below:
+    # "12GB memory GPU" and "GPU memory of 16GB" are about the card, not the RAM.
+    vram = next((m for m in (p.search(lower) for p in GPU_MEMORY) if m), None)
+    if vram and int(vram.group(1)) in (4, 6, 8, 10, 12, 16, 20, 24, 32):
+        req.setdefault("hard_constraints", {})["minimum_gpu_memory_gb"] = int(vram.group(1))
+    system = lower.replace(vram.group(0), " ") if vram else lower
+    ram = re.search(r"(\d{1,3})\s*gb\s*(?:内存|ram|memory)", system) or re.search(r"(?:内存|ram|memory)\s*(?:of\s*)?(\d{1,3})\s*gb", system)
+    if not ram and not re.search(r"\d\s*(?:tb|gb)\s*(?:ssd|storage|硬盘|存储)|rtx|gtx|\brx\s?\d|vram|gddr|\bgpu\b|graphics|显卡|显存", system):
+        ram = re.search(r"(\d{1,3})\s*gb", system)
     if ram and int(ram.group(1)) in (8, 16, 24, 32, 48, 64, 96, 128):
         req.setdefault("hard_constraints", {})["minimum_memory_gb"] = int(ram.group(1))
     storage = re.search(r"(\d(?:\.\d)?)\s*tb\s*(?:ssd|storage|硬盘|存储)?|(\d{3,4})\s*gb\s*(?:ssd|storage|硬盘|存储)", lower)
@@ -106,8 +123,9 @@ class RequirementExtraction(BaseModel):
         None, description="'compare' when the user is undecided between a desktop and a laptop")
     budget_sgd: float | None = Field(None, description="maximum budget in Singapore dollars, only if stated")
     workloads: list[str] = Field(default_factory=list, description="software or activities, e.g. gaming, SolidWorks")
-    minimum_memory_gb: int | None = None
+    minimum_memory_gb: int | None = Field(None, description="system memory (RAM), not graphics memory")
     minimum_storage_gb: int | None = None
+    minimum_gpu_memory_gb: int | None = Field(None, description="graphics card memory (VRAM), only if stated")
     preferences: list[str] = Field(default_factory=list, description="soft wishes, e.g. quiet, portable, white, RGB")
     must_buy_components: list[str] = Field(default_factory=list, description="specific parts the user insists on buying")
     owned_components: list[str] = Field(default_factory=list, description="parts the user already has and will reuse")
@@ -230,9 +248,12 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
         elif not regex_budget_set and _number_in_text(extracted.budget_sgd, text):
             req["budget"] = {"currency": "SGD", "maximum_minor": llm_minor, "is_hard_limit": True}
     constraints = req.setdefault("hard_constraints", {})
-    for field in ("minimum_memory_gb", "minimum_storage_gb"):
+    for field in ("minimum_memory_gb", "minimum_storage_gb", "minimum_gpu_memory_gb"):
         value = getattr(extracted, field)
         if not value or field in constraints:
+            continue
+        # The model often files graphics memory under system memory; the rule layer already told them apart.
+        if field == "minimum_memory_gb" and value in (constraints.get("minimum_gpu_memory_gb"), extracted.minimum_gpu_memory_gb):
             continue
         stated = _number_in_text(value, text) or (
             field == "minimum_storage_gb" and value % 1024 == 0 and _number_in_text(value // 1024, text))
@@ -295,7 +316,8 @@ def floor_summary(req: dict, floor: dict) -> str:
     """One sentence stating the priced floor and what it covers, shared by the question and the run result."""
     noun = {"desktop": "desktop", "laptop": "laptop", "compare": "desktop or laptop"}[req["device_type"]]
     constraints = req.get("hard_constraints") or {}
-    needs = [f"{constraints[key]}GB of {label}" for key, label in (("minimum_memory_gb", "memory"), ("minimum_storage_gb", "storage"))
+    needs = [f"{constraints[key]}GB of {label}" for key, label in (("minimum_memory_gb", "memory"), ("minimum_storage_gb", "storage"),
+                                                                    ("minimum_gpu_memory_gb", "graphics memory"))
              if constraints.get(key)]
     needs += [f"the {item.get('name') or item.get('mention')}" for item in req.get("locked_items", [])]
     detail = " with " + " and ".join(needs) if needs else ""

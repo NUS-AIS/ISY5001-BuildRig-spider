@@ -30,6 +30,9 @@ const maxToolCalls = Number(process.env.PI_MAX_TOOL_CALLS || 24);
 // server default (OLLAMA_CONTEXT_LENGTH) must match the value the Python backend requests, or every switch
 // between the two reloads the model.
 const contextLength = Number(process.env.BUILDRIG_OLLAMA_NUM_CTX || 8192);
+// The API waits BUILDRIG_PI_RUNTIME_TIMEOUT_SECONDS for the answer and discards a run that takes longer.
+// Stopping a little earlier returns what was tried, with an explanation, instead of a bare timeout.
+const maxSeconds = Number(process.env.PI_MAX_SECONDS || Math.max(Number(process.env.BUILDRIG_PI_RUNTIME_TIMEOUT_SECONDS || 300) - 30, 30));
 const DESKTOP = ["cpu", "motherboard", "ram", "gpu", "psu", "case", "ssd", "cooler"];
 
 async function readJson(request: IncomingMessage): Promise<Json> {
@@ -113,6 +116,8 @@ interface Session {
   seen: Record<string, Json>;            // offer_id -> offer returned by find_parts in this session
   submitted?: { title: string; reasons: string[]; assembled: Json };
   emptySearches: Record<string, number>; // category -> find_parts calls in a row that returned nothing
+  deadline: number;                      // epoch ms after which the run stops and reports what it tried
+  timedOut: boolean;
   drafted: boolean;                      // draft_build has loaded the starting build
   budgetAdvice: boolean;                 // the last failed check came with server-computed swaps
   shortfallSgd?: number;                 // set when no cheaper compatible part can close the budget gap
@@ -134,7 +139,8 @@ function required(session: Session): string[] {
   if (session.deviceType === "laptop") return ["laptop"];
   const owned = new Set((session.requirements.owned_components || []).map((o: Json) => o.category));
   const office = (session.requirements.workloads || []).every((w: string) => !/gam|solidworks|ansys|blender|video|render|learning|ai\b/i.test(w));
-  const igpu = session.build.cpu?.specs?.integrated_graphics === true && office && !session.build.gpu;
+  const cardRequired = Boolean(session.requirements.hard_constraints?.minimum_gpu_memory_gb);
+  const igpu = session.build.cpu?.specs?.integrated_graphics === true && office && !session.build.gpu && !cardRequired;
   return DESKTOP.filter((c) => !owned.has(c) && !(igpu && c === "gpu"));
 }
 
@@ -151,6 +157,9 @@ function progress(session: Session): Json {
   if (next === "ram") {
     if (b.motherboard?.specs?.memory_type) hint.require = { memory_type: b.motherboard.specs.memory_type };
     hint.minimum = { capacity_gb: session.requirements.hard_constraints?.minimum_memory_gb || 16 };
+  }
+  if (next === "gpu" && session.requirements.hard_constraints?.minimum_gpu_memory_gb) {
+    hint.minimum = { vram_gb: session.requirements.hard_constraints.minimum_gpu_memory_gb };
   }
   if (next === "psu" && b.cpu?.specs?.tdp_w != null) {
     hint.minimum = { wattage_w: Math.ceil(((b.cpu.specs.tdp_w || 0) + (b.gpu?.specs?.tdp_w || 0) + 100) * 1.2) };
@@ -207,6 +216,7 @@ function tools(session: Session): AgentTool<any>[] {
   const log = (tool: string, args: Json, outcome: string) => session.toolCalls.push({ tool, args, outcome });
   const guard = () => {
     if (session.toolCalls.length >= maxToolCalls) throw new Error("Tool call budget exhausted for this run.");
+    if (Date.now() >= session.deadline) throw new Error("Time budget exhausted for this run.");
   };
   // Building part by part from an empty build spends the budget on the first category; the draft is
   // a compatible build within budget shares, so every other tool waits for it.
@@ -410,9 +420,9 @@ function briefing(session: Session): string {
   return `/no_think Recommend ONE complete desktop. ${common} ${steps}`;
 }
 
-async function superviseOne(runId: string, deviceType: "desktop" | "laptop", requirements: Json) {
+async function superviseOne(runId: string, deviceType: "desktop" | "laptop", requirements: Json, deadline: number) {
   const session: Session = { runId, deviceType, requirements, build: {}, seen: {}, attempts: [], toolCalls: [],
-    emptySearches: {}, drafted: false, budgetAdvice: false, usage: { calls: 0, input_tokens: 0, output_tokens: 0 } };
+    emptySearches: {}, deadline, timedOut: false, drafted: false, budgetAdvice: false, usage: { calls: 0, input_tokens: 0, output_tokens: 0 } };
   // Locked products are part of the build from the start; the model cannot remove them.
   const lockedIds = (requirements.locked_product_ids || []).map(String);
   if (lockedIds.length) {
@@ -444,6 +454,8 @@ async function superviseOne(runId: string, deviceType: "desktop" | "laptop", req
     toolExecution: "sequential",
   });
   await report(runId, `pi_planning_${deviceType}`, `Pi is planning the ${deviceType}`);
+  // A model call can outlast the deadline on its own, so the stop does not wait for the next tool call.
+  const stopAtDeadline = setTimeout(() => { session.timedOut = true; agent.abort(); }, Math.max(deadline - Date.now(), 0));
   agent.subscribe(async (event: Json) => {
     if (event.type === "tool_execution_start" && STAGES[event.toolName]) {
       await report(runId, ...STAGES[event.toolName](event.args || {}));
@@ -459,12 +471,17 @@ async function superviseOne(runId: string, deviceType: "desktop" | "laptop", req
       console.log(`[${deviceType}] ${parts.join(" | ").slice(0, 400)} usage=${JSON.stringify(event.message.usage?.input ?? "")}`);
     }
   });
-  await agent.prompt(briefing(session));
-  for (let nudge = 0; nudge < 2 && !session.submitted && session.shortfallSgd == null && !agent.state.errorMessage
-      && session.toolCalls.length < maxToolCalls; nudge++) {
-    await agent.prompt(`/no_think You have not submitted an accepted build yet. Status: ${JSON.stringify(progress(session))}. Continue with tool calls.`);
+  try {
+    await agent.prompt(briefing(session));
+    for (let nudge = 0; nudge < 2 && !session.submitted && session.shortfallSgd == null && !session.timedOut
+        && !agent.state.errorMessage && session.toolCalls.length < maxToolCalls; nudge++) {
+      await agent.prompt(`/no_think You have not submitted an accepted build yet. Status: ${JSON.stringify(progress(session))}. Continue with tool calls.`);
+    }
+  } finally {
+    clearTimeout(stopAtDeadline);
   }
-  return { session, error: agent.state.errorMessage };
+  // Stopping at the deadline is reported as such, not as whatever error the interruption left behind.
+  return { session, error: session.timedOut ? undefined : agent.state.errorMessage };
 }
 
 async function execute(payload: Json): Promise<Json> {
@@ -475,8 +492,9 @@ async function execute(payload: Json): Promise<Json> {
   const usage = { calls: 0, input_tokens: 0, output_tokens: 0 };
   const limitations: string[] = [];
   const failures: ("error" | "budget" | "steps")[] = [];
+  const deadline = Date.now() + maxSeconds * 1000;
   for (const branch of branches) {
-    const { session, error } = await superviseOne(run.id, branch, requirements);
+    const { session, error } = await superviseOne(run.id, branch, requirements, deadline);
     trace.push({ agent: `pi_supervisor:${branch}`, tool_calls: session.toolCalls, attempts: session.attempts });
     usage.calls += session.usage.calls; usage.input_tokens += session.usage.input_tokens; usage.output_tokens += session.usage.output_tokens;
     if (!session.submitted) {
@@ -492,8 +510,9 @@ async function execute(payload: Json): Promise<Json> {
           `alternatives its build is still about S$${session.shortfallSgd.toFixed(0)} over.`);
       } else {
         failures.push("steps");
-        limitations.push(`Pi ${branch} supervisor stopped after ${session.toolCalls.length} of ${maxToolCalls} tool calls ` +
-          `without an accepted build.${closest}`);
+        limitations.push(session.timedOut || Date.now() >= deadline
+          ? `Pi ${branch} supervisor reached its ${maxSeconds}-second limit after ${session.toolCalls.length} tool calls without an accepted build.${closest}`
+          : `Pi ${branch} supervisor stopped after ${session.toolCalls.length} of ${maxToolCalls} tool calls without an accepted build.${closest}`);
       }
       continue;
     }

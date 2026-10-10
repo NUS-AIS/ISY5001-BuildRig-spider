@@ -9,6 +9,13 @@ from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
 
 
+NOTHING_CHANGED = (
+    "I could not turn that message into a requirement, so nothing changed and a new recommendation would be the "
+    "same. I can act on: desktop or laptop, budget, what you will use it for, minimum memory, storage or graphics "
+    "memory (for example \"a graphics card with at least 12GB\"), preferences such as quiet or white, parts to "
+    "keep, and parts you already own.")
+
+
 def create_router(store, corpus, engine):
     router = APIRouter(prefix="/api/v1", tags=["recommendation"])
 
@@ -76,12 +83,20 @@ def create_router(store, corpus, engine):
             version = store.update_requirements(session_id, body.expected_requirements_version, requirements, status)
         except ValueError as exc:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_VERSION_CONFLICT", "current_version": exc.args[0]})
-        assistant_message, generation_source = engine.intake_reply(body.text, requirements, questions)
+        # A message that changes nothing must not be answered with "Understood": the next recommendation
+        # would be identical, and the user should know why and what the system can act on.
+        ignore = ("understanding_source",)
+        changed = ({k: v for k, v in requirements.items() if k not in ignore}
+                   != {k: v for k, v in session["requirements"].items() if k not in ignore})
+        if changed or questions:
+            assistant_message, generation_source = engine.intake_reply(body.text, requirements, questions)
+        else:
+            assistant_message, generation_source = NOTHING_CHANGED, "fallback"
         store.add_reply(session_id, assistant_message)
         reply_options = questions[0].get("options", []) if questions else []
         return {"session_id": session_id, "message_id": mid, "requirements_version": version,
                 "status": status, "requirements": requirements, "questions": questions,
-                "can_generate": not questions, "assistant_message": assistant_message,
+                "can_generate": not questions, "requirements_changed": changed, "assistant_message": assistant_message,
                 "generation_source": generation_source, "reply_options": reply_options}
 
     @router.get("/sessions/{session_id}/transcript")

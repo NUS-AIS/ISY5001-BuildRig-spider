@@ -171,10 +171,12 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
         minimum["max_gpu_length_mm"] = gpu["specs"]["length_mm"]
     if category == "ssd":
         minimum["capacity_gb"] = constraints.get("minimum_storage_gb") or 500
+    if category == "gpu" and constraints.get("minimum_gpu_memory_gb"):
+        minimum["vram_gb"] = constraints["minimum_gpu_memory_gb"]
     rows, fallback = [], []
-    # A user's hard minimum (memory, storage) must be verifiable: prefer a wider price window with an offer
-    # known to satisfy it over a narrower one whose offers leave the value unknown.
-    hard = [k for k in minimum if (category, k) in {("ram", "capacity_gb"), ("ssd", "capacity_gb")}]
+    # A user's hard minimum (memory, storage, graphics memory) must be verifiable: prefer a wider price window
+    # with an offer known to satisfy it over a narrower one whose offers leave the value unknown.
+    hard = [k for k in minimum if (category, k) in {("ram", "capacity_gb"), ("ssd", "capacity_gb"), ("gpu", "vram_gb")}]
 
     def verified(candidates: list[dict]) -> list[dict]:
         return [r for r in candidates if all(r["specs"].get(k) is not None for k in hard)]
@@ -224,12 +226,14 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
             reasons[row["category"]] = "Locked by the user."
     profile = profile or profile_for(requirements)
     shares = PROFILES[profile]
-    # Everyday use does not need a graphics card when the CPU has integrated graphics.
-    integrated = profile == "general" and "gpu" not in items
+    # Everyday use does not need a graphics card when the CPU has integrated graphics - unless the user asked
+    # for a card with a minimum of graphics memory, which integrated graphics cannot meet.
+    card_required = bool((requirements.get("hard_constraints") or {}).get("minimum_gpu_memory_gb"))
+    integrated = profile == "general" and "gpu" not in items and not card_required
     spent = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
     free = max(budget - spent, 0)
     notes = []
-    if not integrated and "gpu" not in items:
+    if not integrated and "gpu" not in items and not card_required:
         # If even the cheapest in-stock card plus the cheapest other parts cannot fit, a graphics card is
         # impossible within this budget; build on integrated graphics and say so instead of failing.
         # Judge against the user's real budget, not a scaled-down alternative's share of it.
@@ -404,8 +408,10 @@ def _desktop_floor(query: Callable, products: Callable, requirements: dict) -> d
         return best
 
     with_card = cheapest(DESKTOP_ORDER, integrated=False)
-    # Planning falls back to integrated graphics when no card fits, unless the user fixed a card.
-    without_card = None if "gpu" in fixed else cheapest([c for c in DESKTOP_ORDER if c != "gpu"], integrated=True)
+    # Planning falls back to integrated graphics when no card fits, unless the user fixed a card or asked
+    # for a minimum of graphics memory.
+    card_required = "gpu" in fixed or bool((requirements.get("hard_constraints") or {}).get("minimum_gpu_memory_gb"))
+    without_card = None if card_required else cheapest([c for c in DESKTOP_ORDER if c != "gpu"], integrated=True)
     builds = [b for b in (with_card, without_card) if b]
     if not builds:
         return None
@@ -414,7 +420,7 @@ def _desktop_floor(query: Callable, products: Callable, requirements: dict) -> d
     spent = sum(minor(i) for i in fixed.values() if not i.get("owned_by_user"))
     open_cost = cheapest_build_minor(query, requirements, fixed, DESKTOP_ORDER)
     card_from = spent + open_cost if open_cost is not None else None
-    wants_card = profile_for(requirements) != "general" and "gpu" not in fixed and card_from is not None and card_from > floor
+    wants_card = profile_for(requirements) != "general" and not card_required and card_from is not None and card_from > floor
     return {"floor_minor": floor, "graphics_card_floor_minor": card_from if wants_card else None, "builds": builds}
 
 
