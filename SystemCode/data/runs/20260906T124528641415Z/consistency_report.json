@@ -1,16 +1,16 @@
 {
-  "checked_at": "2026-10-08T13:06:20.048668+00:00",
+  "checked_at": "2026-10-10T06:26:46.394584+00:00",
   "snapshot_id": "20260906T124528641415Z",
   "manifest": {
     "offers": 2236,
     "reviews": 15,
-    "updated_at": "2026-10-08T13:04:15.293608+00:00",
+    "updated_at": "2026-10-10T06:25:27.093690+00:00",
     "embedding_dimensions": 1024,
     "snapshot_id": "20260906T124528641415Z",
     "chunks": 4149,
     "embedding_model": "bge-m3",
-    "status": "published",
-    "milvus_collection": "buildrig_chunks_bge_m3_v2"
+    "milvus_collection": "buildrig_chunks_bge_m3_v2",
+    "status": "published"
   },
   "snapshot_files": {
     "offers": 2236,
