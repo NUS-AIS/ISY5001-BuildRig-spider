@@ -11,6 +11,9 @@ from langchain_core.documents import Document
 TOKEN = re.compile(r"[a-z0-9][a-z0-9._+-]*|[\u4e00-\u9fff]", re.I)
 
 
+from backend.attributes import derive, verdict
+
+
 def tokens(text: str) -> list[str]:
     return TOKEN.findall(text.casefold())
 
@@ -94,10 +97,11 @@ class LocalCorpus:
     def candidates(self, category: str, maximum_minor: int | None = None, limit: int = 25,
                    minimum_minor: int | None = None, require: dict | None = None,
                    minimum_specs: dict | None = None, exclude_ids: list[str] | None = None,
-                   order: str = "price_asc") -> list[dict]:
-        """In-stock single-component offers, optionally filtered by spec equality (``require``) and
-        spec lower bounds (``minimum_specs``). Offers whose spec is unknown are kept after the known
-        matches, so a missing spec never silently counts as compatible."""
+                   order: str = "price_asc", filters: dict | None = None) -> list[dict]:
+        """In-stock single-component offers, optionally filtered by spec equality (``require``), spec
+        lower bounds (``minimum_specs``) and listing attributes such as maker or store (``filters``, see
+        backend.attributes). Offers whose value is unknown are kept after the known matches, so a
+        missing value never silently counts as compatible."""
         excluded = set(exclude_ids or [])
         rows = [r for r in self.prices if r["category"] == category and r.get("available") is True
                 and r["id"] not in excluded and not self.flags.get(r["id"], {}).get("bundle_suspect")]
@@ -111,6 +115,8 @@ class LocalCorpus:
             specs = self.specs.get(row["id"], {})
             verdicts = [specs.get(k) == v if specs.get(k) is not None else None for k, v in (require or {}).items()]
             verdicts += [specs.get(k) >= v if specs.get(k) is not None else None for k, v in (minimum_specs or {}).items()]
+            if filters:
+                verdicts.append(verdict(derive({**row, "specs": specs}), filters))
             if False in verdicts:
                 continue
             (unknown if None in verdicts else known).append(row)

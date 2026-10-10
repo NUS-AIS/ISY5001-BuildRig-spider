@@ -5,6 +5,8 @@ from fastapi.responses import StreamingResponse
 from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, HybridRequest, MemoryPatch, MessageCreate,
                             ProgressReport, RunCreate, SessionCreate, ValidationRequest)
 from backend.planning import Chooser, assemble_option, budget_repair, plan_desktop, plan_laptops
+from backend.attributes import filters_for
+from backend.requirement_rules import unsupported_requests
 from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
 
@@ -85,18 +87,25 @@ def create_router(store, corpus, engine):
             raise HTTPException(409, detail={"code": "REQUIREMENTS_VERSION_CONFLICT", "current_version": exc.args[0]})
         # A message that changes nothing must not be answered with "Understood": the next recommendation
         # would be identical, and the user should know why and what the system can act on.
-        ignore = ("understanding_source",)
-        changed = ({k: v for k, v in requirements.items() if k not in ignore}
-                   != {k: v for k, v in session["requirements"].items() if k not in ignore})
+        def stated(req: dict) -> dict:
+            return {k: v for k, v in req.items() if k != "understanding_source" and v not in (None, [], {})}
+
+        changed = stated(requirements) != stated(session["requirements"])
+        # Wishes the recommendation cannot honour are named, so they are not mistaken for understood.
+        notes = unsupported_requests(body.text, requirements.get("device_type"))
         if changed or questions:
-            assistant_message, generation_source = engine.intake_reply(body.text, requirements, questions)
+            assistant_message, generation_source = engine.intake_reply(body.text, requirements, questions, notes)
         else:
             assistant_message, generation_source = NOTHING_CHANGED, "fallback"
+        if notes:
+            assistant_message += (" Note: I cannot act on " + ", ".join(notes) + "; that is outside what I plan or what "
+                                  "the catalogue records, so the recommendation will not reflect it.")
         store.add_reply(session_id, assistant_message)
         reply_options = questions[0].get("options", []) if questions else []
         return {"session_id": session_id, "message_id": mid, "requirements_version": version,
                 "status": status, "requirements": requirements, "questions": questions,
-                "can_generate": not questions, "requirements_changed": changed, "assistant_message": assistant_message,
+                "can_generate": not questions, "requirements_changed": changed, "not_acted_on": notes,
+                "assistant_message": assistant_message,
                 "generation_source": generation_source, "reply_options": reply_options}
 
     @router.get("/sessions/{session_id}/transcript")
@@ -254,12 +263,17 @@ def create_router(store, corpus, engine):
         if unknown:
             return {"snapshot_id": corpus.snapshot_id, "items": [],
                     "invalid_filters": {"unknown_keys": unknown, "valid_keys": sorted(known)}}
+        # What the user asked for by maker, chip, store or feature applies to every search of this run,
+        # whether or not the runtime remembers to ask for it.
+        run = store.run(body.run_id)
+        stated = filters_for(body.category, store.requirements(run["session_id"], run["requirements_version"]) or {}) if run else {}
         filters = (body.require or None, body.minimum_specs or None, body.exclude_ids)
-        rows = corpus.candidates(body.category, body.maximum_minor, body.limit, body.minimum_minor, *filters, body.order)
+        rows = corpus.candidates(body.category, body.maximum_minor, body.limit, body.minimum_minor, *filters, body.order,
+                                 stated or None)
         response = {"snapshot_id": corpus.snapshot_id, "items": [offer_view(r) for r in rows]}
         if not rows and (body.maximum_minor is not None or body.minimum_minor is not None):
             # Tell the caller where matching offers start, so it does not probe the price one dollar at a time.
-            cheapest = corpus.candidates(body.category, None, 1, None, *filters, "price_asc")
+            cheapest = corpus.candidates(body.category, None, 1, None, *filters, "price_asc", stated or None)
             response["cheapest_match_sgd"] = float(cheapest[0]["price"]) if cheapest else None
         return response
 

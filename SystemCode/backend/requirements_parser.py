@@ -19,6 +19,10 @@ from typing import Literal
 from langchain_core.runnables import RunnableLambda
 from pydantic import BaseModel, Field
 
+from backend.attributes import LABELS, active, describe, gpu_model
+from backend.requirement_rules import (NO_RGB, NOT_THE_BUDGET, SOFT_PREFERENCES, budget_amount, shorthand,
+                                       stated_constraints)
+
 COMPARE_PATTERNS = ("台式还是笔记本", "笔记本还是台式", "desktop or laptop", "laptop or desktop", "desktop vs laptop",
                     "laptop vs desktop", "not sure whether", "compare a desktop", "compare desktop")
 # Rough floors used only when no catalogue is at hand; with one, the floor is priced from the snapshot.
@@ -27,7 +31,7 @@ PREFERENCE_PATTERNS = {
     "quiet": r"\bquiet\b|\bsilent\b|low[- ]noise|静音|安静",
     "white": r"\bwhite\b|白色",
     "RGB lighting": r"\brgb\b|灯效",
-    "portable": r"\bportable\b|\blight(?:weight)?\b|轻薄|便携",
+    "portable": r"\bportable\b|\blight(?:weight)?\b|\blighter\b|轻薄|便携|轻一点|轻便|重量轻",
     "compact": r"\bcompact\b|small form factor|\bsff\b|小机箱",
 }
 KNOWN_WORKLOADS = ("SolidWorks", "MATLAB", "ANSYS", "AutoCAD", "Blender", "Premiere", "gaming", "video editing",
@@ -65,7 +69,7 @@ GPU_MEMORY = (
 def _parse(payload: dict) -> dict:
     text = payload["text"]
     req = deepcopy(payload.get("current") or {})
-    lower = text.casefold()
+    lower = shorthand(text.casefold())
     normalized = re.sub(r"(?<=\d),(?=\d)", "", lower)
     if any(p in lower for p in COMPARE_PATTERNS):
         req["device_type"] = "compare"
@@ -73,13 +77,21 @@ def _parse(payload: dict) -> dict:
         req["device_type"] = "laptop"
     elif any(x in lower for x in ("台式", "组装", "装机", "desktop", "workstation")) or re.search(r"\bpc\b", lower):
         req["device_type"] = "desktop"
-    money = (re.search(r"(?:预算|budget|max(?:imum)? budget|under|up to|maximum|below|within)\s*(?:是|为|is|of|:)?\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?", normalized)
-             or re.search(r"(?:s\$|sgd|\$)\s*([1-9]\d{2,5})(?:\.\d{1,2})?", normalized)
-             or re.search(r"([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:新币|新加坡元|sgd|dollars)", normalized))
-    if not money and not req.get("budget"):
-        money = re.fullmatch(r"\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:sgd)?\s*", normalized)
-    if money:
-        req["budget"] = {"currency": "SGD", "maximum_minor": int(money.group(1)) * 100, "is_hard_limit": True}
+    # The overall maximum only: a per-part amount or a minimum spend is not the budget.
+    budget_text = NOT_THE_BUDGET.sub(" ", normalized)
+    amount, foreign = budget_amount(lower, budget_text)          # ranges, "2.5k", "一万", other currencies
+    if amount is None:
+        money = (re.search(r"(?:预算|budget|max(?:imum)? budget|under|up to|maximum|below|within)\s*(?:是|为|is|of|:)?\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?", budget_text)
+                 or re.search(r"(?:s\$|sgd|\$)\s*([1-9]\d{2,5})(?:\.\d{1,2})?", budget_text)
+                 or re.search(r"([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:新币|新加坡元|sgd|dollars|usd|rmb|人民币|美元|美金)", budget_text))
+        if not money and not req.get("budget"):
+            money = re.fullmatch(r"\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:sgd)?\s*", budget_text)
+        amount = int(money.group(1)) if money else None
+    transient = req.setdefault("_transient", {})       # facts about this message only; never stored
+    if amount and foreign:
+        transient["foreign_budget"] = True               # not converted and not assumed to be SGD
+    elif amount:
+        req["budget"] = {"currency": "SGD", "maximum_minor": amount * 100, "is_hard_limit": True}
     # Graphics memory is read first, and its wording is hidden from the system-memory rules below:
     # "12GB memory GPU" and "GPU memory of 16GB" are about the card, not the RAM.
     vram = next((m for m in (p.search(lower) for p in GPU_MEMORY) if m), None)
@@ -100,9 +112,27 @@ def _parse(payload: dict) -> dict:
         if name.casefold() in lower and name not in workloads:
             workloads.append(name)
     preferences = req.setdefault("preferences", [])
-    for label, pattern in PREFERENCE_PATTERNS.items():
-        if re.search(pattern, lower) and label not in preferences:
+    no_rgb = bool(NO_RGB.search(lower))
+    for label, pattern in {**PREFERENCE_PATTERNS, **SOFT_PREFERENCES}.items():
+        if re.search(pattern, lower) and label not in preferences and not (no_rgb and label == "RGB lighting"):
             preferences.append(label)
+    if no_rgb:          # "no RGB" is the opposite wish, not a mention of RGB
+        preferences[:] = [p for p in preferences if p != "RGB lighting"] + ([] if "no RGB lighting" in preferences else ["no RGB lighting"])
+    elif "RGB lighting" in preferences and "no RGB lighting" in preferences:
+        preferences.remove("no RGB lighting")
+    # Requirements the catalogue can enforce: maker, chip, platform, store, Wi-Fi, laptop screen ...
+    stated = stated_constraints(text, req.get("device_type"))
+    if stated:
+        hard = req.setdefault("hard_constraints", {})
+        for key, value in stated.items():
+            if value is None:
+                hard.pop(key, None)
+            else:
+                hard[key] = value
+        if stated.get("minimum_gpu_model"):
+            transient["floor_model"] = stated["minimum_gpu_model"]["label"]
+    if vram and (req.get("hard_constraints") or {}).get("minimum_gpu_memory_gb"):
+        req["hard_constraints"].pop("no_graphics_card", None)
     req.setdefault("locked_product_ids", [])
     req.setdefault("locked_items", [])
     req.setdefault("owned_components", [])
@@ -143,7 +173,8 @@ EXTRACTION_PROMPT = (
 
 
 # Capacities, small numbers and category words do not identify a product ("64GB RAM", "2 TB SSD").
-GENERIC_TOKEN = re.compile(r"\d{1,2}|\d+(?:gb|tb|w|mhz|mt|hz|mm|cm)|gb|tb|ddr\d|gddr\d|ram|memory|ssd|nvme|hdd|storage|drive")
+GENERIC_TOKEN = re.compile(r"\d{1,2}|\d+(?:gb|tb|g|t|w|mhz|mt|hz|mm|cm)|gb|tb|ddr\d|gddr\d|ram|memory|ssd|nvme|hdd|storage|drive|"
+                           r"am[45]|lga\d{4}|platform|socket")
 OWNERSHIP = re.compile(r"already (?:have|own|got|has)|\bi (?:have|own)\b|i've got|\bre-?use\b|\bexisting\b|"
                        r"\bmy (?:old|current|own)\b|已有|已经有|我有|现有|旧的", re.I)
 
@@ -270,7 +301,10 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
         if not any(o["mention"].casefold() == mention.casefold() for o in req["owned_components"]):
             req["owned_components"].append(_owned_component(mention, catalogue))
     owned = {o["mention"].casefold() for o in req["owned_components"]}
-    must_buy = [m for m in extracted.must_buy_components if _specific_mention(m, text) and m.casefold() not in owned]
+    # "an RTX 5070 or better" sets a floor; it is not a request to buy that exact card.
+    floor_model = (req.get("_transient") or {}).get("floor_model")
+    must_buy = [m for m in extracted.must_buy_components if _specific_mention(m, text) and m.casefold() not in owned
+                and not (floor_model and (gpu_model(m) or {}).get("label") == floor_model)]
     for i, mention in enumerate(must_buy):
         recent = _recent_match(mention, recent_items)
         if recent:        # the user means the part we just recommended: lock exactly that product
@@ -308,6 +342,8 @@ def budget_floor(req: dict, catalogue=None) -> dict | None:
             floor = None
         if floor:
             return {**floor, "priced": True}
+        if active(req):      # nothing in the snapshot meets the stated requirements together
+            return {"floor_minor": None, "graphics_card_floor_minor": None, "priced": True, "unavailable": True}
     rough = MINIMUM_FEASIBLE_MINOR.get(req.get("device_type"))
     return {"floor_minor": rough, "graphics_card_floor_minor": None, "priced": False} if rough else None
 
@@ -315,11 +351,7 @@ def budget_floor(req: dict, catalogue=None) -> dict | None:
 def floor_summary(req: dict, floor: dict) -> str:
     """One sentence stating the priced floor and what it covers, shared by the question and the run result."""
     noun = {"desktop": "desktop", "laptop": "laptop", "compare": "desktop or laptop"}[req["device_type"]]
-    constraints = req.get("hard_constraints") or {}
-    needs = [f"{constraints[key]}GB of {label}" for key, label in (("minimum_memory_gb", "memory"), ("minimum_storage_gb", "storage"),
-                                                                    ("minimum_gpu_memory_gb", "graphics memory"))
-             if constraints.get(key)]
-    needs += [f"the {item.get('name') or item.get('mention')}" for item in req.get("locked_items", [])]
+    needs = describe(req) + [f"the {item.get('name') or item.get('mention')}" for item in req.get("locked_items", [])]
     detail = " with " + " and ".join(needs) if needs else ""
     text = (f"The cheapest compatible {noun}{detail} in the current Singapore catalogue costs "
             f"S${floor['floor_minor'] / 100:,.0f}.")
@@ -350,10 +382,21 @@ def clarification_questions(req: dict, catalogue=None) -> list[dict]:
             "text": "What is your maximum budget in Singapore dollars?",
             "options": [{"label": f"S${v:,}", "value": f"My maximum budget is S${v:,}."} for v in (1200, 1800, 2500, 3500)],
         })
-    elif req.get("device_type") in MINIMUM_FEASIBLE_MINOR and not req.get("budget_low_acknowledged"):
+    elif req.get("device_type") in MINIMUM_FEASIBLE_MINOR:
         floor = budget_floor(req, catalogue)
         budget = req["budget"]["maximum_minor"]
-        if floor and budget < floor["floor_minor"] and floor["priced"]:
+        if floor and floor.get("unavailable"):
+            wanted = active(req)
+            questions.append({
+                "question_id": "q_unavailable",
+                "text": "Nothing in the current Singapore catalogue meets all of these together: " + "; ".join(describe(req))
+                        + ". Which requirement should I drop?",
+                "options": [{"label": f"Drop: {LABELS[key][1](value)}"[:60], "value": f"Remove the {LABELS[key][0]} requirement."}
+                            for key, value in list(wanted.items())[:4]],
+            })
+        elif req.get("budget_low_acknowledged"):
+            pass
+        elif floor and budget < floor["floor_minor"] and floor["priced"]:
             # Offer budgets that are known to work: the floor itself and, where it differs, a build with a card.
             raises = [(_round_up(floor["floor_minor"]), "")]
             if floor.get("graphics_card_floor_minor"):
@@ -386,6 +429,7 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
     slips = ambiguous_amounts(text)
     stated = (req.get("budget") or {}).get("maximum_minor")
     unclear = req.get("budget") != before.get("budget") and stated is not None and stated // 100 in slips
+    foreign = bool(req.get("_transient", {}).get("foreign_budget"))
     if req.get("budget") != before.get("budget"):
         req.pop("budget_low_acknowledged", None)      # the acknowledgement was for the previous budget
     if "keep my budget" in text.casefold():
@@ -416,8 +460,19 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
         if record["category"] and record["category"] not in known:
             req.setdefault("owned_components", []).append(record)
             known.add(record["category"])
+    if foreign and not unclear:
+        if before.get("budget"):
+            req["budget"] = before["budget"]         # the model may have taken the foreign amount as SGD
+        else:
+            req.pop("budget", None)
+        questions = [q for q in questions if q["question_id"] != "q_budget_confirm"]
+        questions.insert(0, {"question_id": "q_budget_currency",
+                             "text": "Catalogue prices are in Singapore dollars and I do not convert currencies. "
+                                     "What is your maximum budget in SGD?",
+                             "options": [{"label": f"S${v:,}", "value": f"My maximum budget is S${v:,}."} for v in (1200, 1800, 2500, 3500)]})
+    req.pop("_transient", None)
     follow_up = clarification_questions(req, catalogue)
-    if unclear:      # the budget is already being asked about
+    if unclear or foreign:      # the budget is already being asked about
         follow_up = [q for q in follow_up if q["question_id"] not in ("q_budget", "q_budget_low")]
     return req, questions + follow_up
 
@@ -444,7 +499,7 @@ def for_model(req: dict) -> dict:
     view = {"device_type": req.get("device_type"),
             "budget_sgd_max": budget / 100 if budget is not None else None,
             "workloads": req.get("workloads", []), "preferences": req.get("preferences", []),
-            "hard_constraints": req.get("hard_constraints", {}),
+            "must_have": describe(req),
             "locked_parts": [i.get("name") or i.get("mention") for i in req.get("locked_items", [])],
             "owned_parts": [o.get("mention") for o in req.get("owned_components", [])]}
     return {k: v for k, v in view.items() if v not in (None, [], {})}

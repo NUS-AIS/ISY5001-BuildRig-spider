@@ -139,9 +139,11 @@ function required(session: Session): string[] {
   if (session.deviceType === "laptop") return ["laptop"];
   const owned = new Set((session.requirements.owned_components || []).map((o: Json) => o.category));
   const office = (session.requirements.workloads || []).every((w: string) => !/gam|solidworks|ansys|blender|video|render|learning|ai\b/i.test(w));
-  const cardRequired = Boolean(session.requirements.hard_constraints?.minimum_gpu_memory_gb);
+  const hard = session.requirements.hard_constraints || {};
+  const cardRequired = Boolean(hard.minimum_gpu_memory_gb || hard.gpu_vendor || hard.minimum_gpu_model);
+  const noCard = Boolean(hard.no_graphics_card) && !session.build.gpu?.locked;
   const igpu = session.build.cpu?.specs?.integrated_graphics === true && office && !session.build.gpu && !cardRequired;
-  return DESKTOP.filter((c) => !owned.has(c) && !(igpu && c === "gpu"));
+  return DESKTOP.filter((c) => !owned.has(c) && !((igpu || noCard) && c === "gpu"));
 }
 
 /** Where the build stands and which compatibility filters the next part needs. */

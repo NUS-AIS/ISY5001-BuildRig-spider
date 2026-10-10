@@ -25,6 +25,8 @@ from typing import Any, Callable
 
 from pydantic import BaseModel
 
+from backend.attributes import filters_for
+
 DESKTOP_ORDER = ["cpu", "motherboard", "ram", "gpu", "psu", "case", "ssd", "cooler"]
 FORM_FACTOR_RANK = {"Mini-ITX": 1, "Micro-ATX": 2, "ATX": 3, "E-ATX": 4}
 
@@ -56,7 +58,7 @@ def minor(row: dict) -> int:
 
 def make_item(row: dict, locked: bool = False) -> dict:
     return {"category": row["category"], "product_id": str(row.get("product_id") or row["id"]), "offer_id": row["id"],
-            "name": row["name"], "quantity": 1, "price": row["price"], "currency": row.get("currency", "SGD"),
+            "name": row["name"], "brand": row.get("brand"), "quantity": 1, "price": row["price"], "currency": row.get("currency", "SGD"),
             "merchant": row.get("store"), "source_url": row.get("source_url"), "collected_at": row.get("collected_at"),
             "availability": "in_stock_at_collection" if row.get("available") else "unavailable",
             "specs": row.get("specs", {}), "flags": row.get("flags", {}), "locked": locked}
@@ -161,12 +163,21 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
         require["socket"] = cpu["specs"]["socket"]
     if category == "cpu" and board and board["specs"].get("socket"):
         require["socket"] = board["specs"]["socket"]
+    # What the user asked for by name: a platform, a memory generation, a power supply size. A part already
+    # in the build decides first, so a locked CPU is never contradicted here (validation reports the clash).
+    if category in ("cpu", "motherboard") and constraints.get("socket"):
+        require.setdefault("socket", constraints["socket"])
+    if category == "motherboard" and constraints.get("memory_type"):
+        require["memory_type"] = constraints["memory_type"]
     if category == "ram":
         if board and board["specs"].get("memory_type"):
             require["memory_type"] = board["specs"]["memory_type"]
+        elif constraints.get("memory_type"):
+            require["memory_type"] = constraints["memory_type"]
         minimum["capacity_gb"] = constraints.get("minimum_memory_gb") or 16
-    if category == "psu" and required_psu_watts(items):
-        minimum["wattage_w"] = required_psu_watts(items)
+    if category == "psu" and (required_psu_watts(items) or constraints.get("minimum_psu_watts")):
+        minimum["wattage_w"] = max(required_psu_watts(items) or 0, constraints.get("minimum_psu_watts") or 0)
+    filters = filters_for(category, requirements)
     if category == "case" and gpu and gpu["specs"].get("length_mm"):
         minimum["max_gpu_length_mm"] = gpu["specs"]["length_mm"]
     if category == "ssd":
@@ -191,7 +202,7 @@ def shortlist(query: Callable, category: str, share_minor: int, items: dict[str,
         rows = query(category=category, maximum_minor=ceiling,
                      minimum_minor=int(share_minor * low) if low else None, require=require or None,
                      minimum_specs=minimum or None, exclude_ids=exclude, order="price_desc" if high else "price_asc",
-                     limit=limit * 3)
+                     limit=limit * 3, **({"filters": filters} if filters else {}))
         rows = [r for r in rows if not is_accessory(r)]
         if category == "case" and board and board["specs"].get("form_factor"):
             need = FORM_FACTOR_RANK[board["specs"]["form_factor"]]
@@ -228,8 +239,10 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
     shares = PROFILES[profile]
     # Everyday use does not need a graphics card when the CPU has integrated graphics - unless the user asked
     # for a card with a minimum of graphics memory, which integrated graphics cannot meet.
-    card_required = bool((requirements.get("hard_constraints") or {}).get("minimum_gpu_memory_gb"))
-    integrated = profile == "general" and "gpu" not in items and not card_required
+    constraints = requirements.get("hard_constraints") or {}
+    no_card = bool(constraints.get("no_graphics_card")) and "gpu" not in items
+    card_required = not no_card and any(constraints.get(k) for k in ("minimum_gpu_memory_gb", "gpu_vendor", "minimum_gpu_model"))
+    integrated = no_card or (profile == "general" and "gpu" not in items and not card_required)
     spent = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
     free = max(budget - spent, 0)
     notes = []
@@ -350,7 +363,8 @@ def cheapest_desktop_option(corpus, requirements: dict) -> dict | None:
             item["selection_reason"] = "Cheapest compatible offer; the budget leaves no room for a higher tier."
             item["selected_by"] = "rules"
     notes = []
-    if not build["has_card"] and profile != "general":
+    chose_no_card = bool((requirements.get("hard_constraints") or {}).get("no_graphics_card"))
+    if not build["has_card"] and profile != "general" and not chose_no_card:
         notes.append("No build with a graphics card fits this budget. This build uses the processor's integrated "
                      "graphics, which suits light or older games only.")
     return {"device_type": "desktop", "profile": profile, "items": items,
@@ -410,7 +424,12 @@ def _desktop_floor(query: Callable, products: Callable, requirements: dict) -> d
     with_card = cheapest(DESKTOP_ORDER, integrated=False)
     # Planning falls back to integrated graphics when no card fits, unless the user fixed a card or asked
     # for a minimum of graphics memory.
-    card_required = "gpu" in fixed or bool((requirements.get("hard_constraints") or {}).get("minimum_gpu_memory_gb"))
+    constraints = requirements.get("hard_constraints") or {}
+    no_card = bool(constraints.get("no_graphics_card")) and "gpu" not in fixed
+    card_required = "gpu" in fixed or (not no_card and any(
+        constraints.get(k) for k in ("minimum_gpu_memory_gb", "gpu_vendor", "minimum_gpu_model")))
+    if no_card:
+        with_card = None
     without_card = None if card_required else cheapest([c for c in DESKTOP_ORDER if c != "gpu"], integrated=True)
     builds = [b for b in (with_card, without_card) if b]
     if not builds:
@@ -420,7 +439,8 @@ def _desktop_floor(query: Callable, products: Callable, requirements: dict) -> d
     spent = sum(minor(i) for i in fixed.values() if not i.get("owned_by_user"))
     open_cost = cheapest_build_minor(query, requirements, fixed, DESKTOP_ORDER)
     card_from = spent + open_cost if open_cost is not None else None
-    wants_card = profile_for(requirements) != "general" and not card_required and card_from is not None and card_from > floor
+    wants_card = (profile_for(requirements) != "general" and not card_required and not no_card
+                  and card_from is not None and card_from > floor)
     return {"floor_minor": floor, "graphics_card_floor_minor": card_from if wants_card else None, "builds": builds}
 
 
@@ -428,9 +448,11 @@ def _laptop_floor(query: Callable, requirements: dict) -> dict | None:
     constraints = requirements.get("hard_constraints") or {}
     minimum = {k: v for k, v in (("ram_gb", constraints.get("minimum_memory_gb")),
                                  ("storage_gb", constraints.get("minimum_storage_gb"))) if v}
-    rows = query(category="laptop", minimum_specs=minimum or None, order="price_asc", limit=FLOOR_SEARCH_WIDTH * 3)
-    # A stated minimum has to be verifiable, as in planning: a laptop with an unknown value does not count.
-    rows = [r for r in rows if all(r["specs"].get(k) is not None for k in minimum)]
+    filters = filters_for("laptop", requirements)
+    rows = query(category="laptop", minimum_specs=minimum or None, order="price_asc", limit=FLOOR_SEARCH_WIDTH * 3,
+                 **({"filters": filters} if filters else {}))
+    # A stated minimum should be verifiable; laptops that do not state it only count when no other one exists.
+    rows = [r for r in rows if all(r["specs"].get(k) is not None for k in minimum)] or rows
     return {"floor_minor": min(minor(r) for r in rows)} if rows else None
 
 
@@ -445,8 +467,9 @@ def plan_laptops(query: Callable, requirements: dict, chooser: Chooser, maximum_
     constraints = requirements.get("hard_constraints") or {}
     minimum = {k: v for k, v in (("ram_gb", constraints.get("minimum_memory_gb")),
                                  ("storage_gb", constraints.get("minimum_storage_gb"))) if v}
+    filters = filters_for("laptop", requirements)
     rows = query(category="laptop", maximum_minor=requirements["budget"]["maximum_minor"], minimum_specs=minimum or None,
-                 order="price_desc", limit=10)
+                 order="price_desc", limit=10, **({"filters": filters} if filters else {}))
     order, reasons, source = [r["id"] for r in rows], {}, "rules"
     model = chooser.model
     if rows and model and getattr(model, "enabled", False):

@@ -15,6 +15,7 @@ Imports are lazy so the API can still start in local development mode.
 import re
 from typing import Any
 from langchain_core.embeddings import Embeddings
+from backend.attributes import derive, verdict
 from backend.retrieval import ROUTES, LocalCorpus, rrf_fuse, vector
 
 
@@ -79,6 +80,8 @@ def create_embeddings(settings) -> Embeddings:
 
 
 
+
+ATTRIBUTE_SCAN_LIMIT = 2000      # more than any category holds in one snapshot
 
 CANDIDATE_QUERY = """
 MATCH (p:Product {category: $category})-[:HAS_VARIANT]->(v:Variant)-[:HAS_OFFER]->(o:Offer {snapshot_id: $sid})
@@ -165,18 +168,28 @@ class Neo4jMilvusCorpus(LocalCorpus):
     def candidates(self, category: str, maximum_minor: int | None = None, limit: int = 25,
                    minimum_minor: int | None = None, require: dict | None = None,
                    minimum_specs: dict | None = None, exclude_ids: list[str] | None = None,
-                   order: str = "price_asc") -> list[dict]:
+                   order: str = "price_asc", filters: dict | None = None) -> list[dict]:
         try:
+            # Attribute filters (maker, store, chip ...) are read from the listing, not stored in the graph:
+            # the graph returns every spec match in order and the filter is applied to that list.
             records, _, _ = self.driver.execute_query(
                 CANDIDATE_QUERY, category=category, sid=self.snapshot_id, exclude=list(exclude_ids or []),
                 max=maximum_minor, min=minimum_minor, require=require or {}, minimum=minimum_specs or {},
-                descending=order == "price_desc", limit=limit, database_=self.settings.neo4j_database)
-            return [self.enrich(self.by_id[r["id"]]) for r in records if r["id"] in self.by_id]
+                descending=order == "price_desc", limit=ATTRIBUTE_SCAN_LIMIT if filters else limit,
+                database_=self.settings.neo4j_database)
+            rows = [self.enrich(self.by_id[r["id"]]) for r in records if r["id"] in self.by_id]
+            if not filters:
+                return rows
+            verdicts = [(verdict(derive(row), filters), row) for row in rows]
+            spec_unknown = lambda row: any(row["specs"].get(k) is None for k in list(require or {}) + list(minimum_specs or {}))
+            known = [row for v, row in verdicts if v is True and not spec_unknown(row)]
+            unknown = [row for v, row in verdicts if v is None or (v is True and spec_unknown(row))]
+            return (known + unknown)[:limit]
         except Exception as exc:
             # The pinned snapshot is also on disk, so planning can continue; the event is reported.
             self.events.append({"route": "neo4j_candidates", "error": type(exc).__name__})
             return super().candidates(category, maximum_minor, limit, minimum_minor, require, minimum_specs,
-                                      exclude_ids, order)
+                                      exclude_ids, order, filters)
 
     # ------------------------------------------------------------------ retrieval routes
 

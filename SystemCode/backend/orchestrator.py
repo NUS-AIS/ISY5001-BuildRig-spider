@@ -22,6 +22,7 @@ from backend.agents import (AgentContext, DesktopPlanningAgent, EvidenceAgent, E
 from backend.explanation_guard import guard, guard_message, option_facts, unsupported
 from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
+from backend.attributes import describe
 from backend.planning import Chooser, cheapest_desktop_option, feasibility_floor, revise
 from backend.requirements_parser import floor_summary, for_model
 from backend.revision import carry_over, requirement_changes, reuse_decision
@@ -46,7 +47,8 @@ class RecommendationEngine:
             settings.ollama_num_predict,
         )
 
-    def intake_reply(self, user_message: str, requirements: dict, questions: list[dict]) -> tuple[str, str]:
+    def intake_reply(self, user_message: str, requirements: dict, questions: list[dict],
+                     not_acted_on: list[str] | None = None) -> tuple[str, str]:
         fallback = (" ".join(question["text"] for question in questions) if questions else
                     "Your requirements are ready. I can now prepare an evidence-backed recommendation.")
         if not self.model.enabled:
@@ -58,9 +60,10 @@ class RecommendationEngine:
                 "user using only the parsed requirements supplied below. If clarification_questions is "
                 "not empty, ask exactly those questions without answering them or inventing details. If "
                 "it is empty, briefly confirm the understood device type, budget and workload, then say "
-                "the recommendation can be generated. Do not recommend products yet.",
+                "the recommendation can be generated. Do not recommend products yet. Anything listed in "
+                "not_part_of_the_request was asked for but cannot be provided: do not confirm it or say it is included.",
                 {"user_message": user_message, "requirements": for_model(requirements),
-                 "clarification_questions": questions},
+                 "clarification_questions": questions, "not_part_of_the_request": not_acted_on or []},
             )
             return (reply or fallback), "llm" if reply else "fallback"
         except Exception:
@@ -105,11 +108,17 @@ class RecommendationEngine:
             floor = feasibility_floor(self.corpus, req)
         except Exception:
             floor = None
-        if not floor or budget is None or budget >= floor["floor_minor"]:
+        unavailable = floor is None and bool(describe(req)) and req.get("device_type") in ("desktop", "laptop", "compare")
+        if budget is None or not (unavailable or (floor and budget < floor["floor_minor"])):
             return None
+        if unavailable:
+            floor = {"floor_minor": None}
+            message = ("Nothing in the current Singapore catalogue meets all of these together: " + "; ".join(describe(req))
+                       + ". Drop or change one of them. Hard constraints were not relaxed.")
+        else:
+            message = (f"S${budget / 100:,.0f} is not enough for this request. {floor_summary(req, floor)} "
+                       "Raise the budget or change a requirement. Hard constraints were not relaxed.")
         self.store.event(run["id"], "infeasible", {"budget_minor": budget, "floor_minor": floor["floor_minor"]})
-        message = (f"S${budget / 100:,.0f} is not enough for this request. {floor_summary(req, floor)} "
-                   "Raise the budget or change a requirement. Hard constraints were not relaxed.")
         return {"run_id": run["id"], "status": "completed", "outcome": "no_feasible_option",
                 "requirements_version": run["requirements_version"], "snapshot_id": run["snapshot_id"],
                 "orchestration_mode": run["orchestration_mode"], "options": [], "rejected_options": [],
@@ -118,7 +127,9 @@ class RecommendationEngine:
                 "agent_trace": [], "agent_log": [], "tool_calls": [], "memory_context": {"confirmed_memory_ids": []},
                 "feasibility": {"budget_minor": budget, "floor_minor": floor["floor_minor"],
                                 "graphics_card_floor_minor": floor.get("graphics_card_floor_minor")},
-                "limitations": ["The budget is below the cheapest compatible build in the pinned catalogue snapshot, "
+                "limitations": ["No offer in the pinned catalogue snapshot meets the stated requirements, so no planning was run."
+                                if unavailable else
+                                "The budget is below the cheapest compatible build in the pinned catalogue snapshot, "
                                 "so no planning was run."]}
 
     def _progress(self, rid: str, stage: str, message: str):
