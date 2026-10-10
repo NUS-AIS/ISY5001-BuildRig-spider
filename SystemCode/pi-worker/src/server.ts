@@ -26,6 +26,10 @@ const internalToken = process.env.BUILDRIG_INTERNAL_API_TOKEN || "";
 const ollamaBase = (process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434").replace(/\/$/, "");
 const modelId = process.env.BUILDRIG_MODEL || "qwen3:8b";
 const maxToolCalls = Number(process.env.PI_MAX_TOOL_CALLS || 24);
+// The window Ollama actually serves: its OpenAI-compatible API takes no per-request context size, so the
+// server default (OLLAMA_CONTEXT_LENGTH) must match the value the Python backend requests, or every switch
+// between the two reloads the model.
+const contextLength = Number(process.env.BUILDRIG_OLLAMA_NUM_CTX || 8192);
 const DESKTOP = ["cpu", "motherboard", "ram", "gpu", "psu", "case", "ssd", "cooler"];
 
 async function readJson(request: IncomingMessage): Promise<Json> {
@@ -49,6 +53,26 @@ async function backend(path: string, body: Json): Promise<Json> {
   return response.json() as Promise<Json>;
 }
 
+/** Tell the API what the supervisor is doing, so the page shows progress during a long run. Never fatal. */
+async function report(runId: string, stage: string, message: string) {
+  try {
+    await fetch(`${apiBase}/api/v1/internal/runs/${runId}/progress`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-internal-token": internalToken },
+      body: JSON.stringify({ stage, message }),
+    });
+  } catch { /* progress is best effort */ }
+}
+
+const STAGES: Record<string, (args: Json) => [string, string]> = {
+  draft_build: () => ["pi_drafting_a_build", "Pi is drafting a starting build"],
+  find_parts: (a) => [`pi_searching_${String(a.category || "parts").replace(/[^a-z0-9]+/gi, "_").toLowerCase()}`, `Pi is searching ${a.category || "parts"}`],
+  select_part: (a) => ["pi_changing_a_part", `Pi is changing the ${a.category || "part"}`],
+  check_build: () => ["pi_validating_the_build", "Pi is validating the build"],
+  find_evidence: () => ["pi_retrieving_evidence", "Pi is retrieving evidence"],
+  submit_build: () => ["pi_submitting_the_build", "Pi is submitting the build"],
+};
+
 function text(value: unknown) {
   return [{ type: "text" as const, text: typeof value === "string" ? value : JSON.stringify(value) }];
 }
@@ -63,7 +87,7 @@ function createModel() {
     reasoning: false,
     input: ["text"],
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: 16384,
+    contextWindow: contextLength,
     maxTokens: 1200,
     compat: { supportsDeveloperRole: false, supportsReasoningEffort: false, supportsStore: false },
   };
@@ -419,7 +443,11 @@ async function superviseOne(runId: string, deviceType: "desktop" | "laptop", req
     sessionId: `${runId}:${deviceType}`,
     toolExecution: "sequential",
   });
+  await report(runId, `pi_planning_${deviceType}`, `Pi is planning the ${deviceType}`);
   agent.subscribe(async (event: Json) => {
+    if (event.type === "tool_execution_start" && STAGES[event.toolName]) {
+      await report(runId, ...STAGES[event.toolName](event.args || {}));
+    }
     if (event.type === "tool_execution_end" && session.toolCalls.length >= maxToolCalls) agent.abort();
     if (event.type === "message_end" && event.message?.role === "assistant") {
       session.usage.calls += 1;

@@ -65,6 +65,11 @@ class AssembleRequest(BaseModel):
     requirements: dict[str, Any]
 
 
+class ProgressReport(BaseModel):
+    stage: str = Field(min_length=1, max_length=60, pattern=r"^[a-z0-9_]+$")
+    message: str = Field(default="", max_length=200)
+
+
 class DraftRequest(BaseModel):
     run_id: str
     device_type: Literal["desktop", "laptop"]

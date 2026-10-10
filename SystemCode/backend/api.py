@@ -2,8 +2,8 @@ import asyncio
 import json
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, HybridRequest, MemoryPatch, MessageCreate, RunCreate,
-                            SessionCreate, ValidationRequest)
+from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, HybridRequest, MemoryPatch, MessageCreate,
+                            ProgressReport, RunCreate, SessionCreate, ValidationRequest)
 from backend.planning import Chooser, assemble_option, budget_repair, plan_desktop, plan_laptops
 from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
@@ -77,11 +77,34 @@ def create_router(store, corpus, engine):
         except ValueError as exc:
             raise HTTPException(409, detail={"code": "REQUIREMENTS_VERSION_CONFLICT", "current_version": exc.args[0]})
         assistant_message, generation_source = engine.intake_reply(body.text, requirements, questions)
+        store.add_reply(session_id, assistant_message)
         reply_options = questions[0].get("options", []) if questions else []
         return {"session_id": session_id, "message_id": mid, "requirements_version": version,
                 "status": status, "requirements": requirements, "questions": questions,
                 "can_generate": not questions, "assistant_message": assistant_message,
                 "generation_source": generation_source, "reply_options": reply_options}
+
+    @router.get("/sessions/{session_id}/transcript")
+    def transcript(session_id: str, x_user_id: str = Header("dev-user")):
+        """Everything a reloaded page needs to continue: the conversation so far, the open question, the last
+        result to show and a run that is still in progress."""
+        session = owned_session(session_id, x_user_id)
+        entries = store.messages(session_id)
+        runs = store.session_runs(session_id)
+        for run in runs:
+            if run["status"] == "completed" and (run["result"] or {}).get("assistant_message"):
+                entries.append({"role": "assistant", "text": run["result"]["assistant_message"], "created_at": run["updated_at"],
+                                "run_id": run["id"]})
+        entries.sort(key=lambda entry: entry["created_at"])
+        questions = parse_requirements("", session["requirements"], catalogue=corpus)[1] if session["requirements"] else []
+        ready = bool(session["requirements"]) and not questions
+        completed = [run for run in runs if run["status"] == "completed"]
+        active = next((run for run in reversed(runs) if run["status"] in ("queued", "running")), None)
+        return {"session_id": session_id, "requirements_version": session["requirements_version"], "messages": entries,
+                "can_generate": ready, "reply_options": questions[0].get("options", []) if questions else [],
+                "latest_run": {"id": completed[-1]["id"], "requirements_version": completed[-1]["requirements_version"]} if completed else None,
+                "active_run": {"id": active["id"], "stage": active["stage"], "orchestration_mode": active["orchestration_mode"],
+                               "created_at": active["created_at"]} if active else None}
 
     @router.post("/sessions/{session_id}/runs", status_code=202)
     def create_run(session_id: str, body: RunCreate, background: BackgroundTasks,
@@ -98,9 +121,12 @@ def create_router(store, corpus, engine):
             if not base or base["session_id"] != session_id or base["status"] != "completed":
                 raise HTTPException(409, detail={"code": "BASE_RUN_UNUSABLE",
                                                  "message": "base_run_id must be a completed run of this session"})
-        run = store.create_run(session_id, body.requirements_version, corpus.snapshot_id, body.orchestration_mode,
-                               idempotency_key, body.base_run_id)
-        if run["status"] == "queued":
+        # One run per session at a time: a second click, tab or reload joins the run already in progress
+        # instead of starting another that competes for the same local model.
+        in_progress = store.active_run(session_id)
+        run = in_progress or store.create_run(session_id, body.requirements_version, corpus.snapshot_id,
+                                              body.orchestration_mode, idempotency_key, body.base_run_id)
+        if not in_progress and run["status"] == "queued":
             background.add_task(engine.execute, run["id"], body.maximum_options)
         return {**run, "status_url": f"/api/v1/runs/{run['id']}", "events_url": f"/api/v1/runs/{run['id']}/events",
                 "result_url": f"/api/v1/runs/{run['id']}/result", "idempotency_key": idempotency_key}
@@ -176,6 +202,13 @@ def create_router(store, corpus, engine):
         owned_memory(memory_id, x_user_id)
         if not store.delete_memory(memory_id):
             raise HTTPException(404, "Memory not found")
+
+    @router.post("/internal/runs/{run_id}/progress", status_code=204)
+    def report_progress(run_id: str, body: ProgressReport, x_internal_token: str | None = Header(None)):
+        """Lets the Pi runtime show what it is doing while the API waits for its result."""
+        require_internal(x_internal_token)
+        if store.set_stage(run_id, body.stage):
+            store.event(run_id, "progress", {"stage": body.stage, "message": body.message})
 
     @router.post("/internal/retrieval/hybrid")
     def hybrid(body: HybridRequest, x_internal_token: str | None = Header(None)):

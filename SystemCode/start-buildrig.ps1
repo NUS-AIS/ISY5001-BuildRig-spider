@@ -107,9 +107,26 @@ function Start-Infrastructure {
         if ($waiting) { Say '  warning: a database container is not healthy yet; the API may report "degraded" at first.' 'Yellow' }
     }
 
+    # A native Ollama must serve the context length the backend asks for (BUILDRIG_OLLAMA_NUM_CTX): the Pi
+    # worker cannot set one per request, and a different server default reloads the model on every switch.
+    $context = '8192'
+    $line = Select-String -Path (Join-Path $root '.env') -Pattern '^\s*BUILDRIG_OLLAMA_NUM_CTX\s*=\s*(\d+)' | Select-Object -First 1
+    if ($line) { $context = $line.Matches[0].Groups[1].Value }
+    $native = Get-Command ollama -ErrorAction SilentlyContinue
+    $owner = Get-NetTCPConnection -LocalPort 11434 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess
+    $servedNatively = $owner -and (Get-Process -Id $owner -ErrorAction SilentlyContinue).ProcessName -like 'ollama*'
+    $configured = [Environment]::GetEnvironmentVariable('OLLAMA_CONTEXT_LENGTH', 'User')
+    if ($native -and $configured -ne $context -and ($servedNatively -or -not $owner)) {
+        Say "Setting Ollama's default context length to $context (was '$configured') and restarting Ollama..."
+        [Environment]::SetEnvironmentVariable('OLLAMA_CONTEXT_LENGTH', $context, 'User')
+        Get-Process -Name 'ollama app', 'ollama' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        $deadline = (Get-Date).AddSeconds(15)
+        while ((Test-Port 11434) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 300 }
+    }
     if (-not (Test-Port 11434)) {
-        if (Get-Command ollama -ErrorAction SilentlyContinue) {
+        if ($native) {
             Say 'Starting Ollama...'
+            $env:OLLAMA_CONTEXT_LENGTH = $context
             Start-Process ollama -ArgumentList 'serve' -WindowStyle Hidden
             if (-not (Wait-Port 11434 30)) { Say '  warning: Ollama did not start; recommendations will fail until it runs.' 'Yellow' }
         } else {

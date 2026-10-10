@@ -71,7 +71,12 @@ docker compose logs -f ollama-init   # wait until both models are pulled
 
 On a machine without an NVIDIA GPU (e.g. macOS), start only the databases with
 `docker compose up -d neo4j milvus`, install Ollama natively, run `ollama pull qwen3:8b` and
-`ollama pull bge-m3`, and keep `OLLAMA_BASE_URL=http://127.0.0.1:11434` in `.env`.
+`ollama pull bge-m3`, and keep `OLLAMA_BASE_URL=http://127.0.0.1:11434` in `.env`. A native Ollama must also
+serve the context length in `BUILDRIG_OLLAMA_NUM_CTX`: set the environment variable
+`OLLAMA_CONTEXT_LENGTH=8192` for the Ollama server and restart it (on Windows, `start-buildrig.bat` does this).
+
+To try the system without Docker at all, copy `.env.local.example` instead: it reads the snapshot files
+directly (no Neo4j or Milvus), so skip step 4. Retrieval then runs on a simplified stand-in.
 
 ### [ 3 ] Install the application
 
@@ -108,8 +113,13 @@ Three terminals:
 ```bash
 python -m uvicorn main:app --port 8000                     # API, docs at http://127.0.0.1:8000/docs
 cd pi-worker && node --env-file=../.env dist/server.js     # Pi runtime on port 8090
-cd frontend && npm run dev                                 # web app at http://127.0.0.1:5173
+cd frontend && npm run dev                                 # web app at http://localhost:5173
 ```
+
+On Windows, `start-buildrig.bat` does all of this in one step: it starts Docker Desktop and the database
+containers if `.env` selects them, restarts the three services in their own windows and opens the web app
+(`start-buildrig.bat -Stop` stops them). In PowerShell, run the commands above one per line; `&&` needs
+PowerShell 7.
 
 Register any account on the login page (accounts are a local prototype stored in the browser), describe
 what you need, then press **Generate recommendation**. Useful things to try:

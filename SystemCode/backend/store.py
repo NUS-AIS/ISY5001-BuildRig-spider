@@ -106,6 +106,43 @@ class StateStore:
             db.execute("INSERT INTO messages VALUES(?,?,?,?,?,?)", (mid, sid, client_id, "user", text, now()))
         return mid
 
+    def add_reply(self, sid: str, text: str) -> None:
+        """Store the assistant's reply to a message, so a reloaded page can show the conversation again."""
+        mid = uuid7("msg")
+        with self.connect() as db:
+            db.execute("INSERT INTO messages VALUES(?,?,?,?,?,?)", (mid, sid, mid, "assistant", text, now()))
+
+    def messages(self, sid: str) -> list[dict[str, Any]]:
+        with self.connect() as db:
+            rows = db.execute("SELECT role, text, created_at FROM messages WHERE session_id=? ORDER BY created_at, id", (sid,)).fetchall()
+            return [dict(row) for row in rows]
+
+    def session_runs(self, sid: str) -> list[dict[str, Any]]:
+        with self.connect() as db:
+            ids = [row["id"] for row in db.execute("SELECT id FROM runs WHERE session_id=? ORDER BY created_at", (sid,)).fetchall()]
+        return [self.run(rid) for rid in ids]
+
+    def active_run(self, sid: str) -> dict[str, Any] | None:
+        """The run of this session that is still queued or running, if any."""
+        with self.connect() as db:
+            row = db.execute("SELECT id FROM runs WHERE session_id=? AND status IN ('queued','running') "
+                             "ORDER BY created_at DESC LIMIT 1", (sid,)).fetchone()
+        return self.run(row["id"]) if row else None
+
+    def reconcile_interrupted_runs(self):
+        """Runs execute inside this process, so one still marked active at start-up was cut off by a restart."""
+        error = json.dumps({"code": "RUN_INTERRUPTED", "message": "The service restarted while this run was in progress."})
+        with self.connect() as db:
+            db.execute("UPDATE runs SET status='failed',stage='failed',error_json=?,updated_at=? WHERE status IN ('queued','running')",
+                       (error, now()))
+
+    def set_stage(self, rid: str, stage: str) -> bool:
+        """Update the stage of a run that is still active; a finished run is left untouched."""
+        with self.connect() as db:
+            cur = db.execute("UPDATE runs SET status='running',stage=?,updated_at=? WHERE id=? AND status IN ('queued','running')",
+                             (stage, now(), rid))
+            return cur.rowcount == 1
+
     def update_requirements(self, sid: str, expected: int, data: dict[str, Any], status: str) -> int:
         with self.connect() as db:
             row = db.execute("SELECT requirements_version FROM sessions WHERE id=?", (sid,)).fetchone()

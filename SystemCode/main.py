@@ -11,6 +11,7 @@ from backend.store import StateStore
 
 store = StateStore(settings.state_db)
 store.reconcile_uncertain_tools()
+store.reconcile_interrupted_runs()
 if settings.retrieval_backend == "neo4j_milvus":
     from backend.production_retrieval import Neo4jMilvusCorpus
     corpus = Neo4jMilvusCorpus(settings.data_dir, settings)

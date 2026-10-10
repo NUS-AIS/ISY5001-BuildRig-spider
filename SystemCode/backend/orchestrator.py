@@ -387,6 +387,7 @@ class RecommendationEngine:
 
     def _pi_fallback(self, run: dict, req: dict, maximum_options: int, dag_result: dict) -> dict:
         self.store.event(run["id"], "fallback", {"from": "dag", "to": "pi", "reason": "revision budget exhausted"})
+        self._progress(run["id"], "handing_over_to_pi_runtime", "The DAG revision budget is used up; the Pi runtime is trying")
         try:
             result = self._execute_pi(run, req, maximum_options)
         except Exception as exc:

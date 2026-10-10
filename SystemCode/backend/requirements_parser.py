@@ -37,6 +37,20 @@ KNOWN_WORKLOADS = ("SolidWorks", "MATLAB", "ANSYS", "AutoCAD", "Blender", "Premi
 
 # ------------------------------------------------------------------------------ rule layer
 
+# A thousands separator followed by fewer than three digits ("3,00"): a slip for 3,000 or a stray comma in 300.
+BROKEN_GROUPING = re.compile(r"(?<![\d.,])(\d{1,3}(?:,\d{3})*),(\d{1,2})(?![\d,])")
+
+
+def ambiguous_amounts(text: str) -> dict[int, int]:
+    """Amounts written with a broken thousands separator, mapped from the value as typed with the comma
+    removed (300) to the value the grouping suggests (3000)."""
+    found = {}
+    for match in BROKEN_GROUPING.finditer(text):
+        head, tail = match.group(1).replace(",", ""), match.group(2)
+        found[int(head + tail)] = int(head + tail.ljust(3, "0"))
+    return found
+
+
 def _parse(payload: dict) -> dict:
     text = payload["text"]
     req = deepcopy(payload.get("current") or {})
@@ -346,6 +360,10 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
                        recent_items: list[dict] | None = None) -> tuple[dict, list[dict]]:
     before = deepcopy(current or {})
     req = requirement_chain.invoke({"text": text, "current": current})
+    # A budget typed as "S$3,00" is not guessed: the previous budget (if any) stands until the user picks one.
+    slips = ambiguous_amounts(text)
+    stated = (req.get("budget") or {}).get("maximum_minor")
+    unclear = req.get("budget") != before.get("budget") and stated is not None and stated // 100 in slips
     if req.get("budget") != before.get("budget"):
         req.pop("budget_low_acknowledged", None)      # the acknowledgement was for the previous budget
     if "keep my budget" in text.casefold():
@@ -359,13 +377,27 @@ def parse_requirements(text: str, current: dict, model=None, catalogue=None,
             req["understanding_source"] = "llm+rules"
         except Exception as exc:  # model down or malformed output: the rule layer result stands
             req["understanding_source"] = f"rules (model unavailable: {type(exc).__name__})"
+    if unclear:
+        typed = stated // 100
+        if before.get("budget"):
+            req["budget"] = before["budget"]         # the model may have read the same slip as a budget
+        else:
+            req.pop("budget", None)
+        questions = [q for q in questions if q["question_id"] != "q_budget_confirm"]
+        questions.insert(0, {"question_id": "q_budget_confirm",
+                             "text": f"I am not sure how to read the budget you typed. Is it S${typed:,} or S${slips[typed]:,}?",
+                             "options": [{"label": f"S${v:,}", "value": f"My maximum budget is S${v:,}."}
+                                         for v in (typed, slips[typed])]})
     known = {o.get("category") for o in req.get("owned_components", [])}
     for mention in _owned_by_rule(text):     # deterministic backstop when the model misses an owned part
         record = _owned_component(mention, catalogue)
         if record["category"] and record["category"] not in known:
             req.setdefault("owned_components", []).append(record)
             known.add(record["category"])
-    return req, questions + clarification_questions(req, catalogue)
+    follow_up = clarification_questions(req, catalogue)
+    if unclear:      # the budget is already being asked about
+        follow_up = [q for q in follow_up if q["question_id"] not in ("q_budget", "q_budget_low")]
+    return req, questions + follow_up
 
 
 OWNED_PHRASE = re.compile(r"(?:already (?:have|own|got)|\bi (?:have|own)|i've got|已经有|已有|我有)\s*"

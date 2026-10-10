@@ -44,7 +44,8 @@ services:
       DEPLOY_MODE: STANDALONE
     ports:
       - "19530:19530"   # gRPC
-      - "9091:9091"     # health / metrics
+      # The health / metrics port 9091 stays inside the container (the healthcheck below uses it there).
+      # Windows often reserves 9015-9114 for Hyper-V, and publishing it then stops the container starting.
     volumes:
       - milvus-data:/var/lib/milvus
       - ./infra/milvus/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml:ro
@@ -59,8 +60,10 @@ services:
   ollama:
     image: ollama/ollama:latest
     environment:
-      # Room for multi-step tool use; the 8B model plus a 12k context fits an 8 GB GPU.
-      OLLAMA_CONTEXT_LENGTH: "12288"
+      # Default context for requests that cannot set one (the Pi worker's OpenAI-compatible calls). It must
+      # equal BUILDRIG_OLLAMA_NUM_CTX, which the backend sends explicitly: a different value makes Ollama
+      # reload the model every time the two alternate. 8192 keeps the 8B model fully on an 8 GB GPU.
+      OLLAMA_CONTEXT_LENGTH: "${BUILDRIG_OLLAMA_NUM_CTX:-8192}"
     ports:
       - "11434:11434"
     volumes:
