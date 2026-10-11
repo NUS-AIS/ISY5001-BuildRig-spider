@@ -76,6 +76,9 @@ class RecommendationEngine:
                 {"user_message": user_message, "requirements": for_model(requirements),
                  "clarification_questions": questions, "not_part_of_the_request": not_acted_on or []},
             )
+            if reply and not questions:      # nothing is being asked, so the model must not end on a question of its own
+                reply = re.sub(r"\s*[^.!?]*\b(?:please confirm|let me know if you|would you like (?:me )?to proceed|shall i proceed|"
+                               r"do you have any|if you have any)\b[^.!?]*[.!?]", "", reply, flags=re.I).strip()
             return (reply or fallback), "llm" if reply else "fallback"
         except Exception:
             return fallback, "fallback"

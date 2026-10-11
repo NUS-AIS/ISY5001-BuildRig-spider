@@ -229,10 +229,10 @@ ATTRIBUTE_CHECKS = {"gpu_vendor": "gpu_brand", "min_gpu_model": "minimum_gpu_mod
                     "wifi": "wifi", "max_form_factor": "maximum_size", "cooler_kind": "cooling_type",
                     "exclude_brands": "excluded_brands", "stores": "allowed_stores", "brands": "laptop_brand",
                     "screen_inches": "screen_size", "oled": "oled_screen", "dedicated_gpu": "dedicated_graphics",
-                    "part_brand": "part_brand", "min_gpu_memory": "minimum_gpu_memory"}
+                    "part_brand": "part_brand", "min_gpu_memory": "minimum_gpu_memory", "min_cpu_tier": "processor_class"}
 REQUIREMENT_OF = {"min_gpu_model": "minimum_gpu_model", "max_form_factor": "maximum_form_factor", "exclude_brands": "excluded_brands",
                   "brands": "laptop_brands", "screen_inches": "laptop_screen_inches", "oled": "laptop_oled",
-                  "dedicated_gpu": "laptop_dedicated_gpu", "part_brand": "part_brands", "min_gpu_memory": "minimum_gpu_memory_gb"}
+                  "dedicated_gpu": "laptop_dedicated_gpu", "part_brand": "part_brands", "min_gpu_memory": "minimum_gpu_memory_gb", "min_cpu_tier": "minimum_cpu_tier"}
 
 
 def rules_stated_requirements(option, req) -> list[dict]:

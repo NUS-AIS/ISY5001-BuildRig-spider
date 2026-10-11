@@ -90,7 +90,12 @@ def loose_budget(normalized: str) -> int | None:
                       r"(?!\d|\.\d|\s*(?:gb|tb|w\b|hz|mhz|mm|p\b|x|k\b|ti\b|xt\b|super|rpm|inch))", normalized) \
         or re.search(r"(?<![\w$.])([1-9]\d{2,5})\s+(?:to spend|budget\b|max\b|maximum\b|tops\b|all in\b)", normalized) \
         or re.search(r"([1-9]\d{2,5})\s*(?:euros?|eur|pounds|ringgit|myr|hkd|yuan|yen|jpy|cny)\b", normalized)
-    return int(loose.group(1)) if loose else None
+    if loose:
+        return int(loose.group(1))
+    bare = re.search(r"(?<![\w.$])(\d(?:\.\d)?)\s*k\b(?!\s*(?:resolution|monitor|display|video|hdr|@|hz))", normalized)
+    if bare and float(bare.group(1)) not in (2, 4, 8) and float(bare.group(1)) >= 0.5:
+        return int(float(bare.group(1)) * 1000)
+    return None
 
 
 # "budget 2.5k", "3k budget": thousands, unless the k belongs to a resolution ("4k gaming").
@@ -117,12 +122,14 @@ _FILLER = r"(?:(?!(?:in|for|and|or|with|the|an?|to|is|but|on|of)\b)[a-z0-9.+-]+\
 def _part_brands(lower: str) -> dict[str, list[str]]:
     """Makers wanted for one part of a desktop: "an ASUS motherboard", "RAM from Corsair", "三星的固态"."""
     out: dict[str, list[str]] = {}
+    others = "|".join(_alias(a) for a in BRAND_ALIASES)
     for alias, brand in BRAND_ALIASES.items():
         name = _alias(alias)
         if _negated(name, lower):
             continue
         for category, words in PART_WORDS.items():
-            if re.search(rf"{name}\s*(?:的)?\s*{_FILLER}(?:{words})(?![a-z])|(?:{words})\s+(?:from|by|made by)\s+{name}", lower) \
+            if re.search(rf"{name}(?:\s*(?:,|/|or|或)\s*(?:{others}))*\s*(?:的)?\s*{_FILLER}(?:{words})(?![a-z])|"
+                         rf"(?:{words})\s+(?:from|by|made by)\s+(?:(?:{others})\s*(?:,|/|or|或)\s*)*{name}", lower) \
                     and brand not in out.setdefault(category, []):
                 out[category].append(brand)
     return {category: brands for category, brands in out.items() if brands}
@@ -211,6 +218,9 @@ def stated_constraints(text: str, device_type: str | None) -> dict:
     elif _negated(bare_amd, lower) and "gpu_vendor" not in found:
         found["cpu_maker"] = "intel"
 
+    tier = re.search(r"\bi([3579])\b|\bcore\s?i([3579])|\bultra\s?([3579])\b|ryzen\s?([3579])\b|锐龙\s?([3579])", lower)
+    if tier:          # "an i7", "Ryzen 7 9800X3D": that class or a higher one
+        found["minimum_cpu_tier"] = int(next(g for g in tier.groups() if g))
     socket = re.search(r"\b(am[45])\b|lga\s?-?(1700|1851)\b", lower)
     if socket:
         found["socket"] = socket.group(1).upper() if socket.group(1) else f"LGA{socket.group(2)}"

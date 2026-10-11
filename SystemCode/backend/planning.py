@@ -260,6 +260,22 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
                          f"light or older games only.")
     required = [c for c in DESKTOP_ORDER if not (integrated and c == "gpu")]
     open_cats = [c for c in required if c not in items]
+    # Editing, CAD and model training run short of 16GB long before the other parts hold them back, and
+    # memory is dear enough that its usual share buys only 16GB. When 32GB costs no more than a fifth of
+    # the budget, its price is set aside first and the other parts share what remains.
+    memory_needs = requirements
+    if profile in ("workstation", "ai") and "ram" in open_cats and not constraints.get("minimum_memory_gb"):
+        larger = {**requirements, "hard_constraints": {**constraints, "minimum_memory_gb": 32}}
+        cheapest: dict[Any, int] = {}
+        for row in shortlist(query, "ram", 0, items, larger, [], limit=50):
+            if (row["specs"].get("capacity_gb") or 0) >= 32:
+                kind = row["specs"].get("memory_type")
+                cheapest[kind] = min(cheapest.get(kind, minor(row)), minor(row))
+        price = max(cheapest.values()) if cheapest else None          # enough whichever generation the board takes
+        if price and price <= free * 0.2:
+            others = 1 - shares["ram"]
+            shares = {c: price / free if c == "ram" else w * (1 - price / free) / others for c, w in shares.items()}
+            memory_needs = larger
     weight = sum(shares[c] for c in open_cats) or 1
     share = {c: int(free * shares[c] / weight) for c in open_cats}
 
@@ -273,7 +289,8 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
         lists = {}
         for category in [c for c in stage if c in open_cats]:
             extra = {"integrated_graphics": True} if integrated and category == "cpu" else None
-            lists[category] = shortlist(query, category, share[category], items, requirements, [], extra_require=extra)
+            lists[category] = shortlist(query, category, share[category], items,
+                                        memory_needs if category == "ram" else requirements, [], extra_require=extra)
         remaining = free - sum(minor(items[c]) for c in open_cats if c in items)
         for category, (row, reason, source) in chooser.choose(lists, requirements, remaining).items():
             items[category] = make_item(row)
@@ -282,7 +299,7 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
         if stage[0] == "motherboard" and "motherboard" in items and "ram" in items and not items["ram"].get("locked"):
             board_mem = items["motherboard"]["specs"].get("memory_type")
             if board_mem and items["ram"]["specs"].get("memory_type") not in (None, board_mem):
-                fixed = shortlist(query, "ram", share.get("ram", 0), items, requirements, [items["ram"]["offer_id"]])
+                fixed = shortlist(query, "ram", share.get("ram", 0), items, memory_needs, [items["ram"]["offer_id"]])
                 if fixed:
                     items["ram"] = make_item(fixed[0])
                     reasons["ram"], sources["ram"] = "Matched to the motherboard's memory generation.", "rules"

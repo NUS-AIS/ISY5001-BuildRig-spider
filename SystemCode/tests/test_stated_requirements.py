@@ -10,7 +10,7 @@ from backend.api import create_router
 from backend.attributes import derive, gpu_model
 from backend.orchestrator import RecommendationEngine
 from backend.requirement_rules import inapplicable, unsupported_requests
-from backend.requirements_parser import parse_requirements
+from backend.requirements_parser import _specific_mention, parse_requirements
 from backend.retrieval import LocalCorpus
 from backend.settings import Settings
 from backend.store import StateStore
@@ -160,7 +160,7 @@ class UnderstandingTests(unittest.TestCase):
         self.assertEqual(floor("at least a 5070."), "RTX 5070")
         self.assertEqual(floor("a 9070 XT or better"), "RX 9070 XT")
         self.assertIsNone(floor("an upgrade from my 3060"))
-        self.assertEqual(hard(DESKTOP + "I want an i7."), {"cpu_maker": "intel"})
+        self.assertEqual(hard(DESKTOP + "I want an i7.")["cpu_maker"], "intel")
         self.assertEqual(hard(DESKTOP + "2x16GB RAM."), {"minimum_memory_gb": 32})
         self.assertEqual(hard(DESKTOP + "ATX case, 850W gold PSU."), {"minimum_psu_watts": 850})
         screen = lambda text: hard(LAPTOP + text)["laptop_screen_inches"]
@@ -179,6 +179,9 @@ class UnderstandingTests(unittest.TestCase):
         self.assertEqual(budget("台式机，预算一万五"), 1500000)
         self.assertEqual(budget("台式机，预算三千五"), 350000)
         self.assertEqual(budget("台式机，预算1万2"), 1200000)
+        self.assertEqual(budget("Gaming rig 3k."), 300000)
+        self.assertEqual(budget("1.5k laptop for school."), 150000)
+        self.assertIsNone(budget("Gaming rig for 2k."))                      # 2k is also a resolution: the budget is asked for
         self.assertIsNone(budget("Gaming PC. I usually spend around 2 hours a day gaming."))
         self.assertIsNone(budget("Gaming PC with around 1000W."))
         req, questions = parse_requirements("Laptop, 1500 euros.", {})
@@ -299,6 +302,31 @@ class EnforcementTests(unittest.TestCase):
         office = self.options("Office desktop, budget S$2,500. MSI graphics card.", ["part_brand"])
         cards = self.parts(office, "gpu")
         self.assertTrue(len(cards) == len(office) and all(card["brand"] == "msi" for card in cards))
+
+    def test_processor_class(self):
+        self.assertEqual(hard(DESKTOP + "I want an i7."), {"cpu_maker": "intel", "minimum_cpu_tier": 7})
+        self.assertEqual(hard(DESKTOP + "Ryzen 7 or better."), {"cpu_maker": "amd", "minimum_cpu_tier": 7})
+        self.assertFalse(_specific_mention("i7", "I want an i7."))            # a class, not a product to lock
+        self.assertTrue(_specific_mention("i7-14700F", "I want the i7-14700F."))
+        tier = lambda name: derive({"category": "cpu", "name": name})["cpu_tier"]
+        self.assertEqual([tier(n) for n in ("AMD Ryzen™ 7 Ryzen 7 9800X3D TRAY", "INTEL i5-14400F 2.5GHz", "INTEL CORE ULTRA 270K PLUS",
+                                            "Intel Core Ultra 5 225F")], [7, 5, 7, 5])
+        desktops = self.parts(self.options(DESKTOP + "I want an i7.", ["processor_brand", "processor_class"]), "cpu")
+        self.assertTrue(desktops and all(cpu["cpu_maker"] == "intel" and cpu["cpu_tier"] >= 7 for cpu in desktops))
+        laptops = self.parts(self.options("Laptop for university, budget S$2,500. Ryzen 7 or better.", ["processor_class"]), "laptop")
+        self.assertTrue(laptops and all(laptop["cpu_maker"] == "amd" and laptop["cpu_tier"] >= 7 for laptop in laptops))
+
+    def test_several_makers_for_one_part(self):
+        self.assertEqual(hard(DESKTOP + "ASUS or MSI motherboard."), {"part_brands": {"motherboard": ["asus", "msi"]}})
+        boards = self.parts(self.options(DESKTOP + "ASUS or MSI motherboard.", ["part_brand"]), "motherboard")
+        self.assertTrue(boards and all(board["brand"] in ("asus", "msi") for board in boards))
+
+    def test_editing_build_spends_what_is_left_on_memory(self):
+        capacity = lambda options: [i["specs"]["capacity_gb"] for o in options for i in o["items"] if i["category"] == "ram"]
+        editing = self.options("Desktop for video editing, budget S$3,500.", [])
+        self.assertTrue(any(size >= 32 for size in capacity(editing)), capacity(editing))
+        for option in editing:
+            self.assertLessEqual(option["validation"]["total_minor"], 350000)
 
     def test_requirement_that_does_not_fit_the_device_is_named(self):
         _, reply = self.ask(LAPTOP + "With an 850W power supply.")

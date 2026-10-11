@@ -66,6 +66,16 @@ def cpu_maker(row: dict, specs: dict) -> str | None:
     return "amd" if socket.startswith("AM") else "intel" if socket.startswith("LGA") else None
 
 
+CPU_TIER = re.compile(r"ryzen\s*(?:ai\s*|ri\s*)?([3579])\b|\bi([3579])[- ]?\d{4,5}|(?:core|ultra)\s*(?:ultra\s*)?([3579])\b|"
+                      r"ultra\s*\d([3579])\d[a-z]", re.I)
+
+
+def cpu_tier(name: str) -> int | None:
+    """The class digit of a processor name: 7 for "Ryzen 7 9800X3D", "i7-14700F", "Core Ultra 7 265K", "Ultra 270K"."""
+    match = CPU_TIER.search(re.sub(r"[™®©]", "", name or ""))
+    return int(next(g for g in match.groups() if g)) if match else None
+
+
 def derive(row: dict) -> dict:
     """Attributes of a catalogue row or an option item (which calls the store ``merchant``)."""
     specs, name, category = row.get("specs") or {}, row.get("name") or "", row.get("category")
@@ -74,7 +84,7 @@ def derive(row: dict) -> dict:
         model = gpu_model(specs.get("chip")) or gpu_model(name)
         out.update(gpu_vendor=model and model["vendor"], gpu_rank=model and model["rank"])
     elif category == "cpu":
-        out["cpu_maker"] = cpu_maker(row, specs)
+        out.update(cpu_maker=cpu_maker(row, specs), cpu_tier=cpu_tier(name))
     elif category == "motherboard":
         out.update(wifi=bool(re.search(r"wi-?fi", name, re.I)), form_factor=specs.get("form_factor"))
     elif category == "case":
@@ -86,7 +96,7 @@ def derive(row: dict) -> dict:
         dedicated = bool(LAPTOP_GPU.search(name))
         # A laptop without a dedicated chip has integrated graphics: it meets no maker, model or memory wish.
         out.update(screen_inches=float(size.group(1)) if size else None, oled="oled" in name.casefold(),
-                   dedicated_gpu=dedicated, cpu_maker=cpu_maker(row, specs),
+                   dedicated_gpu=dedicated, cpu_maker=cpu_maker(row, specs), cpu_tier=cpu_tier(name),
                    gpu_vendor=model["vendor"] if model else None if dedicated else "integrated",
                    gpu_rank=model["rank"] if model else None if dedicated else [0, 0, 0],
                    gpu_memory_gb=int(memory.group(1)) if memory else None if dedicated else 0)
@@ -100,7 +110,7 @@ def filters_for(category: str, requirements: dict) -> dict:
     if category == "gpu":
         wanted.update(gpu_vendor=hard.get("gpu_vendor"), min_gpu_model=hard.get("minimum_gpu_model"))
     elif category == "cpu":
-        wanted["cpu_maker"] = hard.get("cpu_maker")
+        wanted.update(cpu_maker=hard.get("cpu_maker"), min_cpu_tier=hard.get("minimum_cpu_tier"))
     elif category == "motherboard":
         wanted.update(wifi=hard.get("wifi"), max_form_factor=hard.get("maximum_form_factor"))
     elif category == "case":
@@ -111,7 +121,8 @@ def filters_for(category: str, requirements: dict) -> dict:
         wanted.update(brands=hard.get("laptop_brands"), screen_inches=hard.get("laptop_screen_inches"),
                       oled=hard.get("laptop_oled"), dedicated_gpu=hard.get("laptop_dedicated_gpu"),
                       gpu_vendor=hard.get("gpu_vendor"), min_gpu_model=hard.get("minimum_gpu_model"),
-                      cpu_maker=hard.get("cpu_maker"), min_gpu_memory=hard.get("minimum_gpu_memory_gb"))
+                      cpu_maker=hard.get("cpu_maker"), min_gpu_memory=hard.get("minimum_gpu_memory_gb"),
+                      min_cpu_tier=hard.get("minimum_cpu_tier"))
     if category != "laptop" and (hard.get("part_brands") or {}).get(category):
         wanted["part_brand"] = {category: hard["part_brands"][category]}
     return {key: value for key, value in wanted.items() if value}
@@ -124,6 +135,9 @@ def _test(key: str, wanted, have: dict) -> bool | None:
         return have["brand"] in wanted
     if key == "part_brand":
         return have["brand"] in next(iter(wanted.values()))
+    if key == "min_cpu_tier":
+        tier = have.get("cpu_tier")
+        return None if tier is None else tier >= wanted
     if key == "min_gpu_memory":
         size = have.get("gpu_memory_gb")
         return None if size is None else size >= wanted
@@ -173,6 +187,7 @@ LABELS: dict[str, tuple[str, object]] = {
     "minimum_gpu_model": ("graphics card model", lambda v: f"a graphics card at least as good as the {v['label']}"),
     "no_graphics_card": ("no graphics card", lambda v: "no graphics card"),
     "cpu_maker": ("processor brand", lambda v: f"a processor from {VENDOR_NAME[v]}"),
+    "minimum_cpu_tier": ("processor class", lambda v: f"a processor of class {v} or higher (Core i{v}, Core Ultra {v}, Ryzen {v})"),
     "socket": ("platform", lambda v: f"the {v} platform"),
     "memory_type": ("memory generation", lambda v: f"{v} memory"),
     "minimum_psu_watts": ("power supply", lambda v: f"a power supply of at least {v}W"),
