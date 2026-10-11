@@ -11,11 +11,11 @@
   "summary": {
     "dense": {
       "all": {
-        "recall@5": 0.8317,
-        "recall@10": 0.8148,
-        "ndcg@5": 0.8319,
-        "ndcg@10": 0.8108,
-        "precision@5": 0.78
+        "recall@5": 0.8383,
+        "recall@10": 0.8067,
+        "ndcg@5": 0.8375,
+        "ndcg@10": 0.8071,
+        "precision@5": 0.7867
       },
       "model": {
         "recall@5": 0.875,
@@ -26,19 +26,19 @@
       },
       "spec": {
         "recall@5": 0.8,
-        "recall@10": 0.7543,
+        "recall@10": 0.75,
         "ndcg@5": 0.7854,
-        "ndcg@10": 0.7443,
+        "ndcg@10": 0.7422,
         "precision@5": 0.72
       },
       "semantic": {
-        "recall@5": 0.82,
-        "recall@10": 0.81,
-        "ndcg@5": 0.809,
-        "ndcg@10": 0.7923,
-        "precision@5": 0.76
+        "recall@5": 0.84,
+        "recall@10": 0.79,
+        "ndcg@5": 0.826,
+        "ndcg@10": 0.783,
+        "precision@5": 0.78
       },
-      "latency_s": 0.137
+      "latency_s": 0.181
     },
     "bm25": {
       "all": {
@@ -69,14 +69,14 @@
         "ndcg@10": 0.5706,
         "precision@5": 0.56
       },
-      "latency_s": 0.007
+      "latency_s": 0.003
     },
     "bm25+dense": {
       "all": {
         "recall@5": 0.8433,
         "recall@10": 0.8413,
-        "ndcg@5": 0.8545,
-        "ndcg@10": 0.8453,
+        "ndcg@5": 0.8449,
+        "ndcg@10": 0.8376,
         "precision@5": 0.7933
       },
       "model": {
@@ -89,25 +89,25 @@
       "spec": {
         "recall@5": 0.86,
         "recall@10": 0.8414,
-        "ndcg@5": 0.8869,
-        "ndcg@10": 0.8659,
+        "ndcg@5": 0.8729,
+        "ndcg@10": 0.8529,
         "precision@5": 0.78
       },
       "semantic": {
         "recall@5": 0.74,
         "recall@10": 0.76,
-        "ndcg@5": 0.7395,
-        "ndcg@10": 0.7434,
+        "ndcg@5": 0.7247,
+        "ndcg@10": 0.7336,
         "precision@5": 0.68
       },
-      "latency_s": 0.029
+      "latency_s": 0.051
     },
     "bm25+dense+graph": {
       "all": {
         "recall@5": 0.85,
         "recall@10": 0.8642,
-        "ndcg@5": 0.8575,
-        "ndcg@10": 0.8604,
+        "ndcg@5": 0.8505,
+        "ndcg@10": 0.8556,
         "precision@5": 0.8
       },
       "model": {
@@ -120,25 +120,25 @@
       "spec": {
         "recall@5": 0.86,
         "recall@10": 0.88,
-        "ndcg@5": 0.8744,
-        "ndcg@10": 0.8827,
+        "ndcg@5": 0.8684,
+        "ndcg@10": 0.8779,
         "precision@5": 0.78
       },
       "semantic": {
         "recall@5": 0.74,
         "recall@10": 0.76,
-        "ndcg@5": 0.7395,
-        "ndcg@10": 0.7434,
+        "ndcg@5": 0.7247,
+        "ndcg@10": 0.7336,
         "precision@5": 0.68
       },
-      "latency_s": 0.098
+      "latency_s": 0.073
     },
     "hybrid+neo4j_constraint": {
       "all": {
         "recall@5": 0.9467,
-        "recall@10": 0.9325,
+        "recall@10": 0.9358,
         "ndcg@5": 0.9466,
-        "ndcg@10": 0.9336,
+        "ndcg@10": 0.9356,
         "precision@5": 0.8933
       },
       "model": {
@@ -150,19 +150,19 @@
       },
       "spec": {
         "recall@5": 0.92,
-        "recall@10": 0.92,
+        "recall@10": 0.93,
         "ndcg@5": 0.9384,
-        "ndcg@10": 0.9328,
+        "ndcg@10": 0.9392,
         "precision@5": 0.84
       },
       "semantic": {
         "recall@5": 0.92,
         "recall@10": 0.91,
         "ndcg@5": 0.9033,
-        "ndcg@10": 0.8907,
+        "ndcg@10": 0.8904,
         "precision@5": 0.86
       },
-      "latency_s": 0.055
+      "latency_s": 0.063
     }
   },
   "per_query": [
@@ -171,7 +171,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 16,
-      "latency_s": 3.116,
+      "latency_s": 3.925,
       "degraded": [],
       "top5": [
         {
@@ -212,7 +212,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 16,
-      "latency_s": 0.012,
+      "latency_s": 0.004,
       "degraded": [],
       "top5": [
         {
@@ -253,7 +253,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 16,
-      "latency_s": 0.031,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -294,7 +294,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 16,
-      "latency_s": 1.742,
+      "latency_s": 0.419,
       "degraded": [],
       "top5": [
         {
@@ -335,7 +335,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 16,
-      "latency_s": 0.472,
+      "latency_s": 0.229,
       "degraded": [],
       "top5": [
         {
@@ -376,7 +376,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 4,
-      "latency_s": 0.076,
+      "latency_s": 0.07,
       "degraded": [],
       "top5": [
         {
@@ -417,7 +417,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 4,
-      "latency_s": 0.01,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -458,7 +458,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 4,
-      "latency_s": 0.025,
+      "latency_s": 0.061,
       "degraded": [],
       "top5": [
         {
@@ -499,7 +499,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 4,
-      "latency_s": 0.025,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -540,7 +540,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 4,
-      "latency_s": 0.028,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -581,7 +581,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 20,
-      "latency_s": 0.045,
+      "latency_s": 0.048,
       "degraded": [],
       "top5": [
         {
@@ -622,7 +622,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 20,
-      "latency_s": 0.007,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -663,7 +663,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 20,
-      "latency_s": 0.024,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -672,14 +672,14 @@
           "excerpt": "Sapphire Pure RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip RX "
         },
         {
-          "evidence_id": "price:a401e4d1ff1885e16cc8",
-          "relevant": true,
-          "excerpt": "Asus Tuf Gaming RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip R"
-        },
-        {
           "evidence_id": "price:a726a5717eb501289554",
           "relevant": true,
           "excerpt": "Sapphire Pulse RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip RX"
+        },
+        {
+          "evidence_id": "price:a401e4d1ff1885e16cc8",
+          "relevant": true,
+          "excerpt": "Asus Tuf Gaming RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip R"
         },
         {
           "evidence_id": "price:1b71739bdba035755faa",
@@ -704,7 +704,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 20,
-      "latency_s": 0.034,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -713,14 +713,14 @@
           "excerpt": "XFX Swift AMD Radeon RX 9070XT Triple Fan Gaming Edition 16GB GDDR6 Graphics Car"
         },
         {
-          "evidence_id": "price:89eaadc1cd1b3b77d0da",
-          "relevant": true,
-          "excerpt": "PowerColor Reaper AMD Radeon RX 9070 XT 16GB GDDR6 Graphics Card PowerColor gpu."
-        },
-        {
           "evidence_id": "price:89e3350513fb96deeeb7",
           "relevant": true,
           "excerpt": "POWERCOLOR Hellhound RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: c"
+        },
+        {
+          "evidence_id": "price:89eaadc1cd1b3b77d0da",
+          "relevant": true,
+          "excerpt": "PowerColor Reaper AMD Radeon RX 9070 XT 16GB GDDR6 Graphics Card PowerColor gpu."
         },
         {
           "evidence_id": "price:a78f014c9b97a0dceeec",
@@ -728,9 +728,9 @@
           "excerpt": "Sapphire Pure RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip RX "
         },
         {
-          "evidence_id": "price:1b71739bdba035755faa",
+          "evidence_id": "price:a726a5717eb501289554",
           "relevant": true,
-          "excerpt": "ASUS Prime Radeon RX 9070 XT OC Edition 16GB GDDR6 Graphics Card ASUS gpu. Speci"
+          "excerpt": "Sapphire Pulse RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip RX"
         }
       ],
       "recall@5": 1.0,
@@ -745,7 +745,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 20,
-      "latency_s": 0.032,
+      "latency_s": 0.055,
       "degraded": [],
       "top5": [
         {
@@ -754,14 +754,14 @@
           "excerpt": "XFX Swift AMD Radeon RX 9070XT Triple Fan Gaming Edition 16GB GDDR6 Graphics Car"
         },
         {
-          "evidence_id": "price:89eaadc1cd1b3b77d0da",
-          "relevant": true,
-          "excerpt": "PowerColor Reaper AMD Radeon RX 9070 XT 16GB GDDR6 Graphics Card PowerColor gpu."
-        },
-        {
           "evidence_id": "price:89e3350513fb96deeeb7",
           "relevant": true,
           "excerpt": "POWERCOLOR Hellhound RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: c"
+        },
+        {
+          "evidence_id": "price:89eaadc1cd1b3b77d0da",
+          "relevant": true,
+          "excerpt": "PowerColor Reaper AMD Radeon RX 9070 XT 16GB GDDR6 Graphics Card PowerColor gpu."
         },
         {
           "evidence_id": "price:a78f014c9b97a0dceeec",
@@ -769,9 +769,9 @@
           "excerpt": "Sapphire Pure RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip RX "
         },
         {
-          "evidence_id": "price:1b71739bdba035755faa",
+          "evidence_id": "price:a726a5717eb501289554",
           "relevant": true,
-          "excerpt": "ASUS Prime Radeon RX 9070 XT OC Edition 16GB GDDR6 Graphics Card ASUS gpu. Speci"
+          "excerpt": "Sapphire Pulse RX 9070 XT 16GB Vii PC Trade Pte Ltd gpu. Specifications: chip RX"
         }
       ],
       "recall@5": 1.0,
@@ -786,7 +786,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 5,
-      "latency_s": 0.041,
+      "latency_s": 0.034,
       "degraded": [],
       "top5": [
         {
@@ -827,7 +827,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 5,
-      "latency_s": 0.008,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -868,7 +868,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 5,
-      "latency_s": 0.026,
+      "latency_s": 0.06,
       "degraded": [],
       "top5": [
         {
@@ -909,7 +909,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 5,
-      "latency_s": 0.026,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -950,7 +950,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 5,
-      "latency_s": 0.028,
+      "latency_s": 0.048,
       "degraded": [],
       "top5": [
         {
@@ -991,7 +991,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 8,
-      "latency_s": 0.045,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -1032,7 +1032,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 8,
-      "latency_s": 0.01,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -1073,7 +1073,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 8,
-      "latency_s": 0.028,
+      "latency_s": 0.051,
       "degraded": [],
       "top5": [
         {
@@ -1114,7 +1114,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 8,
-      "latency_s": 0.024,
+      "latency_s": 0.058,
       "degraded": [],
       "top5": [
         {
@@ -1155,7 +1155,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 8,
-      "latency_s": 0.024,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -1196,7 +1196,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 24,
-      "latency_s": 0.041,
+      "latency_s": 0.051,
       "degraded": [],
       "top5": [
         {
@@ -1205,12 +1205,12 @@
           "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
         },
         {
-          "evidence_id": "price:7b6350b6b8dbfcd486fe",
+          "evidence_id": "price:4c5908a277acdfd17df0",
           "relevant": true,
           "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
         },
         {
-          "evidence_id": "price:4c5908a277acdfd17df0",
+          "evidence_id": "price:7b6350b6b8dbfcd486fe",
           "relevant": true,
           "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
         },
@@ -1237,7 +1237,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 24,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -1278,9 +1278,14 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 24,
-      "latency_s": 0.026,
+      "latency_s": 0.049,
       "degraded": [],
       "top5": [
+        {
+          "evidence_id": "price:4c5908a277acdfd17df0",
+          "relevant": true,
+          "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
+        },
         {
           "evidence_id": "price:f874f691c68cfa7a72e6",
           "relevant": true,
@@ -1295,11 +1300,6 @@
           "evidence_id": "price:924b24646dd2efc3324c",
           "relevant": true,
           "excerpt": "SAMSUNG 990 PRO 2TB 7450MB/s PCIe4.0 NVMe M.2 SSD(5YRS) - 8806094215038 SAMSUNG "
-        },
-        {
-          "evidence_id": "price:7b6350b6b8dbfcd486fe",
-          "relevant": true,
-          "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
         },
         {
           "evidence_id": "price:715b2dd7a192979d315c",
@@ -1319,9 +1319,14 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 24,
-      "latency_s": 0.026,
+      "latency_s": 0.063,
       "degraded": [],
       "top5": [
+        {
+          "evidence_id": "price:4c5908a277acdfd17df0",
+          "relevant": true,
+          "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
+        },
         {
           "evidence_id": "price:f874f691c68cfa7a72e6",
           "relevant": true,
@@ -1336,11 +1341,6 @@
           "evidence_id": "price:924b24646dd2efc3324c",
           "relevant": true,
           "excerpt": "SAMSUNG 990 PRO 2TB 7450MB/s PCIe4.0 NVMe M.2 SSD(5YRS) - 8806094215038 SAMSUNG "
-        },
-        {
-          "evidence_id": "price:7b6350b6b8dbfcd486fe",
-          "relevant": true,
-          "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
         },
         {
           "evidence_id": "price:715b2dd7a192979d315c",
@@ -1360,9 +1360,14 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 24,
-      "latency_s": 0.028,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
+        {
+          "evidence_id": "price:4c5908a277acdfd17df0",
+          "relevant": true,
+          "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
+        },
         {
           "evidence_id": "price:f874f691c68cfa7a72e6",
           "relevant": true,
@@ -1377,11 +1382,6 @@
           "evidence_id": "price:924b24646dd2efc3324c",
           "relevant": true,
           "excerpt": "SAMSUNG 990 PRO 2TB 7450MB/s PCIe4.0 NVMe M.2 SSD(5YRS) - 8806094215038 SAMSUNG "
-        },
-        {
-          "evidence_id": "price:7b6350b6b8dbfcd486fe",
-          "relevant": true,
-          "excerpt": "Samsung 990 Pro Gen4 NVMe 1TB / 2TB / 4TB Samsung ssd. Specifications: capacity "
         },
         {
           "evidence_id": "price:715b2dd7a192979d315c",
@@ -1401,7 +1401,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 15,
-      "latency_s": 0.042,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -1442,7 +1442,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 15,
-      "latency_s": 0.007,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -1483,7 +1483,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 15,
-      "latency_s": 0.028,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -1524,7 +1524,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 15,
-      "latency_s": 0.025,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -1565,7 +1565,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 15,
-      "latency_s": 0.028,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -1606,7 +1606,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 28,
-      "latency_s": 0.038,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -1647,7 +1647,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 28,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -1688,7 +1688,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 28,
-      "latency_s": 0.026,
+      "latency_s": 0.046,
       "degraded": [],
       "top5": [
         {
@@ -1729,7 +1729,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 28,
-      "latency_s": 0.025,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -1770,7 +1770,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 28,
-      "latency_s": 0.027,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -1811,7 +1811,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 5,
-      "latency_s": 0.041,
+      "latency_s": 0.05,
       "degraded": [],
       "top5": [
         {
@@ -1852,7 +1852,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 5,
-      "latency_s": 0.008,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -1893,7 +1893,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 5,
-      "latency_s": 0.027,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -1934,7 +1934,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 5,
-      "latency_s": 0.03,
+      "latency_s": 0.059,
       "degraded": [],
       "top5": [
         {
@@ -1975,7 +1975,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 5,
-      "latency_s": 0.03,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -2016,7 +2016,7 @@
       "type": "model",
       "variant": "dense",
       "relevant_total": 13,
-      "latency_s": 0.044,
+      "latency_s": 0.066,
       "degraded": [],
       "top5": [
         {
@@ -2057,7 +2057,7 @@
       "type": "model",
       "variant": "bm25",
       "relevant_total": 13,
-      "latency_s": 0.006,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -2098,7 +2098,7 @@
       "type": "model",
       "variant": "bm25+dense",
       "relevant_total": 13,
-      "latency_s": 0.03,
+      "latency_s": 0.037,
       "degraded": [],
       "top5": [
         {
@@ -2139,7 +2139,7 @@
       "type": "model",
       "variant": "bm25+dense+graph",
       "relevant_total": 13,
-      "latency_s": 0.027,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -2180,7 +2180,7 @@
       "type": "model",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 13,
-      "latency_s": 0.032,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -2221,7 +2221,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 193,
-      "latency_s": 0.04,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -2235,14 +2235,14 @@
           "excerpt": "Gigabyte X870E AORUS Master X3D ICE AMD AM5 DDR5 ATX Motherboard - 4719331876517"
         },
         {
-          "evidence_id": "price:22f3318d065c2ad0722a",
-          "relevant": true,
-          "excerpt": "Gigabyte B850 AI TOP Wi-Fi 7 DDR5 PCIe 5.0 10Gbe LAN AMD AM5 ATX Motherboard - 4"
-        },
-        {
           "evidence_id": "price:69ec7ffa8a10ce06010d",
           "relevant": true,
           "excerpt": "GIGABYTE B850 AORUS ELITE WIFI7 ICE AM5 ATX MOTHERBOARD - 4719331866099 GIGABYTE"
+        },
+        {
+          "evidence_id": "price:22f3318d065c2ad0722a",
+          "relevant": true,
+          "excerpt": "Gigabyte B850 AI TOP Wi-Fi 7 DDR5 PCIe 5.0 10Gbe LAN AMD AM5 ATX Motherboard - 4"
         },
         {
           "evidence_id": "price:39aaf510ee0abb76a80a",
@@ -2262,7 +2262,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 193,
-      "latency_s": 0.008,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -2303,7 +2303,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 193,
-      "latency_s": 0.032,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -2344,7 +2344,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 193,
-      "latency_s": 0.402,
+      "latency_s": 0.149,
       "degraded": [],
       "top5": [
         {
@@ -2385,7 +2385,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 193,
-      "latency_s": 0.353,
+      "latency_s": 0.15,
       "degraded": [],
       "top5": [
         {
@@ -2426,7 +2426,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 16,
-      "latency_s": 0.026,
+      "latency_s": 0.05,
       "degraded": [],
       "top5": [
         {
@@ -2467,7 +2467,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 16,
-      "latency_s": 0.01,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -2508,7 +2508,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 16,
-      "latency_s": 0.029,
+      "latency_s": 0.045,
       "degraded": [],
       "top5": [
         {
@@ -2541,7 +2541,7 @@
       "ndcg@5": 0.8304,
       "precision@5": 0.8,
       "recall@10": 0.8,
-      "ndcg@10": 0.8263,
+      "ndcg@10": 0.8237,
       "precision@10": 0.8
     },
     {
@@ -2549,7 +2549,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 16,
-      "latency_s": 0.038,
+      "latency_s": 0.067,
       "degraded": [],
       "top5": [
         {
@@ -2590,7 +2590,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 16,
-      "latency_s": 0.037,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -2631,7 +2631,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 89,
-      "latency_s": 0.03,
+      "latency_s": 0.045,
       "degraded": [],
       "top5": [
         {
@@ -2672,7 +2672,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 89,
-      "latency_s": 0.008,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -2713,7 +2713,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 89,
-      "latency_s": 0.027,
+      "latency_s": 0.049,
       "degraded": [],
       "top5": [
         {
@@ -2754,7 +2754,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 89,
-      "latency_s": 0.042,
+      "latency_s": 0.061,
       "degraded": [],
       "top5": [
         {
@@ -2795,7 +2795,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 89,
-      "latency_s": 0.038,
+      "latency_s": 0.058,
       "degraded": [],
       "top5": [
         {
@@ -2836,7 +2836,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 1,
-      "latency_s": 0.027,
+      "latency_s": 0.051,
       "degraded": [],
       "top5": [
         {
@@ -2877,7 +2877,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 1,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -2918,7 +2918,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 1,
-      "latency_s": 0.027,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -2937,14 +2937,14 @@
           "excerpt": "G.SKILL RIPJAWS V 3600MHz 32GB (16GBx2) CL18 KIT - 4713294223104 G.SKILL ram. Sp"
         },
         {
+          "evidence_id": "price:cde7e8c7055c08444801",
+          "relevant": false,
+          "excerpt": "Crucial 32GB DDR4 3200MHz CL22 1.2V Non-ECC SODIMM SO-DIMM Notebook Memory CT32G"
+        },
+        {
           "evidence_id": "price:91ac24a1717176c78de4",
           "relevant": false,
           "excerpt": "LEXAR DDR5 5600 16GB CL46 DESKTOP SINGLE STICK RAM - 843367132782 LEXAR ram. Spe"
-        },
-        {
-          "evidence_id": "price:86233d77a61e2e6e5abb",
-          "relevant": false,
-          "excerpt": "ASUS VIVOBOOK 16  X1605VA-MB1504W 16IN INTEL I7-13620H/16GB DDR4 Ram (16GB / 512"
         }
       ],
       "recall@5": 1.0,
@@ -2959,7 +2959,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 1,
-      "latency_s": 0.032,
+      "latency_s": 0.062,
       "degraded": [],
       "top5": [
         {
@@ -3000,7 +3000,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 1,
-      "latency_s": 0.034,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -3041,7 +3041,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 57,
-      "latency_s": 0.039,
+      "latency_s": 0.082,
       "degraded": [],
       "top5": [
         {
@@ -3082,7 +3082,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 57,
-      "latency_s": 0.006,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -3123,7 +3123,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 57,
-      "latency_s": 0.03,
+      "latency_s": 0.039,
       "degraded": [],
       "top5": [
         {
@@ -3164,7 +3164,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 57,
-      "latency_s": 0.027,
+      "latency_s": 0.059,
       "degraded": [],
       "top5": [
         {
@@ -3205,7 +3205,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 57,
-      "latency_s": 0.031,
+      "latency_s": 0.058,
       "degraded": [],
       "top5": [
         {
@@ -3246,7 +3246,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 50,
-      "latency_s": 0.026,
+      "latency_s": 0.046,
       "degraded": [],
       "top5": [
         {
@@ -3287,7 +3287,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 50,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -3328,7 +3328,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 50,
-      "latency_s": 0.029,
+      "latency_s": 0.044,
       "degraded": [],
       "top5": [
         {
@@ -3369,7 +3369,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 50,
-      "latency_s": 0.029,
+      "latency_s": 0.061,
       "degraded": [],
       "top5": [
         {
@@ -3410,7 +3410,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 50,
-      "latency_s": 0.026,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -3451,7 +3451,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 35,
-      "latency_s": 0.026,
+      "latency_s": 0.047,
       "degraded": [],
       "top5": [
         {
@@ -3475,16 +3475,16 @@
           "excerpt": "ASUS PRIME A620AM-K-CSM AMD A620 Micro-ATX Motherboard - 4711636227995 ASUS moth"
         },
         {
-          "evidence_id": "price:0c0be801ffcffadf892a",
+          "evidence_id": "price:4668df280ca5ac5b4d8c",
           "relevant": false,
-          "excerpt": "MSI MEG Z890 ACE Intel® Core™ Ultra Processors DDR5 WIF7 ATX Gaming Motherboard "
+          "excerpt": "MSI MEG Z790 ACE MAX ATX MOTHERBOARD - D5-MSIMEGZ790ACEMAX MSI motherboard. Spec"
         }
       ],
       "recall@5": 0.6,
       "ndcg@5": 0.6992,
       "precision@5": 0.6,
       "recall@10": 0.7,
-      "ndcg@10": 0.7314,
+      "ndcg@10": 0.7264,
       "precision@10": 0.7
     },
     {
@@ -3492,7 +3492,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 35,
-      "latency_s": 0.007,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -3533,7 +3533,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 35,
-      "latency_s": 0.029,
+      "latency_s": 0.048,
       "degraded": [],
       "top5": [
         {
@@ -3574,7 +3574,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 35,
-      "latency_s": 0.026,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -3615,7 +3615,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 35,
-      "latency_s": 0.028,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -3656,7 +3656,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 19,
-      "latency_s": 0.026,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -3697,7 +3697,7 @@
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 19,
-      "latency_s": 0.006,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -3738,7 +3738,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 19,
-      "latency_s": 0.03,
+      "latency_s": 0.031,
       "degraded": [],
       "top5": [
         {
@@ -3779,7 +3779,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 19,
-      "latency_s": 0.026,
+      "latency_s": 0.073,
       "degraded": [],
       "top5": [
         {
@@ -3820,7 +3820,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 19,
-      "latency_s": 0.027,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -3861,7 +3861,7 @@
       "type": "spec",
       "variant": "dense",
       "relevant_total": 42,
-      "latency_s": 0.027,
+      "latency_s": 0.054,
       "degraded": [],
       "top5": [
         {
@@ -3893,16 +3893,16 @@
       "recall@5": 0.6,
       "ndcg@5": 0.6548,
       "precision@5": 0.6,
-      "recall@10": 0.5,
-      "ndcg@10": 0.5645,
-      "precision@10": 0.5
+      "recall@10": 0.6,
+      "ndcg@10": 0.6282,
+      "precision@10": 0.6
     },
     {
       "query_id": "S09",
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 42,
-      "latency_s": 0.005,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -3943,7 +3943,7 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 42,
-      "latency_s": 0.027,
+      "latency_s": 0.03,
       "degraded": [],
       "top5": [
         {
@@ -3984,7 +3984,7 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 42,
-      "latency_s": 0.025,
+      "latency_s": 0.058,
       "degraded": [],
       "top5": [
         {
@@ -4025,7 +4025,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 42,
-      "latency_s": 0.028,
+      "latency_s": 0.049,
       "degraded": [],
       "top5": [
         {
@@ -4057,16 +4057,16 @@
       "recall@5": 0.4,
       "ndcg@5": 0.5531,
       "precision@5": 0.4,
-      "recall@10": 0.4,
-      "ndcg@10": 0.5017,
-      "precision@10": 0.4
+      "recall@10": 0.5,
+      "ndcg@10": 0.5654,
+      "precision@10": 0.5
     },
     {
       "query_id": "S10",
       "type": "spec",
       "variant": "dense",
       "relevant_total": 7,
-      "latency_s": 0.025,
+      "latency_s": 0.049,
       "degraded": [],
       "top5": [
         {
@@ -4098,16 +4098,16 @@
       "recall@5": 0.0,
       "ndcg@5": 0.0,
       "precision@5": 0.0,
-      "recall@10": 0.1429,
-      "ndcg@10": 0.0795,
-      "precision@10": 0.1
+      "recall@10": 0.0,
+      "ndcg@10": 0.0,
+      "precision@10": 0.0
     },
     {
       "query_id": "S10",
       "type": "spec",
       "variant": "bm25",
       "relevant_total": 7,
-      "latency_s": 0.006,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -4148,23 +4148,18 @@
       "type": "spec",
       "variant": "bm25+dense",
       "relevant_total": 7,
-      "latency_s": 0.028,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
-        {
-          "evidence_id": "price:0f597d5e59d3493ddcfc",
-          "relevant": true,
-          "excerpt": "AMD RYZEN 5 5600 3.5GHz 6CORE/12THREAD AM4 TRAY PROCESSOR(3YRS BY AMD) - 7301433"
-        },
         {
           "evidence_id": "price:6ab5894fc1c456af0684",
           "relevant": false,
           "excerpt": "Gigabyte B550 Eagle WiFi6E AM4 ATX Motherboard - 4719331883331 GIGABYTE motherbo"
         },
         {
-          "evidence_id": "price:e067e401012ba5bd282b",
+          "evidence_id": "price:0f597d5e59d3493ddcfc",
           "relevant": true,
-          "excerpt": "AMD Ryzen 7 5700G 8CORE/16THREAD AM4 CPU TRAY - 100-000000263 AMD cpu. Specifica"
+          "excerpt": "AMD RYZEN 5 5600 3.5GHz 6CORE/12THREAD AM4 TRAY PROCESSOR(3YRS BY AMD) - 7301433"
         },
         {
           "evidence_id": "price:188fc109f1a756700536",
@@ -4175,13 +4170,18 @@
           "evidence_id": "price:cd2372713cf6ed8c6e98",
           "relevant": false,
           "excerpt": "DeepCool ASSASSIN IV Premium CPU Air Cooler, Dual-Tower, 120/140mm FDB Fan Confi"
+        },
+        {
+          "evidence_id": "price:440690509fd12ea9451c",
+          "relevant": true,
+          "excerpt": "AMD Ryzen™ 7 5700 with Wraith Spire Cooler - Ryzen 7 5000 G-Series Desktop Proce"
         }
       ],
       "recall@5": 0.6,
-      "ndcg@5": 0.6548,
+      "ndcg@5": 0.5148,
       "precision@5": 0.6,
       "recall@10": 0.7143,
-      "ndcg@10": 0.7114,
+      "ndcg@10": 0.5834,
       "precision@10": 0.5
     },
     {
@@ -4189,18 +4189,13 @@
       "type": "spec",
       "variant": "bm25+dense+graph",
       "relevant_total": 7,
-      "latency_s": 0.033,
+      "latency_s": 0.06,
       "degraded": [],
       "top5": [
         {
           "evidence_id": "price:0f597d5e59d3493ddcfc",
           "relevant": true,
           "excerpt": "AMD RYZEN 5 5600 3.5GHz 6CORE/12THREAD AM4 TRAY PROCESSOR(3YRS BY AMD) - 7301433"
-        },
-        {
-          "evidence_id": "price:e067e401012ba5bd282b",
-          "relevant": true,
-          "excerpt": "AMD Ryzen 7 5700G 8CORE/16THREAD AM4 CPU TRAY - 100-000000263 AMD cpu. Specifica"
         },
         {
           "evidence_id": "price:6ab5894fc1c456af0684",
@@ -4216,13 +4211,18 @@
           "evidence_id": "price:bbed768e0045c9850558",
           "relevant": false,
           "excerpt": "Gigabyte B550M DS3H AC R2 DDR4 m-ATX Motherboard - 4719331869908 GIGABYTE mother"
+        },
+        {
+          "evidence_id": "price:717d55e5fd90c0ba7813",
+          "relevant": true,
+          "excerpt": "AMD Ryzen™ 5 5500GT with Wraith Stealth Cooler - Ryzen 5 5000 G-Series Desktop P"
         }
       ],
       "recall@5": 0.6,
-      "ndcg@5": 0.6992,
+      "ndcg@5": 0.6399,
       "precision@5": 0.6,
       "recall@10": 1.0,
-      "ndcg@10": 0.9257,
+      "ndcg@10": 0.8776,
       "precision@10": 0.7
     },
     {
@@ -4230,7 +4230,7 @@
       "type": "spec",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 7,
-      "latency_s": 0.033,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -4271,7 +4271,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 248,
-      "latency_s": 0.032,
+      "latency_s": 0.061,
       "degraded": [],
       "top5": [
         {
@@ -4312,7 +4312,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 248,
-      "latency_s": 0.005,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -4353,7 +4353,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 248,
-      "latency_s": 0.03,
+      "latency_s": 0.051,
       "degraded": [],
       "top5": [
         {
@@ -4394,7 +4394,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 248,
-      "latency_s": 0.028,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -4435,7 +4435,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 248,
-      "latency_s": 0.029,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -4476,7 +4476,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 13,
-      "latency_s": 0.028,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -4509,7 +4509,7 @@
       "ndcg@5": 0.3601,
       "precision@5": 0.4,
       "recall@10": 0.3,
-      "ndcg@10": 0.3031,
+      "ndcg@10": 0.2999,
       "precision@10": 0.3
     },
     {
@@ -4517,7 +4517,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 13,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -4558,7 +4558,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 13,
-      "latency_s": 0.028,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -4577,21 +4577,21 @@
           "excerpt": "MSI Stealth 16 AI+ B3WF-023SG 16\" OLED 240Hz \tIntel Core Ultra 9 processor 386H "
         },
         {
-          "evidence_id": "price:c3f9984516f08432acc2",
-          "relevant": false,
-          "excerpt": "Crucial 32GB DDR5 5600MHz SO-DIMM Laptop Single Stick CL46 Memory / RAM - CT32G5"
-        },
-        {
           "evidence_id": "price:e31510f4ed579a01ef87",
           "relevant": false,
           "excerpt": "SAMSUNG T9 SHIELD PORTABLE SSD 1TB BLACK - MU-PG1T0B/WW - 8806094489125 SAMSUNG "
+        },
+        {
+          "evidence_id": "price:f6d163a0fd9ec3b0665d",
+          "relevant": false,
+          "excerpt": "My Passport, Works with USB-C™ - 2TB (Silicon Grey) - 718037902944 WD hdd. \nYour"
         }
       ],
       "recall@5": 0.2,
       "ndcg@5": 0.3392,
       "precision@5": 0.2,
       "recall@10": 0.2,
-      "ndcg@10": 0.2935,
+      "ndcg@10": 0.2985,
       "precision@10": 0.2
     },
     {
@@ -4599,7 +4599,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 13,
-      "latency_s": 0.028,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -4618,21 +4618,21 @@
           "excerpt": "MSI Stealth 16 AI+ B3WF-023SG 16\" OLED 240Hz \tIntel Core Ultra 9 processor 386H "
         },
         {
-          "evidence_id": "price:c3f9984516f08432acc2",
-          "relevant": false,
-          "excerpt": "Crucial 32GB DDR5 5600MHz SO-DIMM Laptop Single Stick CL46 Memory / RAM - CT32G5"
-        },
-        {
           "evidence_id": "price:e31510f4ed579a01ef87",
           "relevant": false,
           "excerpt": "SAMSUNG T9 SHIELD PORTABLE SSD 1TB BLACK - MU-PG1T0B/WW - 8806094489125 SAMSUNG "
+        },
+        {
+          "evidence_id": "price:f6d163a0fd9ec3b0665d",
+          "relevant": false,
+          "excerpt": "My Passport, Works with USB-C™ - 2TB (Silicon Grey) - 718037902944 WD hdd. \nYour"
         }
       ],
       "recall@5": 0.2,
       "ndcg@5": 0.3392,
       "precision@5": 0.2,
       "recall@10": 0.2,
-      "ndcg@10": 0.2935,
+      "ndcg@10": 0.2985,
       "precision@10": 0.2
     },
     {
@@ -4640,7 +4640,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 13,
-      "latency_s": 0.029,
+      "latency_s": 0.055,
       "degraded": [],
       "top5": [
         {
@@ -4673,7 +4673,7 @@
       "ndcg@5": 0.3392,
       "precision@5": 0.2,
       "recall@10": 0.3,
-      "ndcg@10": 0.3531,
+      "ndcg@10": 0.35,
       "precision@10": 0.3
     },
     {
@@ -4681,7 +4681,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 2,
-      "latency_s": 0.027,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -4722,7 +4722,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 2,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -4763,7 +4763,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 2,
-      "latency_s": 0.029,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -4804,7 +4804,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 2,
-      "latency_s": 0.029,
+      "latency_s": 0.058,
       "degraded": [],
       "top5": [
         {
@@ -4845,7 +4845,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 2,
-      "latency_s": 0.027,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -4886,7 +4886,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 186,
-      "latency_s": 0.028,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -4900,11 +4900,6 @@
           "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
         },
         {
-          "evidence_id": "review:web-review-20260906-12",
-          "relevant": false,
-          "excerpt": "Lian Li Lancool 216 case\nthe Lancool 216 is quite an improvement over its predec"
-        },
-        {
           "evidence_id": "price:66e510cbfa47351d6279",
           "relevant": true,
           "excerpt": "Montech SKY TWO ATX Mid Tower Case - High Airflow Performance, ARGB PWM Fans, Du"
@@ -4913,21 +4908,26 @@
           "evidence_id": "price:7adc34b45e8c8c3f57ae",
           "relevant": true,
           "excerpt": "Montech SKY TWO ATX Mid Tower Case - High Airflow Performance, ARGB PWM Fans, Du"
+        },
+        {
+          "evidence_id": "price:1bf5f570fa4e2fe645c2",
+          "relevant": true,
+          "excerpt": "Corsair 480T Airflow Tempered Glass Mid-Tower Black - CS-CC-9011271-WW CORSAIR c"
         }
       ],
-      "recall@5": 0.8,
-      "ndcg@5": 0.8304,
-      "precision@5": 0.8,
-      "recall@10": 0.9,
-      "ndcg@10": 0.89,
-      "precision@10": 0.9
+      "recall@5": 1.0,
+      "ndcg@5": 1.0,
+      "precision@5": 1.0,
+      "recall@10": 1.0,
+      "ndcg@10": 1.0,
+      "precision@10": 1.0
     },
     {
       "query_id": "Q04",
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 186,
-      "latency_s": 0.006,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -4968,7 +4968,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 186,
-      "latency_s": 0.027,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -4982,14 +4982,14 @@
           "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
         },
         {
-          "evidence_id": "price:c95b884ddef5fb9628a3",
-          "relevant": true,
-          "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
-        },
-        {
           "evidence_id": "price:8065ecf20dae1efe59b2",
           "relevant": true,
           "excerpt": "Corsair 3000D Airflow Mid-Tower PC Case 2x SP120 ELITE Fans White - CS-CC-901125"
+        },
+        {
+          "evidence_id": "price:c95b884ddef5fb9628a3",
+          "relevant": true,
+          "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
         },
         {
           "evidence_id": "price:31ab00209ec987cb69a3",
@@ -5009,7 +5009,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 186,
-      "latency_s": 0.027,
+      "latency_s": 0.061,
       "degraded": [],
       "top5": [
         {
@@ -5023,14 +5023,14 @@
           "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
         },
         {
-          "evidence_id": "price:c95b884ddef5fb9628a3",
-          "relevant": true,
-          "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
-        },
-        {
           "evidence_id": "price:8065ecf20dae1efe59b2",
           "relevant": true,
           "excerpt": "Corsair 3000D Airflow Mid-Tower PC Case 2x SP120 ELITE Fans White - CS-CC-901125"
+        },
+        {
+          "evidence_id": "price:c95b884ddef5fb9628a3",
+          "relevant": true,
+          "excerpt": "HAVN BF 360 Flow High Airflow ATX Mid Tower PC Case - Black / White Havn case. S"
         },
         {
           "evidence_id": "price:31ab00209ec987cb69a3",
@@ -5050,7 +5050,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 186,
-      "latency_s": 0.031,
+      "latency_s": 0.055,
       "degraded": [],
       "top5": [
         {
@@ -5091,7 +5091,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 516,
-      "latency_s": 0.023,
+      "latency_s": 0.034,
       "degraded": [],
       "top5": [
         {
@@ -5132,7 +5132,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 516,
-      "latency_s": 0.006,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -5173,14 +5173,9 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 516,
-      "latency_s": 0.027,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
-        {
-          "evidence_id": "price:62e4d9389c4e09f617c2",
-          "relevant": true,
-          "excerpt": "Corsair FRAME 4000D WOOD RS Modular Mid-Tower PC Case - White and Oak - 84044041"
-        },
         {
           "evidence_id": "price:085d807fd258ba922137",
           "relevant": false,
@@ -5200,13 +5195,18 @@
           "evidence_id": "price:7425032ec03017df2516",
           "relevant": true,
           "excerpt": "SilverStone PM01-WA-W Primera ATX Mid Tower PC Case White with Blue LED - SST-PM"
+        },
+        {
+          "evidence_id": "price:1fa3dd3d51aec195169b",
+          "relevant": false,
+          "excerpt": "AMD RYZEN 5 7600 / 7 7700 / 7 7800X3D / 7 9800X3D / 9 9950X3D / 9 9900X3D TRAY +"
         }
       ],
-      "recall@5": 0.6,
-      "ndcg@5": 0.6399,
-      "precision@5": 0.6,
+      "recall@5": 0.4,
+      "ndcg@5": 0.3601,
+      "precision@5": 0.4,
       "recall@10": 0.5,
-      "ndcg@10": 0.5549,
+      "ndcg@10": 0.4451,
       "precision@10": 0.5
     },
     {
@@ -5214,14 +5214,9 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 516,
-      "latency_s": 0.024,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
-        {
-          "evidence_id": "price:62e4d9389c4e09f617c2",
-          "relevant": true,
-          "excerpt": "Corsair FRAME 4000D WOOD RS Modular Mid-Tower PC Case - White and Oak - 84044041"
-        },
         {
           "evidence_id": "price:085d807fd258ba922137",
           "relevant": false,
@@ -5241,13 +5236,18 @@
           "evidence_id": "price:7425032ec03017df2516",
           "relevant": true,
           "excerpt": "SilverStone PM01-WA-W Primera ATX Mid Tower PC Case White with Blue LED - SST-PM"
+        },
+        {
+          "evidence_id": "price:1fa3dd3d51aec195169b",
+          "relevant": false,
+          "excerpt": "AMD RYZEN 5 7600 / 7 7700 / 7 7800X3D / 7 9800X3D / 9 9950X3D / 9 9900X3D TRAY +"
         }
       ],
-      "recall@5": 0.6,
-      "ndcg@5": 0.6399,
-      "precision@5": 0.6,
+      "recall@5": 0.4,
+      "ndcg@5": 0.3601,
+      "precision@5": 0.4,
       "recall@10": 0.5,
-      "ndcg@10": 0.5549,
+      "ndcg@10": 0.4451,
       "precision@10": 0.5
     },
     {
@@ -5255,7 +5255,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 516,
-      "latency_s": 0.028,
+      "latency_s": 0.046,
       "degraded": [],
       "top5": [
         {
@@ -5269,6 +5269,11 @@
           "excerpt": "Corsair FRAME 4000D WOOD RS Modular Mid-Tower PC Case - White and Oak - 84044041"
         },
         {
+          "evidence_id": "price:fd39d0ba497bfbf5c5b5",
+          "relevant": true,
+          "excerpt": "Asus ROG Ryujin lll 360 OLED ARGB Liquid Cooler White Vii PC Trade Pte Ltd coole"
+        },
+        {
           "evidence_id": "price:7a6974d0d3e4de1733c1",
           "relevant": true,
           "excerpt": "DeepCool CG530 4F PC Case - (Black / White) DEEPCOOL case. Specifications: max f"
@@ -5277,11 +5282,6 @@
           "evidence_id": "price:b8f380f25364fe58c76d",
           "relevant": true,
           "excerpt": "DeepCool CG530 4F PC Case - (Black / White) DEEPCOOL case. Specifications: max f"
-        },
-        {
-          "evidence_id": "price:b1440a640ed19a5757e8",
-          "relevant": true,
-          "excerpt": "Thermalright AssassinX120 R SE White ARGB CPU Air Cooler, AX120 R SE White, 4 He"
         }
       ],
       "recall@5": 1.0,
@@ -5296,7 +5296,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 621,
-      "latency_s": 0.027,
+      "latency_s": 0.033,
       "degraded": [],
       "top5": [
         {
@@ -5337,7 +5337,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 621,
-      "latency_s": 0.006,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -5378,7 +5378,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 621,
-      "latency_s": 0.03,
+      "latency_s": 0.063,
       "degraded": [],
       "top5": [
         {
@@ -5419,7 +5419,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 621,
-      "latency_s": 0.027,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {
@@ -5460,7 +5460,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 621,
-      "latency_s": 0.03,
+      "latency_s": 0.055,
       "degraded": [],
       "top5": [
         {
@@ -5501,7 +5501,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 200,
-      "latency_s": 0.031,
+      "latency_s": 0.036,
       "degraded": [],
       "top5": [
         {
@@ -5542,7 +5542,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 200,
-      "latency_s": 0.007,
+      "latency_s": 0.003,
       "degraded": [],
       "top5": [
         {
@@ -5583,7 +5583,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 200,
-      "latency_s": 0.033,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -5605,88 +5605,6 @@
           "evidence_id": "price:427b0f7c3a6c477673c9",
           "relevant": true,
           "excerpt": "Thermalright SG-850 / SG-750 / SG-650 Full Modular PSU (Black/White) - 80 PLUS G"
-        },
-        {
-          "evidence_id": "price:294cb44f390bf612b43f",
-          "relevant": true,
-          "excerpt": "Corsair RM1000x Shift White 1000 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
-        }
-      ],
-      "recall@5": 1.0,
-      "ndcg@5": 1.0,
-      "precision@5": 1.0,
-      "recall@10": 1.0,
-      "ndcg@10": 1.0,
-      "precision@10": 1.0
-    },
-    {
-      "query_id": "Q07",
-      "type": "semantic",
-      "variant": "bm25+dense+graph",
-      "relevant_total": 200,
-      "latency_s": 0.032,
-      "degraded": [],
-      "top5": [
-        {
-          "evidence_id": "price:e1a6a84b65267f41d845",
-          "relevant": true,
-          "excerpt": "Montech CENTURY 850 Fully Modular 80 Plus® Gold Certified 850W Power Supply MONT"
-        },
-        {
-          "evidence_id": "price:bc1d94092f50b415d9df",
-          "relevant": true,
-          "excerpt": "Corsair HX1000i SHIFT High Performance Fully Modular Platinum ATX Power Supply -"
-        },
-        {
-          "evidence_id": "price:2b597e138eac962437ab",
-          "relevant": true,
-          "excerpt": "Corsair RM1200x Shift White 1200 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
-        },
-        {
-          "evidence_id": "price:427b0f7c3a6c477673c9",
-          "relevant": true,
-          "excerpt": "Thermalright SG-850 / SG-750 / SG-650 Full Modular PSU (Black/White) - 80 PLUS G"
-        },
-        {
-          "evidence_id": "price:294cb44f390bf612b43f",
-          "relevant": true,
-          "excerpt": "Corsair RM1000x Shift White 1000 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
-        }
-      ],
-      "recall@5": 1.0,
-      "ndcg@5": 1.0,
-      "precision@5": 1.0,
-      "recall@10": 1.0,
-      "ndcg@10": 1.0,
-      "precision@10": 1.0
-    },
-    {
-      "query_id": "Q07",
-      "type": "semantic",
-      "variant": "hybrid+neo4j_constraint",
-      "relevant_total": 200,
-      "latency_s": 0.035,
-      "degraded": [],
-      "top5": [
-        {
-          "evidence_id": "price:e1a6a84b65267f41d845",
-          "relevant": true,
-          "excerpt": "Montech CENTURY 850 Fully Modular 80 Plus® Gold Certified 850W Power Supply MONT"
-        },
-        {
-          "evidence_id": "price:bc1d94092f50b415d9df",
-          "relevant": true,
-          "excerpt": "Corsair HX1000i SHIFT High Performance Fully Modular Platinum ATX Power Supply -"
-        },
-        {
-          "evidence_id": "price:2b597e138eac962437ab",
-          "relevant": true,
-          "excerpt": "Corsair RM1200x Shift White 1200 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
-        },
-        {
-          "evidence_id": "price:294cb44f390bf612b43f",
-          "relevant": true,
-          "excerpt": "Corsair RM1000x Shift White 1000 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
         },
         {
           "evidence_id": "price:01e7c77fa5e3c3d29d4b",
@@ -5702,11 +5620,93 @@
       "precision@10": 1.0
     },
     {
+      "query_id": "Q07",
+      "type": "semantic",
+      "variant": "bm25+dense+graph",
+      "relevant_total": 200,
+      "latency_s": 0.053,
+      "degraded": [],
+      "top5": [
+        {
+          "evidence_id": "price:e1a6a84b65267f41d845",
+          "relevant": true,
+          "excerpt": "Montech CENTURY 850 Fully Modular 80 Plus® Gold Certified 850W Power Supply MONT"
+        },
+        {
+          "evidence_id": "price:bc1d94092f50b415d9df",
+          "relevant": true,
+          "excerpt": "Corsair HX1000i SHIFT High Performance Fully Modular Platinum ATX Power Supply -"
+        },
+        {
+          "evidence_id": "price:2b597e138eac962437ab",
+          "relevant": true,
+          "excerpt": "Corsair RM1200x Shift White 1200 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
+        },
+        {
+          "evidence_id": "price:427b0f7c3a6c477673c9",
+          "relevant": true,
+          "excerpt": "Thermalright SG-850 / SG-750 / SG-650 Full Modular PSU (Black/White) - 80 PLUS G"
+        },
+        {
+          "evidence_id": "price:01e7c77fa5e3c3d29d4b",
+          "relevant": true,
+          "excerpt": "Corsair RM850x Shift White 850 Watt 80 Plus Gold Fully Modular Cybernetics Gold "
+        }
+      ],
+      "recall@5": 1.0,
+      "ndcg@5": 1.0,
+      "precision@5": 1.0,
+      "recall@10": 1.0,
+      "ndcg@10": 1.0,
+      "precision@10": 1.0
+    },
+    {
+      "query_id": "Q07",
+      "type": "semantic",
+      "variant": "hybrid+neo4j_constraint",
+      "relevant_total": 200,
+      "latency_s": 0.052,
+      "degraded": [],
+      "top5": [
+        {
+          "evidence_id": "price:e1a6a84b65267f41d845",
+          "relevant": true,
+          "excerpt": "Montech CENTURY 850 Fully Modular 80 Plus® Gold Certified 850W Power Supply MONT"
+        },
+        {
+          "evidence_id": "price:bc1d94092f50b415d9df",
+          "relevant": true,
+          "excerpt": "Corsair HX1000i SHIFT High Performance Fully Modular Platinum ATX Power Supply -"
+        },
+        {
+          "evidence_id": "price:2b597e138eac962437ab",
+          "relevant": true,
+          "excerpt": "Corsair RM1200x Shift White 1200 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
+        },
+        {
+          "evidence_id": "price:01e7c77fa5e3c3d29d4b",
+          "relevant": true,
+          "excerpt": "Corsair RM850x Shift White 850 Watt 80 Plus Gold Fully Modular Cybernetics Gold "
+        },
+        {
+          "evidence_id": "price:294cb44f390bf612b43f",
+          "relevant": true,
+          "excerpt": "Corsair RM1000x Shift White 1000 Watt 80 Plus Gold Fully Modular Cybernetics Gol"
+        }
+      ],
+      "recall@5": 1.0,
+      "ndcg@5": 1.0,
+      "precision@5": 1.0,
+      "recall@10": 1.0,
+      "ndcg@10": 1.0,
+      "precision@10": 1.0
+    },
+    {
       "query_id": "Q08",
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 214,
-      "latency_s": 0.038,
+      "latency_s": 0.066,
       "degraded": [],
       "top5": [
         {
@@ -5747,7 +5747,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 214,
-      "latency_s": 0.007,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -5788,7 +5788,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 214,
-      "latency_s": 0.033,
+      "latency_s": 0.062,
       "degraded": [],
       "top5": [
         {
@@ -5829,7 +5829,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 214,
-      "latency_s": 0.032,
+      "latency_s": 0.051,
       "degraded": [],
       "top5": [
         {
@@ -5870,7 +5870,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 214,
-      "latency_s": 0.031,
+      "latency_s": 0.051,
       "degraded": [],
       "top5": [
         {
@@ -5911,7 +5911,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 31,
-      "latency_s": 0.029,
+      "latency_s": 0.05,
       "degraded": [],
       "top5": [
         {
@@ -5930,14 +5930,14 @@
           "excerpt": "LENOVO YOGA SLIM 7 AURA 83QK000USB (ULTRA 7 355 8C/ 32GB LP-RAM/1TB SSD/INTEL/14"
         },
         {
-          "evidence_id": "price:8fddbb44b3bc7367a571",
-          "relevant": false,
-          "excerpt": "Dell Pro 16 PC16250 Business Laptop (Ultra 7 255U/16\" FHD+ /16GB RAM/ 512GB SSD/"
-        },
-        {
           "evidence_id": "price:cb007f1727e870cbf023",
           "relevant": false,
           "excerpt": "ASUS ROG Ryuo IV SLC 360 ARGB 6.67 inch AMOLED Vii PC Trade Pte Ltd cooler. \nASU"
+        },
+        {
+          "evidence_id": "price:8fddbb44b3bc7367a571",
+          "relevant": false,
+          "excerpt": "Dell Pro 16 PC16250 Business Laptop (Ultra 7 255U/16\" FHD+ /16GB RAM/ 512GB SSD/"
         }
       ],
       "recall@5": 0.6,
@@ -5952,7 +5952,7 @@
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 31,
-      "latency_s": 0.005,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -5993,7 +5993,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 31,
-      "latency_s": 0.029,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -6017,16 +6017,16 @@
           "excerpt": "Lian Li HydroShift II OLED Curved 360TL ARGB CPU Liquid Cooler White - 471846602"
         },
         {
-          "evidence_id": "price:6802f75fc76180a0d6a8",
-          "relevant": false,
-          "excerpt": "Lian Li HydroShift II OLED Curved 360TL ARGB CPU Liquid Cooler Black - 471846602"
+          "evidence_id": "price:538bd72d54ed55ad79c8",
+          "relevant": true,
+          "excerpt": "ASUS ROG ZEPHYRUS DUO - GX651AX-SR010W 16IN OLED 3K INTEL CORE ULTRA 9 386H 64GB"
         }
       ],
-      "recall@5": 0.6,
-      "ndcg@5": 0.7227,
-      "precision@5": 0.6,
+      "recall@5": 0.8,
+      "ndcg@5": 0.8539,
+      "precision@5": 0.8,
       "recall@10": 0.8,
-      "ndcg@10": 0.8201,
+      "ndcg@10": 0.8268,
       "precision@10": 0.8
     },
     {
@@ -6034,7 +6034,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 31,
-      "latency_s": 0.028,
+      "latency_s": 0.056,
       "degraded": [],
       "top5": [
         {
@@ -6058,16 +6058,16 @@
           "excerpt": "Lian Li HydroShift II OLED Curved 360TL ARGB CPU Liquid Cooler White - 471846602"
         },
         {
-          "evidence_id": "price:6802f75fc76180a0d6a8",
-          "relevant": false,
-          "excerpt": "Lian Li HydroShift II OLED Curved 360TL ARGB CPU Liquid Cooler Black - 471846602"
+          "evidence_id": "price:538bd72d54ed55ad79c8",
+          "relevant": true,
+          "excerpt": "ASUS ROG ZEPHYRUS DUO - GX651AX-SR010W 16IN OLED 3K INTEL CORE ULTRA 9 386H 64GB"
         }
       ],
-      "recall@5": 0.6,
-      "ndcg@5": 0.7227,
-      "precision@5": 0.6,
+      "recall@5": 0.8,
+      "ndcg@5": 0.8539,
+      "precision@5": 0.8,
       "recall@10": 0.8,
-      "ndcg@10": 0.8201,
+      "ndcg@10": 0.8268,
       "precision@10": 0.8
     },
     {
@@ -6075,7 +6075,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 31,
-      "latency_s": 0.027,
+      "latency_s": 0.055,
       "degraded": [],
       "top5": [
         {
@@ -6116,7 +6116,7 @@
       "type": "semantic",
       "variant": "dense",
       "relevant_total": 205,
-      "latency_s": 0.026,
+      "latency_s": 0.052,
       "degraded": [],
       "top5": [
         {
@@ -6135,29 +6135,29 @@
           "excerpt": "MSI PRO B650 S WIFI AM5 ATX MOTHERBOARD - D5 - MSIPROB650SWIFI MSI motherboard. "
         },
         {
+          "evidence_id": "price:69ec7ffa8a10ce06010d",
+          "relevant": true,
+          "excerpt": "GIGABYTE B850 AORUS ELITE WIFI7 ICE AM5 ATX MOTHERBOARD - 4719331866099 GIGABYTE"
+        },
+        {
           "evidence_id": "price:02ce3f88ed1d6f5054b8",
           "relevant": true,
           "excerpt": "MSI PRO B840 P WIFI AM5 ATX MOTHERBOARD - D5 - MSIPROB840PWIFI MSI motherboard. "
-        },
-        {
-          "evidence_id": "price:d1a6684b5814ace8dd2b",
-          "relevant": true,
-          "excerpt": "MSI B850M GAMING PLUS WIFI AM5 m-ATX MOTHERBOARD(3YRS) - 4711377347570 MSI mothe"
         }
       ],
       "recall@5": 1.0,
       "ndcg@5": 1.0,
       "precision@5": 1.0,
-      "recall@10": 1.0,
-      "ndcg@10": 1.0,
-      "precision@10": 1.0
+      "recall@10": 0.7,
+      "ndcg@10": 0.8007,
+      "precision@10": 0.7
     },
     {
       "query_id": "Q10",
       "type": "semantic",
       "variant": "bm25",
       "relevant_total": 205,
-      "latency_s": 0.006,
+      "latency_s": 0.002,
       "degraded": [],
       "top5": [
         {
@@ -6198,7 +6198,7 @@
       "type": "semantic",
       "variant": "bm25+dense",
       "relevant_total": 205,
-      "latency_s": 0.035,
+      "latency_s": 0.057,
       "degraded": [],
       "top5": [
         {
@@ -6239,7 +6239,7 @@
       "type": "semantic",
       "variant": "bm25+dense+graph",
       "relevant_total": 205,
-      "latency_s": 0.028,
+      "latency_s": 0.055,
       "degraded": [],
       "top5": [
         {
@@ -6280,7 +6280,7 @@
       "type": "semantic",
       "variant": "hybrid+neo4j_constraint",
       "relevant_total": 205,
-      "latency_s": 0.03,
+      "latency_s": 0.053,
       "degraded": [],
       "top5": [
         {

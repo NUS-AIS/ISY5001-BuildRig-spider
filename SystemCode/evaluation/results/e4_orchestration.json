@@ -6,19 +6,19 @@
         "cases": 8,
         "task_completed": 1.0,
         "constraint_satisfaction": 1.0,
-        "mean_seconds": 42.23,
-        "mean_tool_calls": 20.5,
-        "mean_llm_calls": 6.38,
-        "mean_tokens": 7021.88
+        "mean_seconds": 36.51,
+        "mean_tool_calls": 21.88,
+        "mean_llm_calls": 6.62,
+        "mean_tokens": 7151.5
       },
       "pi": {
         "cases": 8,
-        "task_completed": 0.75,
-        "constraint_satisfaction": 0.75,
-        "mean_seconds": 234.91,
-        "mean_tool_calls": 7.12,
-        "mean_llm_calls": 7.62,
-        "mean_tokens": 8569.38
+        "task_completed": 0.875,
+        "constraint_satisfaction": 0.875,
+        "mean_seconds": 54.56,
+        "mean_tool_calls": 6.38,
+        "mean_llm_calls": 7.0,
+        "mean_tokens": 11358.88
       }
     },
     "fault_recovery": {
@@ -26,8 +26,8 @@
         "socket_mismatch": {
           "trials": 5,
           "recovery_rate": 1.0,
-          "mean_rounds": 1.6,
-          "parts_kept_share": 0.775,
+          "mean_rounds": 1.4,
+          "parts_kept_share": 0.8,
           "first_round_targeted_rate": 1.0
         },
         "memory_mismatch": {
@@ -91,10 +91,10 @@
       "fr": [
         "FR05"
       ],
-      "seconds": 32.3,
+      "seconds": 18.2,
       "tool_calls": 3,
-      "llm_calls": 3,
-      "tokens": 2248,
+      "llm_calls": 4,
+      "tokens": 2788,
       "task_completed": true,
       "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
       "guard_interventions": 0,
@@ -116,10 +116,10 @@
         "FR05",
         "FR07"
       ],
-      "seconds": 147.0,
-      "tool_calls": 10,
-      "llm_calls": 10,
-      "tokens": 9178,
+      "seconds": 30.3,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 4464,
       "task_completed": true,
       "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
       "guard_interventions": 0,
@@ -140,12 +140,23 @@
       "fr": [
         "FR05"
       ],
-      "seconds": 600.5,
-      "tool_calls": 0,
-      "llm_calls": 0,
-      "tokens": 0,
-      "task_completed": false,
-      "detail": "outcome=None kinds=[] questions=[]"
+      "seconds": 54.5,
+      "tool_calls": 7,
+      "llm_calls": 7,
+      "tokens": 7830,
+      "task_completed": true,
+      "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
+      "guard_interventions": 0,
+      "constraint_satisfaction": true,
+      "constraint_detail": [
+        {
+          "within_budget": true,
+          "no_failed_check": true
+        }
+      ],
+      "compatibility_correct": true,
+      "source_accuracy": true,
+      "unknown_handling": true
     },
     {
       "case_id": "D07",
@@ -153,10 +164,10 @@
       "fr": [
         "FR05"
       ],
-      "seconds": 442.8,
-      "tool_calls": 11,
-      "llm_calls": 14,
-      "tokens": 19664,
+      "seconds": 193.6,
+      "tool_calls": 16,
+      "llm_calls": 19,
+      "tokens": 53854,
       "task_completed": false,
       "detail": "outcome=no_feasible_option kinds=[] questions=[]"
     },
@@ -167,10 +178,10 @@
         "FR05",
         "FR07"
       ],
-      "seconds": 58.5,
-      "tool_calls": 4,
-      "llm_calls": 4,
-      "tokens": 4631,
+      "seconds": 14.4,
+      "tool_calls": 3,
+      "llm_calls": 3,
+      "tokens": 1768,
       "task_completed": true,
       "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
       "guard_interventions": 0,
@@ -192,10 +203,10 @@
       "fr": [
         "FR05"
       ],
-      "seconds": 40.3,
-      "tool_calls": 3,
-      "llm_calls": 4,
-      "tokens": 2716,
+      "seconds": 22.5,
+      "tool_calls": 4,
+      "llm_calls": 5,
+      "tokens": 2653,
       "task_completed": true,
       "detail": "outcome=recommendations_available kinds=['laptop'] questions=[]",
       "guard_interventions": 0,
@@ -217,10 +228,10 @@
         "FR04",
         "FR06"
       ],
-      "seconds": 171.2,
-      "tool_calls": 6,
-      "llm_calls": 6,
-      "tokens": 10360,
+      "seconds": 58.5,
+      "tool_calls": 5,
+      "llm_calls": 5,
+      "tokens": 7874,
       "task_completed": true,
       "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
       "guard_interventions": 0,
@@ -242,10 +253,10 @@
       "fr": [
         "FR05"
       ],
-      "seconds": 386.7,
-      "tool_calls": 20,
-      "llm_calls": 20,
-      "tokens": 19758,
+      "seconds": 44.5,
+      "tool_calls": 8,
+      "llm_calls": 8,
+      "tokens": 9640,
       "task_completed": true,
       "detail": "outcome=recommendations_available kinds=['desktop'] questions=[]",
       "guard_interventions": 0,
@@ -339,7 +350,7 @@
       ],
       "parts_kept_share": 0.75,
       "first_round_targeted": true,
-      "total_after_sgd": 2964.0
+      "total_after_sgd": 2750.0
     },
     {
       "max_revisions": 3,
@@ -440,7 +451,7 @@
       ],
       "parts_kept_share": 0.625,
       "first_round_targeted": true,
-      "total_after_sgd": 4193.0
+      "total_after_sgd": 4228.0
     },
     {
       "max_revisions": 3,
@@ -459,7 +470,7 @@
       ],
       "parts_kept_share": 0.875,
       "first_round_targeted": true,
-      "total_after_sgd": 4132.0
+      "total_after_sgd": 4072.0
     },
     {
       "max_revisions": 3,
@@ -478,7 +489,7 @@
       ],
       "parts_kept_share": 0.875,
       "first_round_targeted": true,
-      "total_after_sgd": 4274.0
+      "total_after_sgd": 4371.0
     },
     {
       "max_revisions": 3,
@@ -501,7 +512,7 @@
       ],
       "parts_kept_share": 0.5,
       "first_round_targeted": true,
-      "total_after_sgd": 4311.0
+      "total_after_sgd": 4364.0
     },
     {
       "max_revisions": 3,
@@ -575,14 +586,13 @@
       ],
       "status": "accepted",
       "recovered": true,
-      "rounds": 2,
+      "rounds": 1,
       "changed_categories": [
-        "case",
         "motherboard"
       ],
-      "parts_kept_share": 0.75,
+      "parts_kept_share": 0.875,
       "first_round_targeted": true,
-      "total_after_sgd": 3482.0
+      "total_after_sgd": 3309.0
     },
     {
       "max_revisions": 3,
@@ -601,7 +611,7 @@
       ],
       "parts_kept_share": 0.875,
       "first_round_targeted": true,
-      "total_after_sgd": 3403.0
+      "total_after_sgd": 3234.0
     },
     {
       "max_revisions": 3,
@@ -620,7 +630,7 @@
       ],
       "parts_kept_share": 0.875,
       "first_round_targeted": true,
-      "total_after_sgd": 3481.0
+      "total_after_sgd": 3493.0
     },
     {
       "max_revisions": 3,
@@ -640,7 +650,7 @@
       ],
       "parts_kept_share": 0.75,
       "first_round_targeted": true,
-      "total_after_sgd": 3297.0
+      "total_after_sgd": 3181.0
     },
     {
       "max_revisions": 0,
@@ -796,7 +806,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 3651.0
+      "total_after_sgd": 3591.0
     },
     {
       "max_revisions": 0,
@@ -813,7 +823,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 4052.0
+      "total_after_sgd": 3992.0
     },
     {
       "max_revisions": 0,
@@ -830,7 +840,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 3863.0
+      "total_after_sgd": 3814.0
     },
     {
       "max_revisions": 0,
@@ -848,7 +858,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 5316.0
+      "total_after_sgd": 5256.0
     },
     {
       "max_revisions": 0,
@@ -918,7 +928,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 2762.0
+      "total_after_sgd": 2809.0
     },
     {
       "max_revisions": 0,
@@ -935,7 +945,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 3309.0
+      "total_after_sgd": 3140.0
     },
     {
       "max_revisions": 0,
@@ -952,7 +962,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 3269.0
+      "total_after_sgd": 3282.0
     },
     {
       "max_revisions": 0,
@@ -969,7 +979,7 @@
       "changed_categories": [],
       "parts_kept_share": 1.0,
       "first_round_targeted": true,
-      "total_after_sgd": 5427.0
+      "total_after_sgd": 5474.0
     }
   ]
 }
