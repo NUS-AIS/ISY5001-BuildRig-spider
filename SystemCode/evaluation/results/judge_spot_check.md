@@ -42,3 +42,17 @@ full marks; one contains a false statement the judge and the explanation guard b
   user's request; for F03 the stated preference (quiet) is not reflected in the text at all.
 - Outside the explanation text, two builds in the sample pair a Ryzen 5 8500G with an RX 9070 XT or RTX 5060 and
   use a single 16GB stick near the top of the budget (F03, M01, M02). That is planning quality, not explanation quality.
+
+## Follow-up (2026-10-11, after this check)
+
+Changes made in response; the figures above still describe commit `9e36926` and were not re-measured.
+
+- The guard now drops a claim of dedicated graphics for an option that has none, and a processor class ("Core i7")
+  that no listing in the option names. Replaying all 230 explanation sentences of this evaluation through the new
+  guard removes 5 (two in C01, one reason and one summary sentence in L03, one in C04) and no others.
+- The template explanation in D05, F03, F04 and M01 (6 of 39 options) came from the model rewriting the option id,
+  so its text was discarded. Options are now matched by position when the id does not match.
+- Quiet, white and RGB are confirmed only where a listing says so. Otherwise sentences claiming them are removed and
+  one trade-off states that the wish could not be checked.
+- Not fixed: a sentence that credits the wrong part with a wish some other part meets ("the processor provides
+  white aesthetics") still passes, and vague or generous wording is not something the guard judges.

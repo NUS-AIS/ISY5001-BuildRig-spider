@@ -305,7 +305,8 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
     seen = {w.casefold() for w in req["workloads"]}
     req["workloads"] += [w for w in extracted.workloads if w.casefold() not in seen]
     seen = {p.casefold() for p in req["preferences"]}
-    req["preferences"] += [p for p in extracted.preferences if p.casefold() not in seen]
+    not_a_wish = {"desktop", "laptop", "pc", "computer", "desktop pc", "notebook"}      # the device type, not a preference
+    req["preferences"] += [p for p in extracted.preferences if p.casefold() not in seen | not_a_wish]
 
     if not OWNERSHIP.search(text):          # "a PC with 128GB RAM" is a requirement, not a part the user owns
         extracted.owned_components = []

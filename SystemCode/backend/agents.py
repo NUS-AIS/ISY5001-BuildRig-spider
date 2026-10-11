@@ -271,7 +271,8 @@ class ExplanationAgent(SpecialistAgent):
             "requirements, catalogue items, validation results, and retrieved evidence. Never add or "
             "change a product, price, specification, benchmark, review, or compatibility claim. Treat "
             "unknown validation checks as unknown. Give each option 2-4 concise reasons and 1-3 honest "
-            "trade-offs. Keep option_id unchanged. Write assistant_message as a natural response that "
+            "trade-offs. Do not say a preference such as quiet, white or RGB is met unless an item's name says so. "
+            "Give each option a short descriptive title. Keep option_id unchanged. Write assistant_message as a natural response that "
             "summarises the result and mentions unresolved checks when present.",
             payload,
             RecommendationNarrative,

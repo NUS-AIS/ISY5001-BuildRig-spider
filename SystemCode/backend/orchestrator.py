@@ -20,7 +20,8 @@ from urllib.request import Request, urlopen
 
 from backend.agents import (AgentContext, DesktopPlanningAgent, EvidenceAgent, ExplanationAgent, LaptopSelectionAgent,
                             PlannerAgent, ReviewAgent)
-from backend.explanation_guard import guard, guard_message, option_facts, unsupported
+from backend.explanation_guard import (guard, guard_message, option_facts, preference_notes, preference_summary,
+                                       unsupported)
 from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
 from backend.attributes import describe
@@ -364,7 +365,9 @@ class RecommendationEngine:
             return message, "fallback", limitations
         message, source = f"I found {len(accepted)} evidence-backed option" + ("s." if len(accepted) != 1 else "."), "fallback"
         for option in accepted:
-            option.setdefault("title", "Catalogue-based candidate")
+            workload = next(iter(context.requirements.get("workloads") or []), "")
+            option.setdefault("title", f"{workload} {option['device_type']}".strip().capitalize()
+                              + (" build" if option["device_type"] == "desktop" else ""))
             option.setdefault("reasons", [i.get("selection_reason") for i in option["items"] if i.get("selection_reason")][:4])
             option.setdefault("trade_offs", ["Unknown checks are listed with the option and should be confirmed before purchase."])
         if context.model_enabled:
@@ -381,13 +384,16 @@ class RecommendationEngine:
                         "validation": [{"code": c["code"], "status": c["status"], "reason": c["reason"]} for c in o["validation"]["checks"]],
                         "evidence": [{"kind": e["kind"], "excerpt": e["excerpt"][:300]} for e in o["evidence"][:5]]}
                         for o in accepted]})
-                by_id = {item["option_id"]: item for item in narrative["options"]}
-                for option in accepted:
-                    generated = by_id.get(option["option_id"])
+                # The model often rewrites the id ("Option 1"); the options are then taken in the order given.
+                by_id = {item["option_id"].casefold(): item for item in narrative["options"]}
+                in_order = len(narrative["options"]) == len(accepted)
+                for position, option in enumerate(accepted):
+                    generated = by_id.get(option["option_id"].casefold()) or (narrative["options"][position] if in_order else None)
                     if generated:
                         option["reasons"], option["trade_offs"] = generated["reasons"], generated["trade_offs"]
                         dropped = guard(option, "reasons") + guard(option, "trade_offs")
-                        title_problem = unsupported(generated["title"], option)
+                        title_problem = unsupported(generated["title"], option) or (
+                            "is a placeholder, not a title" if re.fullmatch(r"option[\s_]*\w*", generated["title"].strip(), re.I) else None)
                         option["title"] = option.get("title") if title_problem else generated["title"]
                         if title_problem:
                             dropped.append({"field": "title", "text": generated["title"], "reason": title_problem})
@@ -398,7 +404,7 @@ class RecommendationEngine:
                 source = "llm"
                 # The model sometimes refers to an option by its internal id; the page numbers them.
                 for number, option in enumerate(accepted, 1):
-                    readable = lambda text: re.sub(re.escape(option["option_id"]), f"Option {number}", text, flags=re.I)
+                    readable = lambda text: re.sub(r"(?:\bthe\s+)?" + re.escape(option["option_id"]), f"Option {number}", text, flags=re.I)
                     message = readable(message or "")
                     option["reasons"], option["trade_offs"] = ([readable(t) for t in option[k]] for k in ("reasons", "trade_offs"))
                 if dropped_summary:
@@ -409,6 +415,18 @@ class RecommendationEngine:
                 harness.transition("recommendation_explained", "explanation_agent", "explain", {"option_count": len(accepted)})
             except Exception as exc:
                 limitations.append(f"The local model explanation was unavailable; template wording was used ({type(exc).__name__}).")
+        # Quiet, white, RGB: said to be met only where a listing says so, whoever wrote the explanation.
+
+        message, removed = preference_summary(message, accepted, context.requirements.get("preferences") or [])
+        if removed:
+            accepted[0].setdefault("explanation_guard", {"dropped": []})["dropped"] += [{"field": "assistant_message", **d} for d in removed]
+            message = message or f"I found {len(accepted)} evidence-backed option" + ("s." if len(accepted) != 1 else ".")
+        message = re.sub(r"\s*[^.!?]*:\s*$", "", message) or message       # "Here's a summary of the build:" with nothing after it
+        for option in accepted:
+            met, unchecked, removed = preference_notes(option, context.requirements.get("preferences") or [])
+            option["reasons"], option["trade_offs"] = option["reasons"] + met, option["trade_offs"] + unchecked
+            if removed:
+                option.setdefault("explanation_guard", {"dropped": []})["dropped"] += removed
         if any(o["validation"]["overall_status"] == "unknown" for o in accepted):
             limitations.append("Some compatibility checks are unknown because the source listings lack the required specifications.")
         return message, source, limitations
