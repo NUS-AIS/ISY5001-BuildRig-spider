@@ -119,6 +119,29 @@ class BackendTests(unittest.TestCase):
             "expected_version": 2, "value": "very quiet", "confirmed": True})
         self.assertEqual(conflict.status_code, 409)
 
+    def test_memory_follows_the_person_into_a_new_conversation_and_reaches_the_run(self):
+        user = {"X-User-ID": "memory-owner"}
+        first = self.client.post("/api/v1/sessions", json={"long_term_memory": True}, headers=user).json()["id"]
+        for _ in range(2):          # saving the same thing twice keeps one
+            self.client.post(f"/api/v1/sessions/{first}/memories", headers=user,
+                             params={"kind": "preference", "value": "Prefer quiet systems", "confirmed": True})
+        self.client.post(f"/api/v1/sessions/{first}/memories", headers=user,
+                         params={"kind": "workload", "value": "video editing", "confirmed": True})
+        second = self.client.post("/api/v1/sessions", json={"long_term_memory": True}, headers=user).json()["id"]
+        listed = self.client.get(f"/api/v1/sessions/{second}/memories", headers=user).json()["items"]
+        self.assertEqual(sorted(m["value"] for m in listed), ["Prefer quiet systems", "video editing"])
+        other = self.client.post("/api/v1/sessions", json={"long_term_memory": True}, headers={"X-User-ID": "someone-else"}).json()["id"]
+        self.assertEqual(self.client.get(f"/api/v1/sessions/{other}/memories", headers={"X-User-ID": "someone-else"}).json()["items"], [])
+        parsed = self.client.post(f"/api/v1/sessions/{second}/messages", headers=user, json={
+            "client_message_id": "m", "expected_requirements_version": 0, "text": "Gaming desktop, budget S$2,500"}).json()
+        run = self.client.post(f"/api/v1/sessions/{second}/runs", headers=user,
+                               json={"requirements_version": parsed["requirements_version"]}).json()["id"]
+        result = self.client.get(f"/api/v1/runs/{run}/result", headers=user).json()
+        # The preference is applied; the saved workload is not, because this request names its own.
+        self.assertEqual(result["memory_context"]["applied"], ["quiet"])
+        self.assertIn("Applied from your saved memory: quiet.", result["assistant_message"])
+        self.assertTrue(any("You asked for quiet" in t for o in result["options"] for t in o["trade_offs"]))
+
     def test_run_creation_is_idempotent(self):
         session = self.client.post("/api/v1/sessions", json={}).json()
         parsed = self.client.post(f"/api/v1/sessions/{session['id']}/messages", json={

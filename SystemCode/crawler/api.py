@@ -26,10 +26,21 @@ def prices(category: str | None = None, q: str | None = None,
            offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=500)):
     with (latest_folder() / 'prices.jsonl').open(encoding='utf-8') as stream:
         rows = [json.loads(line) for line in stream if line.strip()]
+    # Every word of the search must occur, in any order; "rtx 5070" also finds a listing written "RTX5070".
+    plain = lambda text: text.casefold().replace('™', '').replace('®', '')
+    words = plain(q or '').split()
+    squashed = ''.join(words)
+
+    def named(row):
+        name = plain(row['name'])
+        return all(word in name for word in words) or squashed in name.replace(' ', '').replace('-', '')
+
     rows = [r for r in rows if (not category or r['category'] == category)
-            and (not q or q.casefold() in r['name'].casefold())
+            and (not words or named(r))
             and (max_price is None or Decimal(r['price']) <= max_price)
             and (not in_stock or r['available'] is True)]
+    if words:          # listings that contain the search as typed come first
+        rows.sort(key=lambda r: ' '.join(words) not in plain(r['name']))
     return {'total': len(rows), 'items': rows[offset:offset + limit]}
 
 

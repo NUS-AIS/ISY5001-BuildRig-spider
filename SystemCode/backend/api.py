@@ -201,7 +201,7 @@ def create_router(store, corpus, engine):
     @router.get("/sessions/{session_id}/memories")
     def memories(session_id: str, x_user_id: str = Header("dev-user")):
         owned_session(session_id, x_user_id)
-        return {"items": store.list_memories(session_id)}
+        return {"items": store.owner_memories(x_user_id)}
 
     @router.post("/sessions/{session_id}/memories", status_code=201)
     def add_memory(session_id: str, kind: str, value: str, confirmed: bool = False,
@@ -209,7 +209,9 @@ def create_router(store, corpus, engine):
         session = owned_session(session_id, x_user_id)
         if not session["long_term_memory"]:
             raise HTTPException(409, detail={"code": "LONG_TERM_MEMORY_DISABLED"})
-        return store.add_memory(session_id, kind, value, confirmed, None)
+        same = next((m for m in store.owner_memories(x_user_id)
+                     if m["kind"] == kind and str(m["value"]).strip().casefold() == value.strip().casefold()), None)
+        return same or store.add_memory(session_id, kind, value.strip(), confirmed, None)      # saving it twice keeps one
 
     @router.patch("/memories/{memory_id}")
     def patch_memory(memory_id: str, body: MemoryPatch, x_user_id: str = Header("dev-user")):

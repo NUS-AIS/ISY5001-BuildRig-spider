@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { workspace } from './workspace'
 
 const USER_KEY = 'buildrig:user'
 const ACCOUNTS_KEY = 'buildrig:accounts'
@@ -25,9 +26,11 @@ export const auth = reactive({
   setUser(user) {
     this.user = user
     localStorage.setItem(USER_KEY, JSON.stringify(user))
+    workspace.load(user.id)
   },
   logout() {
     this.user = null
     localStorage.removeItem(USER_KEY)
+    workspace.load(null)
   }
 })

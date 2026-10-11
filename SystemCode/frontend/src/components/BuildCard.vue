@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { CheckCircle2, AlertTriangle, XCircle, HelpCircle, Bookmark, ExternalLink, Lock, History, FileSearch } from '@lucide/vue'
 
-const props = defineProps({ option: { type: Object, required: true }, compact: Boolean, busy: Boolean })
+const props = defineProps({ option: { type: Object, required: true }, compact: Boolean, busy: Boolean, saved: Boolean })
 defineEmits(['save', 'lock'])
 
 const total = computed(() => (props.option.validation?.total_minor ?? props.option.items.reduce((sum, item) => sum + Math.round(Number(item.price) * 100), 0)) / 100)
@@ -100,6 +100,6 @@ const levelText = { exact_offer: 'listing', model_family_only: 'model family', b
         </li>
       </ul>
     </div>
-    <button v-if="!compact" class="secondary-button save-button" @click="$emit('save', option)"><Bookmark :size="17" /> Save this option</button>
+    <button v-if="!compact" class="secondary-button save-button" :disabled="saved" @click="$emit('save', option)"><Bookmark :size="17" /> {{ saved ? 'Saved to Builds' : 'Save this option' }}</button>
   </article>
 </template>

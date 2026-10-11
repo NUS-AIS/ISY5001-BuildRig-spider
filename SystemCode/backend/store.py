@@ -226,6 +226,18 @@ class StateStore:
             rows = db.execute("SELECT * FROM memories WHERE session_id=? AND deleted=0 ORDER BY updated_at DESC", (sid,)).fetchall()
             return [{**dict(r), "value": json.loads(r["value_json"]), "confirmed": bool(r["confirmed"])} for r in rows]
 
+    def owner_memories(self, owner_id: str) -> list[dict[str, Any]]:
+        """Every memory of one person, across their conversations: a saved preference outlives the chat it was saved in."""
+        with self.connect() as db:
+            rows = db.execute("SELECT m.* FROM memories m JOIN sessions s ON s.id=m.session_id "
+                              "WHERE s.owner_id=? AND m.deleted=0 ORDER BY m.updated_at DESC", (owner_id,)).fetchall()
+            return [{**dict(r), "value": json.loads(r["value_json"]), "confirmed": bool(r["confirmed"])} for r in rows]
+
+    def session_owner(self, sid: str) -> str | None:
+        with self.connect() as db:
+            row = db.execute("SELECT owner_id FROM sessions WHERE id=?", (sid,)).fetchone()
+            return row[0] if row else None
+
     def add_memory(self, sid: str, kind: str, value: Any, confirmed: bool, source: str | None) -> dict[str, Any]:
         mid, stamp = uuid7("mem"), now()
         with self.connect() as db:

@@ -17,6 +17,8 @@ let clock = null
 const say = (role, text, extra = {}) => messages.value.push({ role, text, at: Date.now(), ...extra })
 const clockTime = (at) => new Date(at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 const sentence = (text) => text.charAt(0).toUpperCase() + text.slice(1)
+// The one-line input cannot wrap its hint, so a phone gets a shorter one.
+const placeholder = window.matchMedia('(max-width: 760px)').matches ? 'Your needs and budget…' : 'Describe your needs, budget, or ask a follow-up…'
 const toBottom = async () => { await nextTick(); scroll.value?.scrollTo({ top: scroll.value.scrollHeight, behavior: 'smooth' }) }
 function startClock(since) { stopClock(); const tick = () => { elapsed.value = Math.max(0, Math.round((Date.now() - since) / 1000)) }; tick(); clock = setInterval(tick, 1000) }
 function stopClock() { clearInterval(clock); clock = null; elapsed.value = 0 }
@@ -118,7 +120,7 @@ onUnmounted(stopClock)
       </div>
       <button v-if="canGenerate && !result" class="generate-button" :disabled="busy" @click="generate()"><Sparkles :size="18"/>Generate recommendation</button>
       <button v-if="needsUpdate" class="generate-button" :disabled="busy" @click="generate(true)"><Sparkles :size="18"/>Update recommendation (keep unaffected parts)</button>
-      <div class="composer"><textarea v-model="input" rows="1" placeholder="Describe your needs, budget, or ask a follow-up…" @keydown.enter.exact.prevent="send()"></textarea><button :disabled="busy||!input.trim()" @click="send()"><Send :size="19"/></button></div>
+      <div class="composer"><textarea v-model="input" rows="1" :placeholder="placeholder" @keydown.enter.exact.prevent="send()"></textarea><button :disabled="busy||!input.trim()" @click="send()"><Send :size="19"/></button></div>
       <small>Example: “A desktop for 3D modelling under S$2,000”</small>
     </div>
   </section>
@@ -131,7 +133,7 @@ onUnmounted(stopClock)
     <div v-if="result?.limitations?.length" class="limitations"><b>Limitations</b><ul><li v-for="note in result.limitations" :key="note">{{ note }}</li></ul></div>
     <div v-if="result && !result.options?.length" class="no-option"><b>No configuration satisfies every hard constraint.</b><p>{{ result.assistant_message }}</p>
       <ul><li v-for="o in result.rejected_options || []" :key="o.option_id"><span v-for="c in o.failed_checks" :key="c.code">{{ c.reason }} </span></li></ul></div>
-    <div v-if="result?.options?.length" class="result-content"><div :class="['option-groups', { compare: groups.length > 1 }]"><div v-for="group in groups" :key="group.kind" class="option-group"><h3 v-if="groups.length > 1" class="group-title">{{ group.kind === 'desktop' ? 'Desktop options' : 'Laptop options' }}</h3><BuildCard v-for="option in group.options" :key="option.option_id" :option="option" :busy="busy" @save="save" @lock="lock"/></div></div><div class="retrieval-summary"><span><Database :size="16"/>BM25</span><span><BrainCircuit :size="16"/>Vector</span><span><Network :size="16"/>Graph</span><small>Evidence routes are fused and reviewed before output.</small></div></div>
+    <div v-if="result?.options?.length" class="result-content"><div :class="['option-groups', { compare: groups.length > 1 }]"><div v-for="group in groups" :key="group.kind" class="option-group"><h3 v-if="groups.length > 1" class="group-title">{{ group.kind === 'desktop' ? 'Desktop options' : 'Laptop options' }}</h3><BuildCard v-for="option in group.options" :key="option.option_id" :option="option" :busy="busy" :saved="workspace.isSaved(option)" @save="save" @lock="lock"/></div></div><div class="retrieval-summary"><span><Database :size="16"/>BM25</span><span><BrainCircuit :size="16"/>Vector</span><span><Network :size="16"/>Graph</span><small>Evidence routes are fused and reviewed before output.</small></div></div>
     <div v-else-if="!result" class="empty-result"><div class="empty-orbit"><Cpu :size="42" :stroke-width="1.7"/><span></span></div><span class="eyebrow">RECOMMENDATION WORKSPACE</span><h2>Your tailored option will appear here</h2><p>Share your use case, budget and must-have requirements. BuildRig will coordinate specialist agents, retrieve evidence and expose every unresolved check.</p><div class="empty-steps"><div><b>1</b>Understand</div><div><b>2</b>Retrieve</div><div><b>3</b>Validate</div></div><button v-if="canGenerate" class="primary-button fit" :disabled="busy" @click="generate()"><Sparkles :size="18"/>Start agent workflow</button></div>
   </section>
 </div></AppShell></template>

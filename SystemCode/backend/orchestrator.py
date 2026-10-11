@@ -26,7 +26,7 @@ from backend.harness import RunHarness, ToolHarness, ToolSpec
 from backend.model_gateway import ModelGateway
 from backend.attributes import describe
 from backend.planning import Chooser, cheapest_desktop_option, feasibility_floor, revise
-from backend.requirements_parser import floor_summary, for_model
+from backend.requirements_parser import floor_summary, for_model, requirement_chain
 from backend.revision import carry_over, requirement_changes, reuse_decision
 from backend.retrieval import LocalCorpus
 from backend.settings import Settings
@@ -92,6 +92,7 @@ class RecommendationEngine:
         try:
             self._progress(run_id, "planning", "Creating the task plan")
             req = self.store.requirements(run["session_id"], run["requirements_version"])
+            req, remembered = self._with_memories(run, req)
             result = self._below_floor(run, req)
             if result:
                 pass
@@ -105,6 +106,11 @@ class RecommendationEngine:
             if result.get("orchestration_mode") != "pi" or "model_usage" not in result:
                 after = self.model.snapshot()
                 result["model_usage"] = {k: after[k] - usage_before[k] for k in after}
+            if remembered:
+                result.setdefault("memory_context", {})["applied"] = remembered
+                if result.get("options"):
+                    result["assistant_message"] = (result.get("assistant_message") or "").rstrip() + \
+                        " Applied from your saved memory: " + ", ".join(remembered) + "."
             result["duration_seconds"] = round(time.time() - started, 2)
             self.store.set_run(run_id, "completed", "completed", result=result)
             self.store.event(run_id, "completed", {"stage": "completed", "outcome": result["outcome"]})
@@ -114,6 +120,32 @@ class RecommendationEngine:
             error = {"code": "RUN_FAILED", "message": str(exc)}
             self.store.set_run(run_id, "failed", "failed", error=error)
             self.store.event(run_id, "failed", error)
+
+    def _memories(self, run: dict) -> list[dict]:
+        """The confirmed memories of the person who owns this run, from all of their conversations."""
+        owner = self.store.session_owner(run["session_id"])
+        return [m for m in self.store.owner_memories(owner) if m["confirmed"]] if owner else []
+
+    def _with_memories(self, run: dict, req: dict) -> tuple[dict, list[str]]:
+        """Saved preferences and workloads join the request for this run. They never change a hard constraint,
+        the budget or the device type, and a saved workload is used only when the request names none."""
+        req = {**req, "preferences": list(req.get("preferences") or []), "workloads": list(req.get("workloads") or [])}
+        applied: list[str] = []
+        asked_for_work = bool(req["workloads"])
+        opposite = {"RGB lighting": "no RGB lighting", "no RGB lighting": "RGB lighting"}
+        for memory in self._memories(run):
+            if memory["kind"] not in ("preference", "workload"):
+                continue
+            read = requirement_chain.invoke({"text": str(memory["value"]), "current": {}})
+            field = "preferences" if memory["kind"] == "preference" else "workloads"
+            if field == "workloads" and asked_for_work:
+                continue
+            for value in read.get(field) or [str(memory["value"]).strip()]:
+                known = {v.casefold() for v in req[field]}
+                if value.casefold() not in known and opposite.get(value, "").casefold() not in known:
+                    req[field].append(value)
+                    applied.append(value)
+        return req, applied
 
     def _below_floor(self, run: dict, req: dict) -> dict | None:
         """The result for a budget that no compatible build in the snapshot can meet, or None if one can.
@@ -163,7 +195,7 @@ class RecommendationEngine:
 
     def _execute_dag(self, run: dict, req: dict, maximum_options: int) -> dict:
         rid = run["id"]
-        memories = [m for m in self.store.list_memories(run["session_id"]) if m["confirmed"]]
+        memories = self._memories(run)
         tools = ToolHarness(self.store, self.tools(), max_calls=200)
         context = AgentContext(rid, req, run["snapshot_id"], memories, tools, self.model if self.model.enabled else None)
         harness = RunHarness(self.store, rid, max_agent_steps=60)
@@ -251,6 +283,7 @@ class RecommendationEngine:
             return None, []
         base = self.store.run(base_id)
         base_req = self.store.requirements(base["session_id"], base["requirements_version"]) or {}
+        base_req, _ = self._with_memories(base, base_req)      # saved memories are not a change the user just made
         changes = requirement_changes(base_req, req)
         reuse, reason = reuse_decision(base_req, req, changes)
         base_options = (base.get("result") or {}).get("options", [])
@@ -421,7 +454,8 @@ class RecommendationEngine:
         if removed:
             accepted[0].setdefault("explanation_guard", {"dropped": []})["dropped"] += [{"field": "assistant_message", **d} for d in removed]
             message = message or f"I found {len(accepted)} evidence-backed option" + ("s." if len(accepted) != 1 else ".")
-        message = re.sub(r"\s*[^.!?]*:\s*$", "", message) or message       # "Here's a summary of the build:" with nothing after it
+        # "Here's a summary of the build:" or "Let me provide the details for each build." with nothing after it
+        message = re.sub(r"\s*(?:[^.!?]*:|(?:let me|here is|here's|below (?:is|are))\b[^.!?]*[.!?])\s*$", "", message, flags=re.I) or message
         for option in accepted:
             met, unchecked, removed = preference_notes(option, context.requirements.get("preferences") or [])
             option["reasons"], option["trade_offs"] = option["reasons"] + met, option["trade_offs"] + unchecked

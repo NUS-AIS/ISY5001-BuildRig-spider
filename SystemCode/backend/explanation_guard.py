@@ -12,6 +12,7 @@ MODEL_TOKEN = re.compile(
     r"\b(?:RTX|GTX|RX)\s?\d{3,4}\s?(?:TI|SUPER|XTX|XT|GRE)?\b|\bRYZEN\s?\d\s?\d{4}[A-Z0-9]*\b"
     r"|\bI[3579]-?\d{4,5}[A-Z]*\b|\bCORE\s?ULTRA\s?[3579]\s?\d{3}[A-Z]*\b", re.I)
 INTEGRATED_INSTEAD = re.compile(r"integrated graphics[^.]*(?:no need|reduc|without|instead|replac|sufficient)|"
+                                r"\b(?:uses?|using|relies on|runs on|depends on)\s+(?:only\s+)?(?:the\s+)?(?:(?:cpu|processor)(?:'s)?\s+)?integrated graphics|"
                                 r"(?:no|without)[^.]*(?:dedicated|discrete) (?:gpu|graphics)", re.I)
 
 

@@ -10,7 +10,9 @@ async function request(path, options = {}) {
   if (!response.ok) {
     let detail
     try { detail = await response.json() } catch { detail = {} }
-    throw new Error(detail?.detail?.message || detail?.detail?.code || detail?.detail || `Request failed (${response.status})`)
+    // FastAPI reports a rejected parameter as a list of { msg } objects.
+    const rejected = Array.isArray(detail?.detail) ? detail.detail.map((d) => d.msg).filter(Boolean).join('; ') : null
+    throw new Error(rejected || detail?.detail?.message || detail?.detail?.code || (typeof detail?.detail === 'string' && detail.detail) || `Request failed (${response.status})`)
   }
   return response.status === 204 ? null : response.json()
 }
