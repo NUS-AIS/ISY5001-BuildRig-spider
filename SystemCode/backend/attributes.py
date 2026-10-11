@@ -23,6 +23,12 @@ SUFFIX_RANK = {"": 0, "GRE": 1, "XT": 1, "SUPER": 1, "TI": 2, "XTX": 2, "TI SUPE
 VENDOR_NAME = {"nvidia": "NVIDIA", "amd": "AMD", "intel": "Intel"}
 SCREEN = re.compile(r"(\d{2}(?:\.\d)?)\s*(?:-?\s*inch|in\b|\"|”|''|英寸|寸)", re.I)
 LAPTOP_GPU = re.compile(r"\brtx\s?\d|\bgtx\s?\d|radeon rx|\barc\s?[ab]?\d", re.I)
+LAPTOP_VRAM = re.compile(r"(?:RTX|GTX|RX)\s*\d{4}\s*(?:TI|SUPER)?\s*-\s*(\d{1,2})\s*GB", re.I)      # "RTX5070-8GB", not "RTX5060 32GB RAM"
+# Many all-in-one coolers are listed by series name and radiator size only ("Frozen Horizon 360", "Kraken 280").
+LIQUID_COOLER = re.compile(r"liquid|\baio\b|all[- ]in[- ]one|water|kraken|hydroshift|\baqua\b|frozen|radiator|\b(?:240|280|360|420)\b", re.I)
+AIR_COOLER = re.compile(r"\bair\b|heat\s?sink|tower|heat[- ]?pipes?|low[- ]profile", re.I)
+PART_WORD = {"cpu": "processor", "gpu": "graphics card", "motherboard": "motherboard", "ram": "memory kit", "ssd": "SSD",
+             "psu": "power supply", "case": "case", "cooler": "cooler"}
 
 
 def gpu_model(text: str | None) -> dict | None:
@@ -44,12 +50,15 @@ def brand_of(row: dict) -> str:
     brand = (row.get("brand") or "").strip()
     if not brand or "pte ltd" in brand.casefold():
         brand = (row.get("name") or "").split(" ")[0]
-    return brand.casefold()
+    brand = brand.casefold()
+    return "wd" if brand.startswith("western") else brand
 
 
 def cpu_maker(row: dict, specs: dict) -> str | None:
     text = f"{row.get('brand') or ''} {row.get('name') or ''}".casefold()
-    if "intel" in text or re.search(r"\bcore\s?(?:i\d|ultra)|\bi[3579]-\d", text):
+    if "ryzen" in text:          # before "intel": a Ryzen laptop may list an Intel Wi-Fi card
+        return "amd"
+    if "intel" in text or re.search(r"\bcore\s?(?:i?\d|ultra)|\bultra\s?\d|\bi[3579][- ]?\d", text):
         return "intel"
     if "amd" in text or "ryzen" in text:
         return "amd"
@@ -71,11 +80,16 @@ def derive(row: dict) -> dict:
     elif category == "case":
         out["form_factor"] = specs.get("max_form_factor")
     elif category == "cooler":
-        out["cooler_kind"] = "liquid" if re.search(r"liquid|\baio\b|water", name, re.I) else "air"
+        out["cooler_kind"] = "liquid" if LIQUID_COOLER.search(name) else "air" if AIR_COOLER.search(name) else None
     elif category == "laptop":
-        size = SCREEN.search(name)
+        size, model, memory = SCREEN.search(name), gpu_model(name), LAPTOP_VRAM.search(name)
+        dedicated = bool(LAPTOP_GPU.search(name))
+        # A laptop without a dedicated chip has integrated graphics: it meets no maker, model or memory wish.
         out.update(screen_inches=float(size.group(1)) if size else None, oled="oled" in name.casefold(),
-                   dedicated_gpu=bool(LAPTOP_GPU.search(name)))
+                   dedicated_gpu=dedicated, cpu_maker=cpu_maker(row, specs),
+                   gpu_vendor=model["vendor"] if model else None if dedicated else "integrated",
+                   gpu_rank=model["rank"] if model else None if dedicated else [0, 0, 0],
+                   gpu_memory_gb=int(memory.group(1)) if memory else None if dedicated else 0)
     return out
 
 
@@ -95,7 +109,11 @@ def filters_for(category: str, requirements: dict) -> dict:
         wanted["cooler_kind"] = hard.get("cooler_kind")
     elif category == "laptop":
         wanted.update(brands=hard.get("laptop_brands"), screen_inches=hard.get("laptop_screen_inches"),
-                      oled=hard.get("laptop_oled"), dedicated_gpu=hard.get("laptop_dedicated_gpu"))
+                      oled=hard.get("laptop_oled"), dedicated_gpu=hard.get("laptop_dedicated_gpu"),
+                      gpu_vendor=hard.get("gpu_vendor"), min_gpu_model=hard.get("minimum_gpu_model"),
+                      cpu_maker=hard.get("cpu_maker"), min_gpu_memory=hard.get("minimum_gpu_memory_gb"))
+    if category != "laptop" and (hard.get("part_brands") or {}).get(category):
+        wanted["part_brand"] = {category: hard["part_brands"][category]}
     return {key: value for key, value in wanted.items() if value}
 
 
@@ -104,6 +122,11 @@ def _test(key: str, wanted, have: dict) -> bool | None:
         return have["brand"] not in wanted
     if key == "brands":
         return have["brand"] in wanted
+    if key == "part_brand":
+        return have["brand"] in next(iter(wanted.values()))
+    if key == "min_gpu_memory":
+        size = have.get("gpu_memory_gb")
+        return None if size is None else size >= wanted
     if key == "stores":
         return any(store in have["store"] for store in wanted)
     if key == "min_gpu_model":
@@ -130,6 +153,17 @@ def _names(values: list[str]) -> str:
     return " or ".join(v.upper() if len(v) <= 4 else v.title() for v in values)
 
 
+def _screen(span: list[float]) -> str:
+    low, high = span
+    if high - low < 1:
+        return f"a {low:g}-inch screen"
+    if high >= 19:
+        return f"a screen of at least {low:g} inches"
+    if low <= 10:
+        return f"a screen of at most {int(high)} inches"
+    return f"a {low:g} to {int(high)}-inch screen"
+
+
 # key in hard_constraints -> (topic used in "Remove the <topic> requirement.", wording of the requirement)
 LABELS: dict[str, tuple[str, object]] = {
     "minimum_memory_gb": ("memory", lambda v: f"{v}GB of memory"),
@@ -145,16 +179,22 @@ LABELS: dict[str, tuple[str, object]] = {
     "maximum_form_factor": ("size", lambda v: f"a {v} build"),
     "wifi": ("Wi-Fi", lambda v: "built-in Wi-Fi"),
     "cooler_kind": ("cooling", lambda v: f"{v} cooling"),
+    "part_brands": ("part brand", lambda v: " and ".join(f"{'an' if PART_WORD[c] == 'SSD' else 'a'} {PART_WORD[c]} from {_names(b)}" for c, b in v.items())),
     "excluded_brands": ("excluded brands", lambda v: f"nothing from {_names(v)}"),
     "stores": ("store", lambda v: f"only from {_names(v)}"),
     "laptop_brands": ("laptop brand", lambda v: f"a laptop from {_names(v)}"),
-    "laptop_screen_inches": ("screen size", lambda v: f"a {v[0]:g}-inch screen"),
+    "laptop_screen_inches": ("screen size", _screen),
     "laptop_oled": ("OLED screen", lambda v: "an OLED screen"),
     "laptop_dedicated_gpu": ("dedicated graphics", lambda v: "a dedicated graphics card"),
 }
 LAPTOP_ONLY = {"laptop_brands", "laptop_screen_inches", "laptop_oled", "laptop_dedicated_gpu"}
-DESKTOP_ONLY = {"minimum_gpu_memory_gb", "gpu_vendor", "minimum_gpu_model", "no_graphics_card", "cpu_maker", "socket",
-                "memory_type", "minimum_psu_watts", "maximum_form_factor", "wifi", "cooler_kind"}
+DESKTOP_ONLY = {"no_graphics_card", "socket", "memory_type", "minimum_psu_watts", "maximum_form_factor", "wifi", "cooler_kind",
+                "part_brands"}
+
+
+def names_a_card(hard: dict) -> bool:
+    """The user asked for something only a graphics card can meet, so integrated graphics will not do."""
+    return any(hard.get(k) for k in ("minimum_gpu_memory_gb", "gpu_vendor", "minimum_gpu_model"))         or bool((hard.get("part_brands") or {}).get("gpu"))
 
 
 def active(requirements: dict) -> dict:

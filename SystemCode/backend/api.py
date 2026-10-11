@@ -6,7 +6,7 @@ from backend.models import (AssembleRequest, CandidateRequest, DraftRequest, Hyb
                             ProgressReport, RunCreate, SessionCreate, ValidationRequest)
 from backend.planning import Chooser, assemble_option, budget_repair, plan_desktop, plan_laptops
 from backend.attributes import filters_for
-from backend.requirement_rules import unsupported_requests
+from backend.requirement_rules import inapplicable, unsupported_requests
 from backend.requirements_parser import parse_requirements
 from backend.validation import validate_option
 
@@ -14,8 +14,8 @@ from backend.validation import validate_option
 NOTHING_CHANGED = (
     "I could not turn that message into a requirement, so nothing changed and a new recommendation would be the "
     "same. I can act on: desktop or laptop, budget, what you will use it for, minimum memory, storage or graphics "
-    "memory (for example \"a graphics card with at least 12GB\"), preferences such as quiet or white, parts to "
-    "keep, and parts you already own.")
+    "memory (for example \"a graphics card with at least 12GB\"), the maker of the processor, graphics card or "
+    "another part, preferences such as quiet or white, parts to keep, and parts you already own.")
 
 
 def create_router(store, corpus, engine):
@@ -92,7 +92,7 @@ def create_router(store, corpus, engine):
 
         changed = stated(requirements) != stated(session["requirements"])
         # Wishes the recommendation cannot honour are named, so they are not mistaken for understood.
-        notes = unsupported_requests(body.text, requirements.get("device_type"))
+        notes = unsupported_requests(body.text, requirements.get("device_type")) + inapplicable(body.text, requirements)
         if changed or questions:
             assistant_message, generation_source = engine.intake_reply(body.text, requirements, questions, notes)
         else:

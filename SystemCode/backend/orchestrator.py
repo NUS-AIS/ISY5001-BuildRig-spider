@@ -12,6 +12,7 @@ to Pi with the same tools and constraints. Hard constraints are never relaxed: a
 ends as ``no_feasible_option`` with the reasons.
 """
 import json
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from urllib.error import URLError
@@ -51,16 +52,26 @@ class RecommendationEngine:
                      not_acted_on: list[str] | None = None) -> tuple[str, str]:
         fallback = (" ".join(question["text"] for question in questions) if questions else
                     "Your requirements are ready. I can now prepare an evidence-backed recommendation.")
+        if not_acted_on and not questions:
+            # The model tends to repeat the whole message back as understood, including what cannot be
+            # honoured; the confirmation is then written from the parsed requirements alone.
+            view = for_model(requirements)
+            noun = {"desktop": "a desktop", "laptop": "a laptop", "compare": "a desktop or a laptop"}[requirements["device_type"]]
+            parts = [noun + (" for " + ", ".join(view["workloads"]) if view.get("workloads") else ""),
+                     f"budget S${view['budget_sgd_max']:,.0f}"] + view.get("must_have", [])
+            wishes = f" Preferences: {', '.join(view['preferences'])}." if view.get("preferences") else ""
+            return f"Understood: {'; '.join(parts)}.{wishes} I can now prepare the recommendation.", "fallback"
         if not self.model.enabled:
             return fallback, "fallback"
         try:
             reply = self.model.text(
                 "You are BuildRig, a concise computer recommendation assistant. Always answer in English, "
-                "even if the user writes in another language. Respond naturally to the "
-                "user using only the parsed requirements supplied below. If clarification_questions is "
+                "even if the user writes in another language. Speak to the user directly as \"you\". Respond "
+                "naturally using only the parsed requirements supplied below. If clarification_questions is "
                 "not empty, ask exactly those questions without answering them or inventing details. If "
-                "it is empty, briefly confirm the understood device type, budget and workload, then say "
-                "the recommendation can be generated. Do not recommend products yet. Anything listed in "
+                "it is empty, briefly confirm the understood device type, budget, workload and must_have "
+                "items, then say the recommendation can be generated, and ask nothing further. "
+                "Do not recommend products yet. Anything listed in "
                 "not_part_of_the_request was asked for but cannot be provided: do not confirm it or say it is included.",
                 {"user_message": user_message, "requirements": for_model(requirements),
                  "clarification_questions": questions, "not_part_of_the_request": not_acted_on or []},
@@ -382,6 +393,11 @@ class RecommendationEngine:
                             option["reasons"] = [i.get("selection_reason") for i in option["items"] if i.get("selection_reason")][:4]
                 message, dropped_summary = guard_message(narrative["assistant_message"], accepted)
                 source = "llm"
+                # The model sometimes refers to an option by its internal id; the page numbers them.
+                for number, option in enumerate(accepted, 1):
+                    readable = lambda text: re.sub(re.escape(option["option_id"]), f"Option {number}", text, flags=re.I)
+                    message = readable(message or "")
+                    option["reasons"], option["trade_offs"] = ([readable(t) for t in option[k]] for k in ("reasons", "trade_offs"))
                 if dropped_summary:
                     accepted[0].setdefault("explanation_guard", {"dropped": []})["dropped"] += [
                         {"field": "assistant_message", **d} for d in dropped_summary]

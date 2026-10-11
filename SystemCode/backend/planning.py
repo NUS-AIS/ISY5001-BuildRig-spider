@@ -25,7 +25,7 @@ from typing import Any, Callable
 
 from pydantic import BaseModel
 
-from backend.attributes import filters_for
+from backend.attributes import filters_for, names_a_card
 
 DESKTOP_ORDER = ["cpu", "motherboard", "ram", "gpu", "psu", "case", "ssd", "cooler"]
 FORM_FACTOR_RANK = {"Mini-ITX": 1, "Micro-ATX": 2, "ATX": 3, "E-ATX": 4}
@@ -140,6 +140,7 @@ ACCESSORY = {
                        r"side panel|riser|bracket|dust filter|stand)\b", re.I),
     "ssd": re.compile(r"\bheatsink\b|\benclosure\b|\badapter\b", re.I),
     "gpu": re.compile(r"\b(?:riser|bracket|support|holder|backplate)\b", re.I),
+    "cooler": re.compile(r"\bssd\b|\bm\.2\b|thermal (?:paste|pad|grease)|contact frame", re.I),      # an SSD heatsink is not a CPU cooler
 }
 PRIMARY_SPEC = {"case": "max_form_factor", "ssd": "capacity_gb", "gpu": "vram_gb"}
 
@@ -241,7 +242,7 @@ def plan_desktop(query: Callable, products: Callable, requirements: dict, choose
     # for a card with a minimum of graphics memory, which integrated graphics cannot meet.
     constraints = requirements.get("hard_constraints") or {}
     no_card = bool(constraints.get("no_graphics_card")) and "gpu" not in items
-    card_required = not no_card and any(constraints.get(k) for k in ("minimum_gpu_memory_gb", "gpu_vendor", "minimum_gpu_model"))
+    card_required = not no_card and names_a_card(constraints)
     integrated = no_card or (profile == "general" and "gpu" not in items and not card_required)
     spent = sum(minor(i) for i in items.values() if not i.get("owned_by_user"))
     free = max(budget - spent, 0)
@@ -426,8 +427,7 @@ def _desktop_floor(query: Callable, products: Callable, requirements: dict) -> d
     # for a minimum of graphics memory.
     constraints = requirements.get("hard_constraints") or {}
     no_card = bool(constraints.get("no_graphics_card")) and "gpu" not in fixed
-    card_required = "gpu" in fixed or (not no_card and any(
-        constraints.get(k) for k in ("minimum_gpu_memory_gb", "gpu_vendor", "minimum_gpu_model")))
+    card_required = "gpu" in fixed or (not no_card and names_a_card(constraints))
     if no_card:
         with_card = None
     without_card = None if card_required else cheapest([c for c in DESKTOP_ORDER if c != "gpu"], integrated=True)

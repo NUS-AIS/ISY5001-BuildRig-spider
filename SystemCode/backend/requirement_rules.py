@@ -12,9 +12,19 @@ from __future__ import annotations
 
 import re
 
-from backend.attributes import GPU_CHIP, LABELS, gpu_model
+from backend.attributes import GPU_CHIP, LABELS, active, gpu_model
 
-NEG = r"(?:avoid|no|not|never|don'?t want|do not want|without|exclude|except|anything but|不要|别用|避开|除了|不用)\s*(?:any(?:thing)?\s+|an?\s+|from\s+|the\s+)?"
+NEG = (r"(?:avoid|no|not|never|don'?t want|do not want|without|exclude|except|anything but|hate|dislike|don'?t like|do not like|"
+       r"not a fan of|stay away from|不要|别用|避开|除了|不用|不喜欢|讨厌)\s*(?:any(?:thing)?\s+|an?\s+|from\s+|the\s+)?")
+# A feature the user says they can do without: "I don't need Wi-Fi", "no need for OLED", "不需要无线".
+NO_NEED = r"(?:(?:don'?t|do not|doesn'?t|does not|no) need(?: for)?|no need for|不需要)\s*(?:any\s+|an?\s+|the\s+)?"
+NOT_NEEDED = r"\s*(?:is|are)?\s*(?:not (?:needed|necessary|required|important)|unnecessary|isn'?t (?:needed|necessary))"
+# The words that say which part of a desktop a maker is wanted for ("an ASUS motherboard", "Corsair RAM").
+PART_WORDS = {
+    "motherboard": r"motherboard|mainboard|mobo|主板", "ram": r"ram|memory|内存", "ssd": r"ssd|nvme|固态(?:硬盘)?",
+    "psu": r"psu|power supply|电源", "case": r"case|chassis|机箱", "cooler": r"cooler|aio|散热器?",
+    "gpu": r"graphics card|video card|gpu|显卡",
+}
 BRAND_ALIASES = {
     "asus": "asus", "rog": "asus", "华硕": "asus", "msi": "msi", "微星": "msi", "gigabyte": "gigabyte", "技嘉": "gigabyte",
     "asrock": "asrock", "corsair": "corsair", "lian li": "lian li", "cooler master": "cooler master", "nzxt": "nzxt",
@@ -58,27 +68,71 @@ def budget_amount(lower: str, normalized: str) -> tuple[int | None, bool]:
                        r"(?:-|–|—|~|to|and|到|至)\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?!\s*(?:gb|tb|w\b|hz|mhz))", normalized)
     if spread:
         return max(int(spread.group(1)), int(spread.group(2))), foreign
-    thousands = re.search(rf"{BUDGET_WORD}[^.;\d]{{0,20}}?(\d+(?:\.\d+)?)\s*k\b(?!\s*(?:resolution|gaming|monitor|display|video|hdr|@))",
-                          normalized)
+    thousands = BUDGET_IN_K.search(normalized)
     if thousands:
-        return int(float(thousands.group(1)) * 1000), foreign
+        return int(float(thousands.group(1) or thousands.group(2)) * 1000), foreign
     if re.search(r"预算|价位|以内|左右|块|元|新币", lower):
-        chinese = re.search(r"(\d+(?:\.\d+)?|[一二两三四五六七八九十])\s*([万千])", lower)
+        # "一万五" is 15,000 and "三千五" is 3,500: a trailing digit counts in the next unit down.
+        chinese = re.search(r"(\d+(?:\.\d+)?|[一二两三四五六七八九十])\s*([万千])\s*(?:([一二两三四五六七八九\d])(?![\d百万])千?)?", lower)
         if chinese:
+            unit = 10000 if chinese.group(2) == "万" else 1000
             number = CHINESE_DIGIT.get(chinese.group(1)) or float(chinese.group(1))
-            return int(number * (10000 if chinese.group(2) == "万" else 1000)), foreign
+            tail = chinese.group(3)
+            extra = (CHINESE_DIGIT.get(tail) or int(tail)) * unit // 10 if tail else 0
+            return int(number * unit) + extra, foreign
     return None, foreign
+
+
+def loose_budget(normalized: str) -> int | None:
+    """An amount with only a weak cue ("I can spend around 2000", "I have 2500 to spend", "1500 euros"),
+    tried after every explicit budget wording has failed."""
+    loose = re.search(r"(?:spend(?:ing)?|around|roughly|approximately|afford|~)\s*(?:up to\s+|about\s+)?(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})"
+                      r"(?!\d|\.\d|\s*(?:gb|tb|w\b|hz|mhz|mm|p\b|x|k\b|ti\b|xt\b|super|rpm|inch))", normalized) \
+        or re.search(r"(?<![\w$.])([1-9]\d{2,5})\s+(?:to spend|budget\b|max\b|maximum\b|tops\b|all in\b)", normalized) \
+        or re.search(r"([1-9]\d{2,5})\s*(?:euros?|eur|pounds|ringgit|myr|hkd|yuan|yen|jpy|cny)\b", normalized)
+    return int(loose.group(1)) if loose else None
+
+
+# "budget 2.5k", "3k budget": thousands, unless the k belongs to a resolution ("4k gaming").
+BUDGET_IN_K = re.compile(rf"{BUDGET_WORD}[^.;\d]{{0,20}}?(\d+(?:\.\d+)?)\s*k\b(?!\s*(?:resolution|gaming|monitor|display|video|hdr|@))"
+                         r"|(?<![\w.])(\d+(?:\.\d+)?)\s*k\s+(?:budget|max\b|maximum|sgd|dollars|to spend|limit)")
 
 
 def _negated(pattern: str, lower: str) -> bool:
     return bool(re.search(NEG + f"(?:{pattern})", lower))
 
 
+def _declined(pattern: str, lower: str) -> bool:
+    """The feature is named only to say it is not wanted or not needed."""
+    return bool(re.search(rf"(?:{NEG}|{NO_NEED})(?:{pattern})|(?:{pattern}){NOT_NEEDED}", lower))
+
+
+def _alias(alias: str) -> str:
+    return re.escape(alias) if re.search(r"[^\x00-\x7f]", alias) else rf"\b{re.escape(alias)}\b"
+
+
+_FILLER = r"(?:(?!(?:in|for|and|or|with|the|an?|to|is|but|on|of)\b)[a-z0-9.+-]+\s+){0,3}?"      # "ASUS ROG Strix <part>"
+
+
+def _part_brands(lower: str) -> dict[str, list[str]]:
+    """Makers wanted for one part of a desktop: "an ASUS motherboard", "RAM from Corsair", "三星的固态"."""
+    out: dict[str, list[str]] = {}
+    for alias, brand in BRAND_ALIASES.items():
+        name = _alias(alias)
+        if _negated(name, lower):
+            continue
+        for category, words in PART_WORDS.items():
+            if re.search(rf"{name}\s*(?:的)?\s*{_FILLER}(?:{words})(?![a-z])|(?:{words})\s+(?:from|by|made by)\s+{name}", lower) \
+                    and brand not in out.setdefault(category, []):
+                out[category].append(brand)
+    return {category: brands for category, brands in out.items() if brands}
+
+
 def _brands(lower: str) -> tuple[list[str], list[str]]:
     """(wanted, unwanted) makers named in the message."""
     wanted, unwanted = [], []
     for alias, brand in BRAND_ALIASES.items():
-        pattern = re.escape(alias) if re.search(r"[^\x00-\x7f]", alias) else rf"\b{re.escape(alias)}\b"
+        pattern = _alias(alias)
         if not re.search(pattern, lower):
             continue
         target = unwanted if _negated(pattern, lower) else wanted
@@ -89,8 +143,16 @@ def _brands(lower: str) -> tuple[list[str], list[str]]:
 
 def removals(lower: str) -> list[str]:
     """Constraint keys the message asks to drop: "Remove the graphics card brand requirement."."""
-    return [key for key, (topic, _) in LABELS.items()
-            if re.search(rf"(?:remove|drop|forget|ignore|cancel)\s+(?:the\s+|my\s+)?{re.escape(topic.casefold())}\s+requirement", lower)]
+    def dropped(topic: str) -> bool:
+        return bool(re.search(rf"(?:remove|drop|forget|ignore|cancel)\s+(?:the\s+|my\s+)?{topic}\s+(?:requirement|preference|restriction)|"
+                              rf"any\s+{topic}\s+(?:is|will be|would be)\s+(?:fine|ok|okay)|"
+                              rf"{topic}\s+(?:does not|doesn'?t)\s+matter|no\s+{topic}\s+preference", lower))
+    return [key for key, (topic, _) in LABELS.items() if dropped(re.escape(topic.casefold()))]
+
+
+# A chip named without its family ("at least a 5070", "a 9070 XT or better"): GeForce 20-50 series, Radeon 6000-9000.
+BARE_CHIP = re.compile(r"(?<![a-z0-9$.,])(?:([2-5]0[5-9]0)|([67][6-9]00|90[67]0))(?:\s*(ti\s*super|ti|super|xtx|xt))?(?![a-z0-9]|\.\d)")
+EITHER = r"\s*(?:or|vs\.?|/|或者?|还是)\s*(?:an?\s+)?"
 
 
 def stated_constraints(text: str, device_type: str | None) -> dict:
@@ -102,7 +164,9 @@ def stated_constraints(text: str, device_type: str | None) -> dict:
     laptop = device_type in ("laptop", "compare")
 
     nvidia, radeon = r"nvidia|geforce|n卡|英伟达", r"radeon|a卡|amd\s*(?:的)?\s*(?:graphics|gpu|video|card|显卡)"
-    if _negated(nvidia, lower):
+    if re.search(rf"(?:nvidia|geforce){EITHER}(?:amd|radeon)|(?:amd|radeon){EITHER}(?:nvidia|geforce)", lower):
+        found["gpu_vendor"] = None            # "NVIDIA or AMD, I don't mind" asks for neither
+    elif _negated(nvidia, lower):
         found["gpu_vendor"] = "amd"
     elif re.search(nvidia, lower):
         found["gpu_vendor"] = "nvidia"
@@ -111,33 +175,41 @@ def stated_constraints(text: str, device_type: str | None) -> dict:
     elif re.search(radeon, lower):
         found["gpu_vendor"] = "amd"
 
-    for match in GPU_CHIP.finditer(text):
+    chips = [(m, m.group(0)) for m in GPU_CHIP.finditer(text)]
+    chips += [(m, f"{'rtx' if m.group(1) else 'rx'} {m.group(0)}") for m in BARE_CHIP.finditer(lower)]
+    for match, name in chips:
         before, after = lower[max(0, match.start() - 28):match.start()], lower[match.end():match.end() + 22]
         at_least = re.search(r"(?:at least|minimum|no (?:lower|less|worse) than|不低于|至少|起码)\s*(?:an?\s+|the\s+)?$", before)
         or_better = re.match(r"\s*(?:or (?:better|above|higher|newer|more)|and (?:above|up)|\+|以上|起步|及以上|或更高|或以上)", after)
         if at_least or or_better:
-            found["minimum_gpu_model"] = gpu_model(match.group(0))
+            found["minimum_gpu_model"] = gpu_model(name)
             found["gpu_vendor"] = found["minimum_gpu_model"]["vendor"]
             break
 
-    if re.search(r"(?:don'?t|do not|no) need (?:an? |any )?(?:dedicated |discrete )?(?:graphics card|gpu|video card)|"
+    if re.search(r"(?:don'?t|do not|no) need (?:for )?(?:an? |any )?(?:dedicated |discrete )?(?:graphics card|gpu|video card)|"
                  r"(?:without|no) (?:an? )?(?:dedicated |discrete )?(?:graphics card|gpu|video card)|"
                  r"integrated graphics (?:is|are|will be) (?:fine|enough|ok|okay)|不需要(?:独立)?显卡|不要(?:独立)?显卡|核显就(?:行|够|可以)", lower):
-        if desktop and not found:
+        if desktop and not any(found.values()):
             found.update(no_graphics_card=True, gpu_vendor=None, minimum_gpu_model=None, minimum_gpu_memory_gb=None)
     elif found.get("gpu_vendor") or found.get("minimum_gpu_model"):
         found["no_graphics_card"] = None
 
-    intel = r"intel|英特尔|酷睿"
-    amd_cpu = r"amd\s*(?:的)?\s*(?:cpu|processor|处理器|平台|platform)|ryzen|锐龙|\bam[45]\b"
-    if _negated(intel, lower):
+    intel = r"intel|英特尔|酷睿|\bi[3579]\b|\bcore\s?(?:i[3579]|ultra)"
+    amd_cpu = r"amd\s*(?:的)?\s*(?:cpu|processor|处理器|平台|platform|build|system|setup)|ryzen|锐龙|\bam[45]\b"
+    # "No AMD" with no part named: the processor is the part every build has.
+    bare_amd = r"amd(?!\s*(?:的)?\s*(?:cpu|processor|处理器|平台|platform|graphics|gpu|video|card|显卡|radeon|ryzen))"
+    if re.search(rf"intel{EITHER}amd|amd{EITHER}intel", lower):
+        found["cpu_maker"] = None
+    elif _negated(intel, lower):
         found["cpu_maker"] = "amd"
     elif re.search(intel, lower) and not re.search(r"intel\s+arc", lower):
         found["cpu_maker"] = "intel"
-    elif _negated(r"amd\s*(?:的)?\s*(?:cpu|processor|处理器)|ryzen|锐龙", lower):
+    elif _negated(amd_cpu, lower):
         found["cpu_maker"] = "intel"
     elif re.search(amd_cpu, lower):
         found["cpu_maker"] = "amd"
+    elif _negated(bare_amd, lower) and "gpu_vendor" not in found:
+        found["cpu_maker"] = "intel"
 
     socket = re.search(r"\b(am[45])\b|lga\s?-?(1700|1851)\b", lower)
     if socket:
@@ -146,18 +218,26 @@ def stated_constraints(text: str, device_type: str | None) -> dict:
     if memory:
         found["memory_type"] = f"DDR{memory.group(1)}"
     watts = (re.search(r"(?:psu|power supply|电源)[^.;\d]{0,30}?(\d{3,4})\s*w\b", lower)
-             or re.search(r"(\d{3,4})\s*w(?:atts?)?\s*(?:or more\s+)?(?:psu|power supply|电源)", lower))
+             or re.search(r"(\d{3,4})\s*w(?:atts?)?\b(?:\s+[a-z0-9+]+){0,3}?\s*(?:psu|power supply|电源)", lower))
     if watts and not OWNERSHIP.search(text) and 300 <= int(watts.group(1)) <= 2200:
         found["minimum_psu_watts"] = int(watts.group(1))
     if re.search(r"mini[- ]?itx|\bitx\b", lower):
         found["maximum_form_factor"] = "Mini-ITX"
     elif re.search(r"micro[- ]?atx|\bm-?atx\b", lower):
         found["maximum_form_factor"] = "Micro-ATX"
-    if re.search(r"wi-?fi|wireless (?:lan|network|card|internet)|无线网|无线上网", lower) and desktop:
+    wifi = r"wi-?fi|wireless (?:lan|network|card|internet)|无线网|无线上网"
+    if _declined(wifi, lower):
+        found["wifi"] = None
+    elif re.search(wifi, lower) and desktop:
         found["wifi"] = True
-    if re.search(r"liquid[- ]cool|water[- ]?cool|\baio\b|水冷", lower):
+    liquid, air = r"liquid[- ]cool\w*|water[- ]?cool\w*|\baio\b|水冷", r"air[- ]cool\w*|风冷"
+    if _declined(liquid, lower):
+        found["cooler_kind"] = "air"
+    elif re.search(liquid, lower):
         found["cooler_kind"] = "liquid"
-    elif re.search(r"air[- ]cool|风冷", lower):
+    elif _declined(air, lower):
+        found["cooler_kind"] = "liquid"
+    elif re.search(air, lower):
         found["cooler_kind"] = "air"
 
     store = re.search(r"(?:only|just)\s+(?:from|at|in)\s+(dynacore|vii\s?pc)|(dynacore|vii\s?pc)\s+only|只(?:要|在|从|买)?\s*(dynacore|vii\s?pc)", lower)
@@ -169,17 +249,38 @@ def stated_constraints(text: str, device_type: str | None) -> dict:
     if re.search(r"any brand|no brand preference|brand (?:does not|doesn'?t) matter|不限品牌|品牌无所谓", lower):
         found.update(excluded_brands=None, laptop_brands=None)
 
+    parts = _part_brands(lower)
+    if parts:
+        found["part_brands"] = parts
     if laptop:
-        makers = [b for b in wanted if b in LAPTOP_BRANDS]
+        named_for_a_part = {brand for brands in parts.values() for brand in brands}      # "with a Samsung SSD"
+        makers = [b for b in wanted if b in LAPTOP_BRANDS and b not in named_for_a_part]
         if makers:
             found["laptop_brands"] = makers
-        size = re.search(r"(\d{2}(?:\.\d)?)\s*(?:-?\s*inch(?:es)?\b|\"|”|英寸|寸)", lower)
-        if size and 10 <= float(size.group(1)) < 20:
-            inches = float(size.group(1))
-            found["laptop_screen_inches"] = [float(int(inches)), int(inches) + 0.99]
-        if re.search(r"\boled\b", lower):
+        inch = r"\s*(?:-?\s*inch(?:es)?\b|\"|”|英寸|寸)"
+        span = re.search(rf"(\d{{2}})\s*(?:or|to|-|–|~|到|或)\s*(\d{{2}}(?:\.\d)?){inch}", lower)
+        size = re.search(rf"(\d{{2}}(?:\.\d)?){inch}", lower)
+        if span and 10 <= int(span.group(1)) <= float(span.group(2)) < 20:
+            found["laptop_screen_inches"] = [float(span.group(1)), int(float(span.group(2))) + 0.99]
+        elif size and 10 <= float(size.group(1)) < 20:
+            inches = int(float(size.group(1)))
+            before, after = lower[max(0, size.start() - 26):size.start()], lower[size.end():size.end() + 18]
+            if re.search(r"(?:at least|minimum|no smaller than|(?:bigger|larger) than|至少|不小于)\s*(?:an?\s+)?$", before) \
+                    or re.match(r"\s*(?:screen\s+)?(?:or (?:larger|bigger|more|above)|and (?:above|up)|\+|以上)", after):
+                found["laptop_screen_inches"] = [float(inches), 19.99]
+            elif re.search(r"(?:under|at most|no (?:bigger|larger) than|smaller than|below|up to|不超过|最大)\s*(?:an?\s+)?$", before) \
+                    or re.match(r"\s*(?:screen\s+)?(?:or (?:smaller|less|below)|以下|以内)", after):
+                found["laptop_screen_inches"] = [10.0, inches + 0.99]
+            else:
+                found["laptop_screen_inches"] = [float(inches), inches + 0.99]
+        if _declined(r"\boled\b", lower):
+            found["laptop_oled"] = None
+        elif re.search(r"\boled\b", lower):
             found["laptop_oled"] = True
-        if re.search(r"dedicated (?:graphics|gpu)|discrete (?:graphics|gpu)|独显|独立显卡", lower):
+        dedicated = r"(?:dedicated|discrete) (?:graphics(?: card)?|gpu)|独显|独立显卡"
+        if _declined(dedicated, lower):
+            found["laptop_dedicated_gpu"] = None
+        elif re.search(dedicated, lower):
             found["laptop_dedicated_gpu"] = True
     for key in removals(lower):
         found[key] = None
@@ -187,14 +288,15 @@ def stated_constraints(text: str, device_type: str | None) -> dict:
 
 
 SOFT_PREFERENCES = {
-    "80 Plus Gold power supply": r"80\s*(?:plus|\+)\s*gold|金牌电源",
+    "80 Plus Gold power supply": r"80\s*(?:plus|\+)\s*gold|金牌电源|\bgold\b[a-z -]{0,12}(?:psu|power supply)",
+    "lowest price": r"cheapest|as cheap as possible|lowest price|最便宜|越便宜越好",
     "NVMe SSD": r"\bnvme\b",
     "room to upgrade later": r"future[- ]?proof|upgrad(?:e|able|ability)|以后升级|方便升级",
     "4K": r"\b4k\b|2160p", "1440p": r"\b1440p\b|\b2k\b|\bqhd\b", "1080p": r"\b1080p\b|\bfhd\b",
     "high refresh rate": r"\b(?:1[2-9]\d|2[0-9]\d|360)\s*hz\b|高刷",
     "tempered glass side panel": r"glass (?:side )?panel|侧透",
 }
-NO_RGB = re.compile(r"(?:no|without|not?|zero|don'?t want|do not want|不要|没有|无)\s*(?:any\s+)?(?:rgb|灯效|灯光|灯\b|灯$|lighting|lights)", re.I)
+NO_RGB = re.compile(r"(?:no|without|not?|zero|don'?t (?:want|need|like)|do not (?:want|need|like)|no need for|not a fan of|hate|dislike|不要|不喜欢|没有|无)\s*(?:any\s+)?(?:rgb|灯效|灯光|灯\b|灯$|lighting|lights)", re.I)
 
 # topic -> pattern. Things no listing field and no planning step can honour.
 UNSUPPORTED = {
@@ -206,12 +308,15 @@ UNSUPPORTED = {
     "a number of processor cores": r"\d+\s*-?\s*cores?\b|\d+\s*threads?\b|\d+\s*核",
     "a weight limit": r"\d(?:\.\d)?\s*kg\b|weigh|公斤|重量",
     "battery life": r"battery|续航|电池",
-    "a second drive": r"hard dis[ck]|\bhdd\b|two drives|second drive|second ssd|机械硬盘|两块硬盘",
+    "a second drive": r"hard dis[ck]|\bhdd\b|(?:two|2)\s+(?:\d+\s*[gt]b\s+)?(?:drives|ssds)|second drive|second ssd|机械硬盘|两块硬盘",
     "a minimum spend": r"(?:spend|use|cost)\s+at least|at least\s+(?:s\$|\$)\s*\d|no less than\s+(?:s\$|\$)",
     "a budget for a single part": r"(?:s\$|\$)\s*\d[\d,]*\s+(?:on|for)\s+the\s+(?:graphics card|gpu|cpu|processor|case|monitor)",
     "the number of options": r"\b(?:two|three|four|five|\d)\s+(?:options|choices|builds|alternatives)\b|几个方案",
-    "used or refurbished parts": r"second[- ]hand|\bused\b|refurbished|二手",
+    "used or refurbished parts": r"second[- ]hand|pre-?owned|\bused\b(?!\s+(?:for|to|in|with|as|by|mainly|mostly|only|primarily))|refurbished|二手",
     "Bluetooth": r"bluetooth|蓝牙",
+    "a touchscreen": r"touch\s?screen|触屏|触摸屏",
+    "particular ports": r"thunderbolt|usb-?c\b|\bhdmi\b|displayport|\bports?\b|接口",
+    "a motherboard chipset": r"\b(?:a[56]20|b[4-8][56]0|x[5-8]70|h[6-8]10|z[6-8]90)[em]?\b",
 }
 
 
@@ -226,3 +331,12 @@ def unsupported_requests(text: str, device_type: str | None) -> list[str]:
     if re.search(r"without (?:a )?monitor|no monitor|不包含显示器", lower) and "a monitor" in found:
         found.remove("a monitor")
     return found
+
+
+def inapplicable(text: str, requirements: dict) -> list[str]:
+    """Requirements named in this message that do not apply to the chosen device ("an 850W power supply"
+    for a laptop), in words for the reply."""
+    device = requirements.get("device_type")
+    live = active(requirements)
+    return [f"{LABELS[key][1](value)} for a {device}" for key, value in stated_constraints(text, device).items()
+            if value and key in LABELS and key not in live]

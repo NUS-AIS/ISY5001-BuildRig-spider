@@ -20,8 +20,8 @@ from langchain_core.runnables import RunnableLambda
 from pydantic import BaseModel, Field
 
 from backend.attributes import LABELS, active, describe, gpu_model
-from backend.requirement_rules import (NO_RGB, NOT_THE_BUDGET, SOFT_PREFERENCES, budget_amount, shorthand,
-                                       stated_constraints)
+from backend.requirement_rules import (BUDGET_IN_K, NEG, NO_RGB, NOT_THE_BUDGET, SOFT_PREFERENCES, budget_amount,
+                                       loose_budget, shorthand, stated_constraints)
 
 COMPARE_PATTERNS = ("台式还是笔记本", "笔记本还是台式", "desktop or laptop", "laptop or desktop", "desktop vs laptop",
                     "laptop vs desktop", "not sure whether", "compare a desktop", "compare desktop")
@@ -32,8 +32,10 @@ PREFERENCE_PATTERNS = {
     "white": r"\bwhite\b|白色",
     "RGB lighting": r"\brgb\b|灯效",
     "portable": r"\bportable\b|\blight(?:weight)?\b|\blighter\b|轻薄|便携|轻一点|轻便|重量轻",
-    "compact": r"\bcompact\b|small form factor|\bsff\b|小机箱",
+    "compact": r"\bcompact\b|small form factor|\bsff\b|\bsmall(?:er)?\b|小机箱",
 }
+LAPTOP_WORDS = r"笔记本|laptop|notebook|macbook|thinkpad|ultrabook|chromebook|轻薄本|游戏本"
+DESKTOP_WORDS = r"台式|组装|装机|主机|desktop|workstation|\btower\b|\brig\b|\bpc\b"
 KNOWN_WORKLOADS = ("SolidWorks", "MATLAB", "ANSYS", "AutoCAD", "Blender", "Premiere", "gaming", "video editing",
                    "programming", "machine learning", "deep learning", "university", "3D modelling", "office",
                    "streaming", "编程", "游戏", "办公", "剪辑")
@@ -71,12 +73,16 @@ def _parse(payload: dict) -> dict:
     req = deepcopy(payload.get("current") or {})
     lower = shorthand(text.casefold())
     normalized = re.sub(r"(?<=\d),(?=\d)", "", lower)
+    # "A desktop, not a laptop" names the laptop only to rule it out.
+    no_laptop, no_desktop = (bool(re.search(NEG + f"(?:{words})", lower)) for words in (LAPTOP_WORDS, DESKTOP_WORDS))
     if any(p in lower for p in COMPARE_PATTERNS):
         req["device_type"] = "compare"
-    elif any(x in lower for x in ("笔记本", "laptop", "notebook")):
+    elif re.search(LAPTOP_WORDS, lower) and not no_laptop:
         req["device_type"] = "laptop"
-    elif any(x in lower for x in ("台式", "组装", "装机", "desktop", "workstation")) or re.search(r"\bpc\b", lower):
+    elif re.search(DESKTOP_WORDS, lower) and not no_desktop:
         req["device_type"] = "desktop"
+    elif no_laptop != no_desktop:
+        req["device_type"] = "desktop" if no_laptop else "laptop"
     # The overall maximum only: a per-part amount or a minimum spend is not the budget.
     budget_text = NOT_THE_BUDGET.sub(" ", normalized)
     amount, foreign = budget_amount(lower, budget_text)          # ranges, "2.5k", "一万", other currencies
@@ -86,7 +92,7 @@ def _parse(payload: dict) -> dict:
                  or re.search(r"([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:新币|新加坡元|sgd|dollars|usd|rmb|人民币|美元|美金)", budget_text))
         if not money and not req.get("budget"):
             money = re.fullmatch(r"\s*(?:s\$|sgd|\$)?\s*([1-9]\d{2,5})(?:\.\d{1,2})?\s*(?:sgd)?\s*", budget_text)
-        amount = int(money.group(1)) if money else None
+        amount = int(money.group(1)) if money else loose_budget(budget_text)
     transient = req.setdefault("_transient", {})       # facts about this message only; never stored
     if amount and foreign:
         transient["foreign_budget"] = True               # not converted and not assumed to be SGD
@@ -98,7 +104,10 @@ def _parse(payload: dict) -> dict:
     if vram and int(vram.group(1)) in (4, 6, 8, 10, 12, 16, 20, 24, 32):
         req.setdefault("hard_constraints", {})["minimum_gpu_memory_gb"] = int(vram.group(1))
     system = lower.replace(vram.group(0), " ") if vram else lower
-    ram = re.search(r"(\d{1,3})\s*gb\s*(?:内存|ram|memory)", system) or re.search(r"(?:内存|ram|memory)\s*(?:of\s*)?(\d{1,3})\s*gb", system)
+    # A kit written as "2x16GB" is 32GB in total.
+    system = re.sub(r"\b([24])\s*[x×*]\s*(\d{1,2})\s*gb?\b", lambda m: f"{int(m.group(1)) * int(m.group(2))}gb", system)
+    ram = (re.search(r"(\d{1,3})\s*gb?\s*(?:of\s+)?(?:ddr\d\s+)?(?:内存|ram|memory)", system)
+           or re.search(r"(?:内存|ram|memory)\s*(?:of\s*)?(\d{1,3})\s*gb", system))
     if not ram and not re.search(r"\d\s*(?:tb|gb)\s*(?:ssd|storage|硬盘|存储)|rtx|gtx|\brx\s?\d|vram|gddr|\bgpu\b|graphics|显卡|显存", system):
         ram = re.search(r"(\d{1,3})\s*gb", system)
     if ram and int(ram.group(1)) in (8, 16, 24, 32, 48, 64, 96, 128):
@@ -113,8 +122,9 @@ def _parse(payload: dict) -> dict:
             workloads.append(name)
     preferences = req.setdefault("preferences", [])
     no_rgb = bool(NO_RGB.search(lower))
+    wishes = BUDGET_IN_K.sub(" ", normalized)          # "budget 2k" is money, not a 1440p screen
     for label, pattern in {**PREFERENCE_PATTERNS, **SOFT_PREFERENCES}.items():
-        if re.search(pattern, lower) and label not in preferences and not (no_rgb and label == "RGB lighting"):
+        if re.search(pattern, wishes) and label not in preferences and not (no_rgb and label == "RGB lighting"):
             preferences.append(label)
     if no_rgb:          # "no RGB" is the opposite wish, not a mention of RGB
         preferences[:] = [p for p in preferences if p != "RGB lighting"] + ([] if "no RGB lighting" in preferences else ["no RGB lighting"])
@@ -127,6 +137,8 @@ def _parse(payload: dict) -> dict:
         for key, value in stated.items():
             if value is None:
                 hard.pop(key, None)
+            elif key == "part_brands":          # one maker per part; naming another part adds to the list
+                hard[key] = {**hard.get(key, {}), **value}
             else:
                 hard[key] = value
         if stated.get("minimum_gpu_model"):
@@ -303,8 +315,9 @@ def _apply_llm(req: dict, text: str, model, catalogue, questions: list[dict], re
     owned = {o["mention"].casefold() for o in req["owned_components"]}
     # "an RTX 5070 or better" sets a floor; it is not a request to buy that exact card.
     floor_model = (req.get("_transient") or {}).get("floor_model")
+    floor_number = floor_model.split()[1] if floor_model else None        # the model may drop the family: "至少5070"
     must_buy = [m for m in extracted.must_buy_components if _specific_mention(m, text) and m.casefold() not in owned
-                and not (floor_model and (gpu_model(m) or {}).get("label") == floor_model)]
+                and not (floor_model and ((gpu_model(m) or {}).get("label") == floor_model or floor_number in m))]
     for i, mention in enumerate(must_buy):
         recent = _recent_match(mention, recent_items)
         if recent:        # the user means the part we just recommended: lock exactly that product

@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from backend.api import create_router
 from backend.attributes import derive, gpu_model
 from backend.orchestrator import RecommendationEngine
-from backend.requirement_rules import unsupported_requests
+from backend.requirement_rules import inapplicable, unsupported_requests
 from backend.requirements_parser import parse_requirements
 from backend.retrieval import LocalCorpus
 from backend.settings import Settings
@@ -112,6 +112,77 @@ class UnderstandingTests(unittest.TestCase):
         self.assertEqual(named("It should weigh less than 1.5kg with 10 hours of battery.", "laptop"), ["a weight limit", "battery life"])
         self.assertEqual(named("Show me three options, delivered this week."), ["delivery or assembly", "the number of options"])
         self.assertEqual(named("Gaming desktop with 32GB RAM"), [])
+        self.assertEqual(named("A PC used for video editing."), [])              # not "used parts"
+        self.assertEqual(named("A touchscreen and two USB-C ports.", "laptop"), ["a touchscreen", "particular ports"])
+        self.assertEqual(named("A B650 motherboard."), ["a motherboard chipset"])
+
+    def test_a_feature_named_to_decline_it_is_not_required(self):
+        cases = {
+            "I don't need Wi-Fi.": {}, "Wi-Fi is not needed.": {}, "No water cooling please.": {"cooler_kind": "air"},
+            "不要水冷，要wifi": {"cooler_kind": "air", "wifi": True}, "I hate ASUS.": {"excluded_brands": ["asus"]},
+            "Intel or AMD, either is fine.": {}, "NVIDIA or AMD card, I don't mind.": {}, "No need for a graphics card.": {"no_graphics_card": True},
+        }
+        for phrase, expected in cases.items():
+            self.assertEqual(hard(DESKTOP + phrase), expected, phrase)
+        for phrase, expected in {"I don't like MSI.": {"excluded_brands": ["msi"]}, "No dedicated GPU needed.": {},
+                                 "No need for OLED.": {}}.items():
+            self.assertEqual(hard(LAPTOP + phrase), expected, phrase)
+        with_wifi, _ = parse_requirements(DESKTOP + "It needs Wi-Fi and an NVIDIA card.", {})
+        self.assertEqual(hard("I don't need Wi-Fi after all.", with_wifi), {"gpu_vendor": "nvidia"})
+        self.assertEqual(hard("Any graphics card brand is fine.", with_wifi), {"wifi": True})
+        prefs = lambda text: parse_requirements(DESKTOP + text, {})[0]["preferences"]
+        self.assertEqual(prefs("Not a fan of RGB."), ["no RGB lighting"])
+
+    def test_device_type_named_only_to_rule_it_out(self):
+        device = lambda text: parse_requirements(text, {})[0].get("device_type")
+        self.assertEqual(device("I want a desktop, not a laptop. Budget S$2,000."), "desktop")
+        self.assertEqual(device("I don't want a laptop, budget S$2,000 for gaming."), "desktop")
+        self.assertEqual(device("No desktop please, something portable for S$1,500."), "laptop")
+        self.assertEqual(device("A ThinkPad under S$2,000."), "laptop")
+        self.assertEqual(device("Build me a gaming rig, budget S$2,000."), "desktop")
+
+    def test_maker_of_one_part(self):
+        self.assertEqual(hard(DESKTOP + "ASUS ROG Strix motherboard and a Samsung 990 Pro SSD."),
+                         {"part_brands": {"motherboard": ["asus"], "ssd": ["samsung"]}})
+        self.assertEqual(hard(DESKTOP + "Power supply from Seasonic. 三星的固态"), {"part_brands": {"psu": ["seasonic"], "ssd": ["samsung"]}})
+        self.assertEqual(hard(DESKTOP + "I like Corsair in any case."), {})
+        first, _ = parse_requirements(DESKTOP + "I want an ASUS motherboard.", {})
+        second, _ = parse_requirements("Corsair RAM too.", first)
+        self.assertEqual(second["hard_constraints"], {"part_brands": {"motherboard": ["asus"], "ram": ["corsair"]}})
+        self.assertEqual(hard("Remove the part brand requirement.", second), {})
+        # On a laptop a maker named for a part is not the laptop's maker, and the reply says it cannot be applied.
+        req, _ = parse_requirements(LAPTOP + "With a Samsung SSD.", {})
+        self.assertNotIn("laptop_brands", req["hard_constraints"])
+        self.assertEqual(inapplicable(LAPTOP + "With a Samsung SSD.", req), ["an SSD from Samsung for a laptop"])
+
+    def test_more_ways_to_name_chips_sizes_and_capacities(self):
+        floor = lambda text: (hard(DESKTOP + text).get("minimum_gpu_model") or {}).get("label")
+        self.assertEqual(floor("at least a 5070."), "RTX 5070")
+        self.assertEqual(floor("a 9070 XT or better"), "RX 9070 XT")
+        self.assertIsNone(floor("an upgrade from my 3060"))
+        self.assertEqual(hard(DESKTOP + "I want an i7."), {"cpu_maker": "intel"})
+        self.assertEqual(hard(DESKTOP + "2x16GB RAM."), {"minimum_memory_gb": 32})
+        self.assertEqual(hard(DESKTOP + "ATX case, 850W gold PSU."), {"minimum_psu_watts": 850})
+        screen = lambda text: hard(LAPTOP + text)["laptop_screen_inches"]
+        self.assertEqual(screen("13 or 14 inch."), [13.0, 14.99])
+        self.assertEqual(screen("Screen at least 15 inches."), [15.0, 19.99])
+        self.assertEqual(screen("Under 15 inches."), [10.0, 15.99])
+
+    def test_more_budget_wordings(self):
+        budget = lambda text: (parse_requirements(text, {})[0].get("budget") or {}).get("maximum_minor")
+        prefs = lambda text: parse_requirements(text, {})[0]["preferences"]
+        self.assertEqual(budget("Gaming PC, budget 2k."), 200000)
+        self.assertEqual(prefs("Gaming PC, budget 2k."), [])                 # not a 1440p screen
+        self.assertEqual(budget("Gaming PC, 3k budget."), 300000)
+        self.assertEqual(budget("Gaming PC, I can spend around 2000."), 200000)
+        self.assertEqual(budget("Gaming PC, I have 2500 to spend."), 250000)
+        self.assertEqual(budget("台式机，预算一万五"), 1500000)
+        self.assertEqual(budget("台式机，预算三千五"), 350000)
+        self.assertEqual(budget("台式机，预算1万2"), 1200000)
+        self.assertIsNone(budget("Gaming PC. I usually spend around 2 hours a day gaming."))
+        self.assertIsNone(budget("Gaming PC with around 1000W."))
+        req, questions = parse_requirements("Laptop, 1500 euros.", {})
+        self.assertEqual([q["question_id"] for q in questions], ["q_budget_currency"])
 
 
 class EnforcementTests(unittest.TestCase):
@@ -198,6 +269,40 @@ class EnforcementTests(unittest.TestCase):
             self.assertTrue(laptop["oled"] and 14 <= laptop["screen_inches"] < 15)
         gaming = self.parts(self.options("Laptop for gaming, budget S$2,500. With a dedicated graphics card.", ["dedicated_graphics"]), "laptop")
         self.assertTrue(gaming and all(laptop["dedicated_gpu"] for laptop in gaming))
+
+    def test_air_cooling_excludes_all_in_one_coolers_named_by_series(self):
+        kind = lambda name: derive({"category": "cooler", "name": name})["cooler_kind"]
+        self.assertEqual(kind("NZXT Kraken 120 (LGA1700/AM5), One 120mm Aer P radiator fan"), "liquid")
+        self.assertEqual(kind("Thermalright Frozen Horizon 360 ARGB BLACK V2 Cooler"), "liquid")
+        self.assertEqual(kind("Thermalright Peerless Assassin 120 SE Dual Tower CPU Air Cooler"), "air")
+        self.assertIsNone(kind("DEEPCOOL UD551 ARGB CPU COOLER"))
+        coolers = self.parts(self.options(DESKTOP + "Air cooling please.", ["cooling_type"]), "cooler")
+        self.assertTrue(coolers and all(cooler["cooler_kind"] != "liquid" for cooler in coolers))
+
+    def test_laptop_graphics_chip_and_processor(self):
+        chip = self.parts(self.options("Laptop for gaming, budget S$3,500. With an RTX 5070 or better and an Intel CPU.",
+                                       ["minimum_gpu_model", "processor_brand"]), "laptop")
+        self.assertTrue(chip)
+        for laptop in chip:
+            self.assertEqual((laptop["gpu_vendor"], laptop["cpu_maker"]), ("nvidia", "intel"))
+            self.assertGreaterEqual(laptop["gpu_rank"], [70, 50, 0])
+        ryzen = self.parts(self.options("Laptop for university, budget S$1,800. AMD Ryzen please.", ["processor_brand"]), "laptop")
+        self.assertTrue(ryzen and all(laptop["cpu_maker"] == "amd" for laptop in ryzen))
+        memory = self.parts(self.options("Laptop for gaming, budget S$3,500. At least 8GB VRAM.", ["minimum_gpu_memory"]), "laptop")
+        self.assertTrue(memory and all((laptop["gpu_memory_gb"] or 8) >= 8 and laptop["dedicated_gpu"] for laptop in memory))
+
+    def test_maker_of_one_desktop_part(self):
+        options = self.options(DESKTOP + "I want an ASUS motherboard, a Corsair power supply and a Samsung SSD.", ["part_brand"])
+        for category, maker in (("motherboard", "asus"), ("psu", "corsair"), ("ssd", "samsung")):
+            self.assertTrue(all(part["brand"] == maker for part in self.parts(options, category)), category)
+        # A maker named for the graphics card means a card is wanted, even for everyday use.
+        office = self.options("Office desktop, budget S$2,500. MSI graphics card.", ["part_brand"])
+        cards = self.parts(office, "gpu")
+        self.assertTrue(len(cards) == len(office) and all(card["brand"] == "msi" for card in cards))
+
+    def test_requirement_that_does_not_fit_the_device_is_named(self):
+        _, reply = self.ask(LAPTOP + "With an 850W power supply.")
+        self.assertEqual(reply["not_acted_on"], ["a power supply of at least 850W for a laptop"])
 
     def test_requirement_nothing_meets_is_asked_about_and_can_be_dropped(self):
         session, reply = self.ask(LAPTOP + "I want a MacBook.")

@@ -228,10 +228,11 @@ def rule_gpu_memory(option, req):
 ATTRIBUTE_CHECKS = {"gpu_vendor": "gpu_brand", "min_gpu_model": "minimum_gpu_model", "cpu_maker": "processor_brand",
                     "wifi": "wifi", "max_form_factor": "maximum_size", "cooler_kind": "cooling_type",
                     "exclude_brands": "excluded_brands", "stores": "allowed_stores", "brands": "laptop_brand",
-                    "screen_inches": "screen_size", "oled": "oled_screen", "dedicated_gpu": "dedicated_graphics"}
+                    "screen_inches": "screen_size", "oled": "oled_screen", "dedicated_gpu": "dedicated_graphics",
+                    "part_brand": "part_brand", "min_gpu_memory": "minimum_gpu_memory"}
 REQUIREMENT_OF = {"min_gpu_model": "minimum_gpu_model", "max_form_factor": "maximum_form_factor", "exclude_brands": "excluded_brands",
                   "brands": "laptop_brands", "screen_inches": "laptop_screen_inches", "oled": "laptop_oled",
-                  "dedicated_gpu": "laptop_dedicated_gpu"}
+                  "dedicated_gpu": "laptop_dedicated_gpu", "part_brand": "part_brands", "min_gpu_memory": "minimum_gpu_memory_gb"}
 
 
 def rules_stated_requirements(option, req) -> list[dict]:
@@ -245,7 +246,8 @@ def rules_stated_requirements(option, req) -> list[dict]:
         have = derive(item)
         for key, value in filters_for(item["category"], {**req, "hard_constraints": wanted}).items():
             result = verdict(have, {key: value})
-            said = LABELS[REQUIREMENT_OF.get(key, key)][1](value)
+            stated = REQUIREMENT_OF.get(key, key)
+            said = LABELS[stated][1](wanted[stated])
             check = checks.setdefault(ATTRIBUTE_CHECKS[key], {"status": "passed", "failed": [], "unknown": [], "said": said, "affected": []})
             if result is False:
                 check["failed"].append(_name(item)); check["affected"].append(item["category"])
