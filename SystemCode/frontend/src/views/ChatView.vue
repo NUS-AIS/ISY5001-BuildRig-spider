@@ -40,12 +40,12 @@ async function send(text = input.value) {
     if (parsed.requirements_changed === false && workspace.lastRunVersion === previous) workspace.setLastRun(workspace.lastRunId, parsed.requirements_version)
     workspace.setVersion(parsed.requirements_version); canGenerate.value=parsed.can_generate
     say('assistant', parsed.assistant_message || (parsed.questions?.length ? parsed.questions.map(q=>q.text).join(' ') : 'Your requirements are ready. I can now prepare an evidence-backed recommendation.'), {options:parsed.reply_options||[],source:parsed.generation_source})
-  } catch(e){ error.value=e.message; say('assistant', 'I could not save that request. Please check the backend connection and try again.') }
+  } catch(e){ error.value=e.message==='Failed to fetch'?'The backend cannot be reached.':e.message; say('assistant', 'I could not save that request. Please check the backend connection and try again.') }
   finally { busy.value=false; stage.value='Ready'; await toBottom() }
 }
 // Bring back the conversation, the last result and any run still in progress after a reload.
 async function restore() {
-  await ensureSession()
+  try { await ensureSession() } catch { messages.value = []; say('assistant', GREETING); error.value = 'The backend cannot be reached. Start it, then reload this page.'; return }
   messages.value = []
   say('assistant', GREETING)
   let saved

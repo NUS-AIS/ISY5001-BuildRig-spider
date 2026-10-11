@@ -23,6 +23,7 @@ def status():
 @router.get('/prices')
 def prices(category: str | None = None, q: str | None = None,
            max_price: Decimal | None = Query(None, gt=0), in_stock: bool = False,
+           sort: str | None = Query(None, pattern='^(price_asc|price_desc)$'),
            offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=500)):
     with (latest_folder() / 'prices.jsonl').open(encoding='utf-8') as stream:
         rows = [json.loads(line) for line in stream if line.strip()]
@@ -39,7 +40,9 @@ def prices(category: str | None = None, q: str | None = None,
             and (not words or named(r))
             and (max_price is None or Decimal(r['price']) <= max_price)
             and (not in_stock or r['available'] is True)]
-    if words:          # listings that contain the search as typed come first
+    if sort:
+        rows.sort(key=lambda r: Decimal(r['price']), reverse=sort == 'price_desc')
+    elif words:          # listings that contain the search as typed come first
         rows.sort(key=lambda r: ' '.join(words) not in plain(r['name']))
     return {'total': len(rows), 'items': rows[offset:offset + limit]}
 

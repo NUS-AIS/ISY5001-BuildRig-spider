@@ -204,7 +204,7 @@ def create_router(store, corpus, engine):
         return {"items": store.owner_memories(x_user_id)}
 
     @router.post("/sessions/{session_id}/memories", status_code=201)
-    def add_memory(session_id: str, kind: str, value: str, confirmed: bool = False,
+    def add_memory(session_id: str, kind: str, value: str = Query(..., min_length=1, max_length=300), confirmed: bool = False,
                    x_user_id: str = Header("dev-user")):
         session = owned_session(session_id, x_user_id)
         if not session["long_term_memory"]:

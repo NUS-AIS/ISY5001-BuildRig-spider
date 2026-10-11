@@ -54,6 +54,17 @@ const levelText = { exact_offer: 'listing', model_family_only: 'model family', b
     </div>
     <div class="build-total"><span>Total price</span><strong>{{ money(total) }}</strong></div>
 
+    <!-- A saved card stays short, but still says when it was saved and which checks are not passed. -->
+    <div v-if="compact" class="saved-summary">
+      <small v-if="option.savedAt">Saved {{ date(option.savedAt) }}</small>
+      <ul v-if="checks.some((c) => c.status !== 'passed')" class="check-list">
+        <li v-for="check in checks.filter((c) => c.status !== 'passed')" :key="check.code" :class="check.status">
+          <XCircle v-if="check.status==='failed'" :size="15" /><HelpCircle v-else :size="15" />
+          <span><b>{{ label(check.code) }}</b> — {{ check.reason }}</span>
+        </li>
+      </ul>
+    </div>
+
     <div v-if="!compact" class="build-insights">
       <div v-if="option.follow_up" class="follow-up-note">
         Updated from your previous recommendation: kept {{ option.follow_up.kept_parts.length }} part(s), changed {{ option.follow_up.changed_parts.length }}.
